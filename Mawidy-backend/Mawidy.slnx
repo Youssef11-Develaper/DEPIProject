@@ -4,7 +4,6 @@
     <Project Path="src/Mawidy.Application/Mawidy.Application.csproj" />
     <Project Path="src/Mawidy.Domain/Mawidy.Domain.csproj" />
     <Project Path="src/Mawidy.Infrastructure/Mawidy.Infrastructure.csproj" />
-    <Project Path="src/Mawidy.Web/Mawidy.Web.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Mawidy.IntegrationTests/Mawidy.IntegrationTests.csproj" />
