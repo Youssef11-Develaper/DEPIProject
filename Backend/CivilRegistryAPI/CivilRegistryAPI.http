@@ -1,0 +1,6 @@
+@CivilRegistryAPI_HostAddress = http://localhost:5074
+
+GET {{CivilRegistryAPI_HostAddress}}/
+Accept: application/json
+
+###

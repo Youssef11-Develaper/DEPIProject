@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الفروع - لوحة التحكم</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <style>
+        #branchMap { height: 300px; border-radius: var(--radius-sm); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="../index.html" class="navbar-brand">
+        <i class="bi bi-building-fill"></i>
+        السجل المدني - لوحة التحكم
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="dashboard.html" class="nav-link">الرئيسية</a></li>
+        <li><a href="appointments.html" class="nav-link">المواعيد</a></li>
+        <li><a href="branches.html" class="nav-link active">الفروع</a></li>
+        <li><a href="services.html" class="nav-link">الخدمات</a></li>
+        <li><a href="complaints.html" class="nav-link">الشكاوى</a></li>
+        <li><a href="users.html" class="nav-link">المستخدمين</a></li>
+        <li>
+            <button class="btn btn-outline" onclick="logout()"
+                style="color:white;border-color:rgba(255,255,255,0.6)">
+                <i class="bi bi-box-arrow-right"></i>
+                خروج
+            </button>
+        </li>
+    </ul>
+</nav>
+
+<div class="sidebar">
+    <a href="dashboard.html" class="sidebar-link">
+        <i class="bi bi-speedometer2"></i> الرئيسية
+    </a>
+    <a href="appointments.html" class="sidebar-link">
+        <i class="bi bi-calendar-check"></i> المواعيد
+    </a>
+    <a href="branches.html" class="sidebar-link active">
+        <i class="bi bi-building"></i> الفروع
+    </a>
+    <a href="services.html" class="sidebar-link">
+        <i class="bi bi-list-check"></i> الخدمات
+    </a>
+    <a href="complaints.html" class="sidebar-link">
+        <i class="bi bi-exclamation-circle"></i> الشكاوى
+    </a>
+    <a href="users.html" class="sidebar-link">
+        <i class="bi bi-people"></i> المستخدمين
+    </a>
+</div>
+
+<div class="main-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <h2 style="font-size:1.4rem;font-weight:900;color:var(--primary)">إدارة الفروع</h2>
+        <button class="btn btn-primary" onclick="openBranchModal()">
+            <i class="bi bi-plus-lg"></i>
+            فرع جديد
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding:0">
+            <div id="branchesContainer">
+                <div class="empty-state">
+                    <div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:30px;height:30px;margin:0 auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Branch Modal -->
+<div class="modal-overlay" id="branchModal">
+    <div class="modal" style="max-width:600px">
+        <h3 class="modal-title" id="branchModalTitle">
+            <i class="bi bi-building"></i>
+            فرع جديد
+        </h3>
+
+        <input type="hidden" id="branchId">
+
+        <div class="row">
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-label">اسم الفرع</label>
+                    <input type="text" class="form-control" id="branchName"
+                        placeholder="مثال: سجل مدني مصر الجديدة">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-group">
+                    <label class="form-label">المحافظة</label>
+                    <select class="form-control" id="branchGovernorate">
+                        <option value="">اختر المحافظة</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">العنوان</label>
+            <input type="text" class="form-control" id="branchAddress"
+                placeholder="العنوان بالتفصيل">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                الموقع على الخريطة
+                <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem">
+                    (اضغط على الخريطة أو ابحث)
+                </span>
+            </label>
+            <div style="display:flex;gap:8px;margin-bottom:8px">
+                <input type="text" class="form-control" id="mapSearch"
+                    placeholder="ابحث عن المكان...">
+                <button type="button" class="btn btn-primary" onclick="searchMap()">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+            <div id="searchResultsList" class="card" style="display:none;max-height:150px;overflow-y:auto;margin-bottom:8px"></div>
+            <div id="branchMap"></div>
+            <div class="row mt-1">
+                <div class="col-6">
+                    <input type="number" class="form-control" id="branchLat"
+                        placeholder="خط العرض" step="any" onchange="updateMapFromInputs()">
+                </div>
+                <div class="col-6">
+                    <input type="number" class="form-control" id="branchLng"
+                        placeholder="خط الطول" step="any" onchange="updateMapFromInputs()">
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-6">
+                <button class="btn btn-outline btn-block" onclick="closeBranchModal()">إلغاء</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary btn-block" id="saveBranchBtn" onclick="saveBranch(this)">
+                    <i class="bi bi-save"></i>
+                    حفظ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule Modal -->
+<div class="modal-overlay" id="scheduleModal">
+    <div class="modal" style="max-width:700px">
+        <h3 class="modal-title" id="scheduleModalTitle">
+            <i class="bi bi-clock"></i>
+            إدارة مواعيد الفرع
+        </h3>
+
+        <div class="card" style="margin-bottom:20px">
+            <div class="card-header" style="justify-content:space-between">
+                <span>أيام العمل</span>
+                <button class="btn btn-sm" style="background:white;color:var(--primary)"
+                    onclick="showAddScheduleForm()">
+                    <i class="bi bi-plus-lg"></i>
+                    إضافة يوم
+                </button>
+            </div>
+            <div id="schedulesList" style="padding:16px"></div>
+        </div>
+
+        <div id="addScheduleForm" style="display:none" class="card">
+            <div class="card-header">إضافة يوم عمل</div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">اليوم</label>
+                            <select class="form-control" id="scheduleDay">
+                                <option value="0">الأحد</option>
+                                <option value="1">الاثنين</option>
+                                <option value="2">الثلاثاء</option>
+                                <option value="3">الأربعاء</option>
+                                <option value="4">الخميس</option>
+                                <option value="5">الجمعة</option>
+                                <option value="6">السبت</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">من</label>
+                            <input type="time" class="form-control" id="scheduleOpen" value="08:00">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">لحد</label>
+                            <input type="time" class="form-control" id="scheduleClose" value="15:00">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label" style="color:var(--warning)">ذروة من</label>
+                            <input type="time" class="form-control" id="schedulePeakStart" value="10:00">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label" style="color:var(--warning)">ذروة لحد</label>
+                            <input type="time" class="form-control" id="schedulePeakEnd" value="12:00">
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label class="form-label">أقصى مواعيد</label>
+                            <input type="number" class="form-control" id="scheduleMax" value="3" min="1" max="10">
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="addSchedule(this)">
+                    <i class="bi bi-plus-lg"></i>
+                    إضافة
+                </button>
+            </div>
+        </div>
+
+        <div class="text-center mt-2">
+            <button class="btn btn-outline" onclick="closeScheduleModal()">إغلاق</button>
+        </div>
+    </div>
+</div>
+
+<script src="../js/api.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    let branchMap = null;
+    let branchMarker = null;
+    let editingBranchId = null;
+    let currentScheduleBranchId = null;
+
+    async function init() {
+        UI.redirectIfNotAdmin();
+        await loadBranches();
+        await loadGovernorates();
+    }
+
+    async function loadBranches() {
+        try {
+            const res = await API.admin.getBranches();
+            const container = document.getElementById('branchesContainer');
+            const branches = res.data || [];
+
+            if (!branches.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-building-x" style="font-size:3rem;color:var(--text-muted)"></i>
+                        <p>لا توجد فروع</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>اسم الفرع</th>
+                            <th>المحافظة</th>
+                            <th>العنوان</th>
+                            <th>أيام العمل</th>
+                            <th>التقييم</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${branches.map(b => `
+                            <tr>
+                                <td style="font-weight:700">${b.name}</td>
+                                <td>${b.governorateName}</td>
+                                <td style="color:var(--text-muted);font-size:0.85rem">${b.address}</td>
+                                <td>
+                                    <span class="badge badge-info">${b.workingDaysCount} أيام</span>
+                                </td>
+                                <td>
+                                    <span style="color:#D4AC0D">
+                                        <i class="bi bi-star-fill"></i>
+                                        ${b.averageRating || '0.0'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px">
+                                        <button class="btn btn-sm"
+                                            style="background:#EAF2FB;color:var(--primary)"
+                                            onclick="openScheduleModal(${b.id}, '${b.name}')">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                        <button class="btn btn-sm"
+                                            style="background:#FEF9E7;color:#7D6608"
+                                            onclick="editBranch(${JSON.stringify(b).replace(/"/g, '&quot;')})">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger"
+                                            onclick="deleteBranch(${b.id}, this)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (err) {
+            UI.showToast('حدث خطأ في تحميل الفروع', 'error');
+        }
+    }
+
+    async function loadGovernorates() {
+        try {
+            const res = await API.branches.getGovernorates();
+            const select = document.getElementById('branchGovernorate');
+            select.innerHTML = '<option value="">اختر المحافظة</option>' +
+                res.data.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+        } catch (err) {}
+    }
+
+    function openBranchModal() {
+        editingBranchId = null;
+        document.getElementById('branchModalTitle').innerHTML =
+            '<i class="bi bi-building"></i> فرع جديد';
+        document.getElementById('branchId').value = '';
+        document.getElementById('branchName').value = '';
+        document.getElementById('branchAddress').value = '';
+        document.getElementById('branchGovernorate').value = '';
+        document.getElementById('branchLat').value = '';
+        document.getElementById('branchLng').value = '';
+
+        document.getElementById('branchModal').classList.add('show');
+        setTimeout(() => initBranchMap(), 300);
+    }
+
+    function editBranch(branch) {
+        editingBranchId = branch.id;
+        document.getElementById('branchModalTitle').innerHTML =
+            '<i class="bi bi-pencil"></i> تعديل الفرع';
+        document.getElementById('branchName').value = branch.name;
+        document.getElementById('branchAddress').value = branch.address;
+        document.getElementById('branchGovernorate').value = branch.governorateId;
+        document.getElementById('branchLat').value = branch.latitude || '';
+        document.getElementById('branchLng').value = branch.longitude || '';
+
+        document.getElementById('branchModal').classList.add('show');
+        setTimeout(() => initBranchMap(branch.latitude, branch.longitude), 300);
+    }
+
+    function initBranchMap(lat = 26.8206, lng = 30.8025) {
+        if (branchMap) {
+            branchMap.remove();
+            branchMap = null;
+            branchMarker = null;
+        }
+
+        branchMap = L.map('branchMap').setView([lat, lng], lat === 26.8206 ? 6 : 14);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO',
+            maxZoom: 19
+        }).addTo(branchMap);
+
+        if (lat !== 26.8206) {
+            branchMarker = L.marker([lat, lng]).addTo(branchMap);
+        }
+
+        branchMap.on('click', function(e) {
+            const { lat, lng } = e.latlng;
+            if (branchMarker) branchMap.removeLayer(branchMarker);
+            branchMarker = L.marker([lat, lng]).addTo(branchMap);
+            document.getElementById('branchLat').value = lat.toFixed(6);
+            document.getElementById('branchLng').value = lng.toFixed(6);
+        });
+    }
+
+    function updateMapFromInputs() {
+        const lat = parseFloat(document.getElementById('branchLat').value);
+        const lng = parseFloat(document.getElementById('branchLng').value);
+        if (!lat || !lng || !branchMap) return;
+
+        if (branchMarker) branchMap.removeLayer(branchMarker);
+        branchMarker = L.marker([lat, lng]).addTo(branchMap);
+        branchMap.setView([lat, lng], 15);
+    }
+
+    async function searchMap() {
+        const query = document.getElementById('mapSearch').value.trim();
+        if (!query) return;
+
+        try {
+            const res = await fetch(
+                `https://photon.komoot.io/api/?q=${encodeURIComponent(query)}&lang=ar&limit=5&bbox=24,21,37,32`
+            );
+            const data = await res.json();
+            const list = document.getElementById('searchResultsList');
+
+            if (!data.features?.length) {
+                list.style.display = 'none';
+                return;
+            }
+
+            list.style.display = 'block';
+            list.innerHTML = data.features.map(f => {
+                const coords = f.geometry.coordinates;
+                const name = [f.properties.name, f.properties.city, f.properties.state]
+                    .filter(Boolean).join('، ');
+                return `
+                    <div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:0.85rem"
+                        onmouseover="this.style.background='#EAF2FB'"
+                        onmouseout="this.style.background='white'"
+                        onclick="selectSearchResult(${coords[1]}, ${coords[0]}, '${name.replace(/'/g, "\\'")}')">
+                        ${name}
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {}
+    }
+
+    function selectSearchResult(lat, lng, name) {
+        if (branchMarker) branchMap.removeLayer(branchMarker);
+        branchMarker = L.marker([lat, lng]).addTo(branchMap);
+        branchMap.setView([lat, lng], 16);
+        document.getElementById('branchLat').value = lat.toFixed(6);
+        document.getElementById('branchLng').value = lng.toFixed(6);
+        document.getElementById('mapSearch').value = name;
+        document.getElementById('searchResultsList').style.display = 'none';
+    }
+
+    async function saveBranch(btn) {
+        const name = document.getElementById('branchName').value.trim();
+        const address = document.getElementById('branchAddress').value.trim();
+        const governorateId = document.getElementById('branchGovernorate').value;
+
+        if (!name || !address || !governorateId) {
+            UI.showToast('ادخل جميع البيانات المطلوبة', 'error');
+            return;
+        }
+
+        const dto = {
+            name,
+            address,
+            governorateId: parseInt(governorateId),
+            latitude: parseFloat(document.getElementById('branchLat').value) || 0,
+            longitude: parseFloat(document.getElementById('branchLng').value) || 0
+        };
+
+        UI.showLoading(btn);
+        try {
+            if (editingBranchId) {
+                await API.admin.updateBranch(editingBranchId, dto);
+                UI.showToast('تم تعديل الفرع بنجاح');
+            } else {
+                await API.admin.createBranch(dto);
+                UI.showToast('تم إضافة الفرع بنجاح');
+            }
+            closeBranchModal();
+            await loadBranches();
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    async function deleteBranch(id, btn) {
+        if (!confirm('متأكد إنك عاوز تحذف الفرع ده؟')) return;
+
+        UI.showLoading(btn);
+        try {
+            await API.admin.deleteBranch(id);
+            UI.showToast('تم حذف الفرع');
+            await loadBranches();
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    function closeBranchModal() {
+        document.getElementById('branchModal').classList.remove('show');
+        document.getElementById('searchResultsList').style.display = 'none';
+        if (branchMap) { branchMap.remove(); branchMap = null; }
+    }
+
+    async function openScheduleModal(branchId, branchName) {
+        currentScheduleBranchId = branchId;
+        document.getElementById('scheduleModalTitle').innerHTML =
+            `<i class="bi bi-clock"></i> مواعيد - ${branchName}`;
+        document.getElementById('addScheduleForm').style.display = 'none';
+        document.getElementById('scheduleModal').classList.add('show');
+        await loadSchedules(branchId);
+    }
+
+    async function loadSchedules(branchId) {
+        try {
+            const res = await API.branches.getById(branchId);
+            const schedules = res.data.schedules || [];
+            const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+
+            const list = document.getElementById('schedulesList');
+
+            if (!schedules.length) {
+                list.innerHTML = '<p style="color:var(--text-muted);text-align:center">لا توجد أيام عمل</p>';
+                return;
+            }
+
+            list.innerHTML = `
+                <table class="table" style="margin:0">
+                    <thead>
+                        <tr>
+                            <th>اليوم</th>
+                            <th>من</th>
+                            <th>لحد</th>
+                            <th>ذروة من</th>
+                            <th>ذروة لحد</th>
+                            <th>أقصى</th>
+                            <th>حذف</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${schedules.map(s => `
+                            <tr>
+                                <td style="font-weight:700">${s.dayName}</td>
+                                <td>${UI.formatTime(s.openTime)}</td>
+                                <td>${UI.formatTime(s.closeTime)}</td>
+                                <td style="color:var(--warning)">${UI.formatTime(s.peakStartTime)}</td>
+                                <td style="color:var(--warning)">${UI.formatTime(s.peakEndTime)}</td>
+                                <td>${s.maxAppointmentsPerSlot}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger"
+                                        onclick="deleteSchedule(${s.id}, this)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (err) {}
+    }
+
+    function showAddScheduleForm() {
+        document.getElementById('addScheduleForm').style.display = 'block';
+    }
+
+    async function addSchedule(btn) {
+        UI.showLoading(btn);
+        try {
+            await API.admin.addSchedule(currentScheduleBranchId, {
+                dayOfWeek: parseInt(document.getElementById('scheduleDay').value),
+                openTime: document.getElementById('scheduleOpen').value + ':00',
+                closeTime: document.getElementById('scheduleClose').value + ':00',
+                peakStartTime: document.getElementById('schedulePeakStart').value + ':00',
+                peakEndTime: document.getElementById('schedulePeakEnd').value + ':00',
+                maxAppointmentsPerSlot: parseInt(document.getElementById('scheduleMax').value)
+            });
+
+            UI.showToast('تم إضافة يوم العمل');
+            document.getElementById('addScheduleForm').style.display = 'none';
+            await loadSchedules(currentScheduleBranchId);
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    async function deleteSchedule(id, btn) {
+        if (!confirm('متأكد؟')) return;
+        UI.showLoading(btn);
+        try {
+            await API.admin.deleteSchedule(id);
+            UI.showToast('تم حذف يوم العمل');
+            await loadSchedules(currentScheduleBranchId);
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    function closeScheduleModal() {
+        document.getElementById('scheduleModal').classList.remove('show');
+    }
+
+    function logout() {
+        Auth.clearSession();
+        window.location.href = '../index.html';
+    }
+
+    document.getElementById('branchModal').addEventListener('click', function(e) {
+        if (e.target === this) closeBranchModal();
+    });
+
+    document.getElementById('scheduleModal').addEventListener('click', function(e) {
+        if (e.target === this) closeScheduleModal();
+    });
+
+    document.getElementById('mapSearch').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') searchMap();
+    });
+
+    init();
+</script>
+</body>
+</html>
