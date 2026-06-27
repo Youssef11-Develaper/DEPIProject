@@ -1,0 +1,354 @@
+﻿@{
+    ViewData["Title"] = "إدارة الفرع";
+    var branch = ViewBag.Branch as Branch;
+    var schedules = ViewBag.Schedules as List<BranchSchedule>;
+    var holidays = ViewBag.Holidays as List<BranchHoliday>;
+    var unavailabilities = ViewBag.Unavailabilities as List<ServiceUnavailability>;
+    var services = ViewBag.Services as List<ServiceType>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold mb-0">
+            <i class="fas fa-clock me-2"></i>إدارة الفرع
+        </h4>
+        <small class="text-muted">@branch.Name</small>
+    </div>
+    <a href="/AdminDashboard/Branches" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-right me-2"></i>رجوع
+    </a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-calendar-check me-2"></i>أيام الشغل</span>
+        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addScheduleModal">
+            <i class="fas fa-plus me-1"></i>إضافة يوم
+        </button>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>اليوم</th>
+                    <th>من</th>
+                    <th>لحد</th>
+                    <th>ذروة من</th>
+                    <th>ذروة لحد</th>
+                    <th>أقصى مواعيد</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!schedules.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-3">
+                            مفيش أيام شغل محددة
+                        </td>
+                    </tr>
+                }
+                @foreach (var schedule in schedules)
+                {
+                    <tr>
+                        <td class="fw-bold">
+                            @switch (schedule.DayOfWeek)
+                            {
+                                case DayOfWeek.Sunday:
+                                    <text>الأحد</text>
+                                    break;
+                                case DayOfWeek.Monday:
+
+                                    <text>الاثنين</text>
+                                    break;
+                                case DayOfWeek.Tuesday:
+
+                                    <text>الثلاثاء</text>
+                                    break;
+                                case DayOfWeek.Wednesday:
+
+                                    <text>الأربعاء</text>
+                                    break;
+                                case DayOfWeek.Thursday:
+
+                                    <text>الخميس</text>
+                                    break;
+                                case DayOfWeek.Friday:
+
+                                    <text>الجمعة</text>
+                                    break;
+                                case DayOfWeek.Saturday:
+
+                                    <text>السبت</text>
+                                    break;
+                            }
+                        </td>
+                        <td>@schedule.OpenTime.ToString(@"hh\:mm")</td>
+                        <td>@schedule.CloseTime.ToString(@"hh\:mm")</td>
+                        <td class="text-warning">@schedule.PeakStartTime.ToString(@"hh\:mm")</td>
+                        <td class="text-warning">@schedule.PeakEndTime.ToString(@"hh\:mm")</td>
+                        <td>@schedule.MaxAppointmentsPerSlot</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-sm btn-outline-primary"
+                                        onclick="editSchedule(@schedule.Id, '@schedule.OpenTime', '@schedule.CloseTime', '@schedule.PeakStartTime', '@schedule.PeakEndTime', @schedule.MaxAppointmentsPerSlot)">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="post" action="/AdminDashboard/DeleteSchedule"
+                                      onsubmit="return confirm('متأكد؟')">
+                                    <input type="hidden" name="id" value="@schedule.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- الإجازات -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-umbrella-beach me-2"></i>الإجازات</span>
+        <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addHolidayModal">
+            <i class="fas fa-plus me-1"></i>إضافة إجازة
+        </button>
+    </div>
+    <div class="card-body p-0">
+        @if (!holidays.Any())
+        {
+            <div class="text-center text-muted py-3">مفيش إجازات قادمة</div>
+        }
+        else
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>السبب</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var holiday in holidays)
+                    {
+                        <tr>
+                            <td class="fw-bold">@holiday.Date.ToString("dd/MM/yyyy")</td>
+                            <td class="text-muted">@holiday.Reason</td>
+                            <td>
+                                <form method="post" action="/AdminDashboard/DeleteHoliday"
+                                      onsubmit="return confirm('متأكد؟')">
+                                    <input type="hidden" name="id" value="@holiday.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-ban me-2"></i>خدمات معطلة</span>
+        <button class="btn btn-light btn-sm" data-bs-toggle="modal"
+                data-bs-target="#addUnavailabilityModal">
+            <i class="fas fa-plus me-1"></i>تعطيل خدمة
+        </button>
+    </div>
+    <div class="card-body p-0">
+        @if (!unavailabilities.Any())
+        {
+            <div class="text-center text-muted py-3">مفيش خدمات معطلة</div>
+        }
+        else
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>الخدمة</th>
+                        <th>التاريخ</th>
+                        <th>السبب</th>
+                        <th>حذف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in unavailabilities)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.ServiceType.Name</td>
+                            <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                            <td class="text-muted">@item.Reason</td>
+                            <td>
+                                <form method="post" action="/AdminDashboard/DeleteServiceUnavailability"
+                                      onsubmit="return confirm('متأكد؟')">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="addScheduleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة يوم شغل</h5>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/AdminDashboard/AddSchedule">
+                    <input type="hidden" name="branchId" value="@branch.Id" />
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-bold">اليوم</label>
+                            <select name="dayOfWeek" class="form-select">
+                                <option value="0">الأحد</option>
+                                <option value="1">الاثنين</option>
+                                <option value="2">الثلاثاء</option>
+                                <option value="3">الأربعاء</option>
+                                <option value="4">الخميس</option>
+                                <option value="5">الجمعة</option>
+                                <option value="6">السبت</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">من الساعة</label>
+                            <input type="time" class="form-control" name="openTime" value="08:00" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">لحد الساعة</label>
+                            <input type="time" class="form-control" name="closeTime" value="15:00" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-warning fw-bold">ذروة من</label>
+                            <input type="time" class="form-control" name="peakStart" value="10:00" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-warning fw-bold">ذروة لحد</label>
+                            <input type="time" class="form-control" name="peakEnd" value="12:00" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">أقصى مواعيد في الـ slot</label>
+                            <input type="number" class="form-control" name="maxSlot" value="3" min="1" max="10" />
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>حفظ
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            إلغاء
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addHolidayModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة إجازة</h5>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/AdminDashboard/AddHoliday">
+                    <input type="hidden" name="branchId" value="@branch.Id" />
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">التاريخ</label>
+                        <input type="date" class="form-control" name="date"
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">السبب</label>
+                        <input type="text" class="form-control" name="reason"
+                               placeholder="مثال: إجازة رسمية" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>حفظ
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            إلغاء
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addUnavailabilityModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تعطيل خدمة</h5>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/AdminDashboard/AddServiceUnavailability">
+                    <input type="hidden" name="branchId" value="@branch.Id" />
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">الخدمة</label>
+                        <select name="serviceTypeId" class="form-select">
+                            @foreach (var service in services)
+                            {
+                                <option value="@service.Id">@service.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">التاريخ</label>
+                        <input type="date" class="form-control" name="date"
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">السبب</label>
+                        <input type="text" class="form-control" name="reason"
+                               placeholder="مثال: مفيش موظف" />
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>حفظ
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                data-bs-dismiss="modal">
+                            إلغاء
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function editSchedule(id, open, close, peakStart, peakEnd, maxSlot) {
+            document.getElementById('scheduleId').value = id;
+            document.getElementById('openTime').value = open.substring(0, 5);
+            document.getElementById('closeTime').value = close.substring(0, 5);
+            document.getElementById('peakStart').value = peakStart.substring(0, 5);
+            document.getElementById('peakEnd').value = peakEnd.substring(0, 5);
+            document.getElementById('maxSlot').value = maxSlot;
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
+    </script>
+}

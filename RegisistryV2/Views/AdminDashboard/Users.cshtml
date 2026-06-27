@@ -1,0 +1,111 @@
+﻿@using RegisistryV2.ViewModel.Admin
+@{
+    ViewData["Title"] = "إدارة الصلاحيات";
+    var branches = ViewBag.Branches as List<Branch>;
+    var branchAdmins = ViewBag.BranchAdmins as List<UserWithRoleViewModel>;
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-user-shield me-2"></i>إضافة أو تغيير صلاحية
+            </div>
+            <div class="card-body p-4">
+                <form method="post" action="/AdminDashboard/ChangeRole">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">البريد الإلكتروني</label>
+                        <input type="email" name="email" class="form-control"
+                               placeholder="ادخل إيميل المستخدم" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">الصلاحية</label>
+                        <select name="newRole" class="form-select" id="roleSelect"
+                                onchange="toggleBranch(this.value)">
+                            <option value="Citizen">مواطن</option>
+                            <option value="BranchAdmin">مسؤول فرع</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="branchDiv" style="display:none">
+                        <label class="form-label fw-bold">الفرع</label>
+                        <select name="branchId" class="form-select">
+                            <option value="">اختار الفرع</option>
+                            @foreach (var branch in branches)
+                            {
+                                <option value="@branch.Id">@branch.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save me-2"></i>حفظ الصلاحية
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <i class="fas fa-users-cog me-2"></i>مسؤولي الفروع الحاليين
+            </div>
+            <div class="card-body p-0">
+                @if (!branchAdmins.Any())
+                {
+                    <div class="text-center py-4 text-muted">
+                        مفيش مسؤولي فروع حالياً
+                    </div>
+                }
+                else
+                {
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>الاسم</th>
+                                <th>الإيميل</th>
+                                <th>الفرع</th>
+                                <th>إزالة الصلاحية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in branchAdmins)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@item.User.FullName</td>
+                                    <td class="text-muted small">@item.User.Email</td>
+                                    <td>
+                                        <span class="badge bg-info">
+                                            @(item.User.Branch?.Name ?? "-")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form method="post" action="/AdminDashboard/ChangeRole"
+                                              onsubmit="return confirm('متأكد إنك عاوز تشيل الصلاحية؟')">
+                                            <input type="hidden" name="email" value="@item.User.Email" />
+                                            <input type="hidden" name="newRole" value="Citizen" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleBranch(role) {
+            document.getElementById('branchDiv').style.display =
+                role === 'BranchAdmin' ? 'block' : 'none';
+        }
+    </script>
+}

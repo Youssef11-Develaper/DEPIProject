@@ -1,0 +1,81 @@
+﻿@model Appointment
+@{
+    ViewData["Title"] = "QR Code الموعد";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center">
+                <i class="fas fa-qrcode me-2"></i>QR Code الموعد
+            </div>
+            <div class="card-body text-center p-4">
+
+                <div class="alert alert-info mb-4 text-start">
+                    <div class="row">
+                        <div class="col-6">
+                            <small class="text-muted">الخدمة</small>
+                            <p class="mb-0 fw-bold">@Model.ServiceType.Name</p>
+                        </div>
+                        <div class="col-6">
+                            <small class="text-muted">الفرع</small>
+                            <p class="mb-0 fw-bold">@Model.Branch.Name</p>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <small class="text-muted">التاريخ</small>
+                            <p class="mb-0 fw-bold">@Model.AppointmentDate.ToString("dd/MM/yyyy")</p>
+                        </div>
+                        <div class="col-6 mt-2">
+                            <small class="text-muted">الوقت</small>
+                            <p class="mb-0 fw-bold">@Model.TimeSlot.ToString(@"hh\:mm")</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="qr-container mb-4">
+                    <img src="data:image/png;base64,@ViewBag.QRCode"
+                         alt="QR Code"
+                         style="width:220px;height:220px;border-radius:12px;
+                                box-shadow:0 4px 20px rgba(0,0,0,0.15)" />
+                </div>
+
+                <p class="text-muted small mb-4">
+                    اعرض الـ QR Code ده للموظف عند وصولك للفرع
+                </p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <div class="bg-light rounded p-3 text-center">
+                            <small class="text-muted d-block">رقم الحجز</small>
+                            <h3 class="fw-bold text-primary mb-0">#@Model.Id</h3>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-primary bg-opacity-10 rounded p-3 text-center">
+                            <small class="text-muted d-block">رقم الطابور</small>
+                            <h3 class="fw-bold text-primary mb-0">@ViewBag.QueueNumber</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2 justify-content-center">
+                    <button onclick="window.print()" class="btn btn-primary">
+                        <i class="fas fa-print me-2"></i>طباعة
+                    </button>
+                    <a href="/Appointment/MyAppointments" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-right me-2"></i>رجوع
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        @@media print {
+            .navbar, .sidebar, .btn { display: none !important; }
+            .card { box-shadow: none !important; }
+        }
+    </style>
+} 

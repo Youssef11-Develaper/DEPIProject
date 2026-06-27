@@ -1,0 +1,154 @@
+﻿@model List<Appointment>
+@{
+    ViewData["Title"] = "إدارة المواعيد";
+    var selectedDate = (DateTime)ViewBag.SelectedDate;
+    var branches = ViewBag.Branches as List<Branch>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="fw-bold mb-0">
+        <i class="fas fa-calendar me-2"></i>إدارة المواعيد
+    </h4>
+
+    <div class="d-flex gap-2 align-items-center">
+        <input type="date" id="datePicker" class="form-control"
+               value="@selectedDate.ToString("yyyy-MM-dd")" />
+
+        <select id="branchPicker" class="form-select">
+            <option value="">كل الفروع</option>
+            @foreach (var branch in branches)
+            {
+                <option value="@branch.Id"
+                        selected="@(ViewBag.SelectedBranch != null && (int)ViewBag.SelectedBranch == branch.Id)">
+                    @branch.Name
+                </option>
+            }
+        </select>
+
+        <a id="downloadBtn"
+           href="/AdminDashboard/DownloadDailyReport?date=@selectedDate.ToString("yyyy-MM-dd")"
+           class="btn btn-success w-100">
+            تقرير PDF <i class="fas fa-file-pdf me-2"></i>
+        </a>
+    </div>
+</div>
+
+
+
+<div class="card">
+    <div class="card-body p-0">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5 text-muted">
+                <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                <p class="fs-5">مفيش مواعيد في اليوم ده</p>
+            </div>
+        }
+        else
+        {
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>المواطن</th>
+                        <th>الخدمة</th>
+                        <th>الفرع</th>
+                        <th>الوقت</th>
+                        <th>الحالة</th>
+                        <th>تغيير الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var appointment in Model)
+                    {
+                        <tr>
+                            <td>
+                                <p class="mb-0 fw-bold small">@appointment.User.FullName</p>
+                                <small class="text-muted">@appointment.User.PhoneNumber</small>
+                            </td>
+                            <td class="small">@appointment.ServiceType.Name</td>
+                            <td class="small">@appointment.Branch.Name</td>
+                            <td class="fw-bold">
+                                @appointment.TimeSlot.ToString(@"hh\:mm")
+                            </td>
+                            <td>
+                                @switch (appointment.Status)
+                                {
+                                    case AppointmentStatus.Pending:
+                                        <span class="badge bg-warning text-dark">معلق</span>
+                                        break;
+                                    case AppointmentStatus.Confirmed:
+                                        <span class="badge bg-success">مؤكد</span>
+                                        break;
+                                    case AppointmentStatus.Completed:
+                                        <span class="badge bg-primary">مكتمل</span>
+                                        break;
+                                    case AppointmentStatus.Cancelled:
+                                        <span class="badge bg-danger">ملغي</span>
+                                        break;
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    @if (appointment.Status == AppointmentStatus.Pending)
+                                    {
+                                        <form method="post" action="/AdminDashboard/UpdateAppointmentStatus">
+                                            <input type="hidden" name="id" value="@appointment.Id" />
+                                            <input type="hidden" name="status" value="1" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <i class="fas fa-check"></i> تأكيد
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (appointment.Status == AppointmentStatus.Confirmed)
+                                    {
+                                        <form method="post" action="/AdminDashboard/UpdateAppointmentStatus">
+                                            <input type="hidden" name="id" value="@appointment.Id" />
+                                            <input type="hidden" name="status" value="2" />
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-flag-checkered"></i> مكتمل
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (appointment.Status != AppointmentStatus.Cancelled &&
+                                         appointment.Status != AppointmentStatus.Completed)
+                                    {
+                                        <form method="post" action="/AdminDashboard/UpdateAppointmentStatus"
+                                              onsubmit="return confirm('متأكد إنك عاوز تلغي الموعد؟')">
+                                            <input type="hidden" name="id" value="@appointment.Id" />
+                                            <input type="hidden" name="status" value="3" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('datePicker').addEventListener('change', updateFilters);
+        document.getElementById('branchPicker').addEventListener('change', updateFilters);
+
+        function updateFilters() {
+            const date = document.getElementById('datePicker').value;
+            const branch = document.getElementById('branchPicker').value;
+            let url = `/AdminDashboard/Appointments?date=${date}`;
+            if (branch) url += `&branchId=${branch}`;
+            window.location.href = url;
+        }
+
+        // تحديث رابط التحميل
+        const date = document.getElementById('datePicker').value;
+        const branch = document.getElementById('branchPicker').value;
+        let downloadUrl = `/AdminDashboard/DownloadDailyReport?date=${date}`;
+        if (branch) downloadUrl += `&branchId=${branch}`;
+        document.getElementById('downloadBtn').href = downloadUrl;
+    </script>
+}

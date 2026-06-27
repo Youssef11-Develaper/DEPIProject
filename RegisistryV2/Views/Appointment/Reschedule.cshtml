@@ -1,0 +1,178 @@
+﻿@using RegisistryV2.ViewModel.Appointment
+@model SelectSlotViewModel
+@{
+    ViewData["Title"] = "تأجيل الموعد";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+
+        <div class="alert alert-primary mb-3">
+            <i class="fas fa-calendar-alt me-2"></i>
+            بتأجل موعدك في <strong>@Model.ServiceName</strong> - <strong>@Model.BranchName</strong>
+        </div>
+
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-calendar-alt me-2"></i>
+                    اختار اليوم والوقت الجديد
+                </div>
+                <input type="date"
+                       class="form-control w-auto"
+                       id="datePicker"
+                       value="@Model.SelectedDate.ToString("yyyy-MM-dd")"
+                       min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="card-body p-4">
+
+                @if (!Model.IsAvailable)
+                {
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle fa-2x mb-2 d-block"></i>
+                        <p class="mb-3">@Model.UnavailabilityMessage</p>
+                        <button class="btn btn-primary btn-sm"
+                                onclick="document.getElementById('datePicker').showPicker()">
+                            <i class="fas fa-calendar me-1"></i>اختار يوم تاني
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <!-- Legend -->
+                    <div class="d-flex gap-3 mb-3 flex-wrap">
+                        <span><span class="badge bg-success">متاح</span></span>
+                        <span><span class="badge bg-danger">محجوز</span></span>
+                        <span><span class="badge bg-warning text-dark">ذروة</span></span>
+                    </div>
+
+                    <!-- Slots -->
+                    <div class="row g-2">
+                        @foreach (var slot in Model.Slots)
+                        {
+                            <div class="col-6 col-md-3">
+                                @if (slot.IsBooked)
+                                {
+                                    <div class="slot-btn booked text-center">
+                                        <div><i class="fas fa-times me-1"></i>@slot.Time.ToString(@"hh\:mm")</div>
+                                        <div class="small mt-1">مكتمل</div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <button class="slot-btn @(slot.IsPeak ? "peak" : "available") w-100"
+                                            onclick="confirmReschedule('@slot.Time', '@Model.SelectedDate.ToString("yyyy-MM-dd")')">
+                                        <div>
+                                            @if (slot.IsPeak)
+                                            {
+                                                <i class="fas fa-fire me-1"></i>
+                                            }
+                                            @slot.Time.ToString(@"hh\:mm")
+                                        </div>
+                                        <div class="small mt-1">
+                                            @slot.BookedCount / @slot.MaxCount
+                                        </div>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+
+                <div class="mt-4">
+                    <a href="/Appointment/MyAppointments" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-right me-2"></i>رجوع من غير تأجيل
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تأكيد التأجيل</h5>
+            </div>
+            <div class="modal-body text-center">
+                <i class="fas fa-calendar-check fa-3x text-primary mb-3"></i>
+                <p class="fs-5">هتأجل موعدك للساعة <strong id="selectedTime"></strong></p>
+                <p class="text-muted" id="selectedDateDisplay"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <form method="post" action="/Appointment/ConfirmReschedule">
+                    <input type="hidden" name="appointmentId" value="@Model.RescheduleAppointmentId" />
+                    <input type="hidden" name="date" id="hiddenDate" />
+                    <input type="hidden" name="timeSlot" id="hiddenTime" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check me-2"></i>تأكيد التأجيل
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .slot-btn {
+            padding: 12px 8px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.2s;
+        }
+
+            .slot-btn.available {
+                background: #e8f8f0;
+                color: #27ae60;
+                border: 2px solid #27ae60;
+            }
+
+                .slot-btn.available:hover {
+                    background: #27ae60;
+                    color: white;
+                }
+
+            .slot-btn.booked {
+                background: #fde8e8;
+                color: #e74c3c;
+                border: 2px solid #e74c3c;
+                cursor: not-allowed;
+            }
+
+            .slot-btn.peak {
+                background: #fef9e7;
+                color: #f39c12;
+                border: 2px solid #f39c12;
+            }
+
+                .slot-btn.peak:hover {
+                    background: #f39c12;
+                    color: white;
+                }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('datePicker').addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            url.searchParams.set('date', this.value);
+            window.location.href = url.toString();
+        });
+
+        function confirmReschedule(time, date) {
+            document.getElementById('selectedTime').textContent = time;
+            document.getElementById('selectedDateDisplay').textContent = date;
+            document.getElementById('hiddenDate').value = date;
+            document.getElementById('hiddenTime').value = time;
+            new bootstrap.Modal(document.getElementById('confirmModal')).show();
+        }
+    </script>
+}
