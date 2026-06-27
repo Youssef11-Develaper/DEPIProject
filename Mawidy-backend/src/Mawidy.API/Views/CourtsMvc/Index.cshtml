@@ -1,0 +1,688 @@
+@using Mawidy.API.ViewModels.Courts
+@model CourtsPageViewModel
+@{ Layout = null; }
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مـوعـدي — خدمات المحاكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/courts.css" />
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">⚖️</div>
+    <div class="nav-logo-text">مـوعـدي <span>Mawidy</span></div>
+  </a>
+  <div class="breadcrumb">
+    <a href="#">الرئيسية</a>
+    <span>/</span>
+    <a href="#">الخدمات</a>
+    <span>/</span>
+    <span style="color:var(--court);font-weight:700">⚖️ المحاكم</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="scrollSec('#services')">الخدمات</button>
+    <button class="nav-link" onclick="scrollSec('#courts-list')">الفروع</button>
+    <button class="nav-link" onclick="scrollSec('#tracking')">متابعة قضية</button>
+    <button class="nav-link" onclick="scrollSec('#booking')">احجز موعد</button>
+    <button class="nav-btn" onclick="openBookModal()">📅 احجز الآن</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-circles"><span></span><span></span><span></span></div>
+  <div class="hero-inner">
+    <!-- Left -->
+    <div>
+      <div class="hero-badge"><div class="dot"></div>خدمات المحاكم المصرية — رقمياً</div>
+      <div class="hero-title">احجز موعدك في <span class="accent">المحكمة</span> بدون طوابير</div>
+      <div class="hero-sub">منصة مـوعـدي تتيح لك حجز جلسات، تقديم مستندات، ومتابعة قضاياك في المحاكم المدنية والجنائية وغيرها — من مكانك وبدون إهدار وقت</div>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="openBookModal()">📅 احجز موعد في المحكمة</button>
+        <button class="btn-outline" onclick="scrollSec('#tracking')">🔍 تابع قضيتك</button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">12</div>
+          <div class="hero-stat-label">محكمة مدعومة</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">7</div>
+          <div class="hero-stat-label">أنواع خدمات</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">24h</div>
+          <div class="hero-stat-label">وقت الرد على الشكاوى</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">مجاني</div>
+          <div class="hero-stat-label">الحجز والمتابعة</div>
+        </div>
+      </div>
+    </div>
+    <!-- Right Card -->
+    <div class="hero-card">
+      <div class="court-emblem">
+        <span class="court-emblem-icon">⚖️</span>
+        <div class="court-emblem-title">المحاكم المصرية</div>
+        <div class="court-emblem-sub">خدمات قضائية رقمية</div>
+      </div>
+      <div class="court-types">
+        <div class="court-type-item" onclick="filterCourts('مدنية')">
+          <div class="court-type-icon">🏛️</div>
+          <div><div class="court-type-name">المحاكم المدنية</div><div class="court-type-desc">قضايا الملكية والعقود والمديونيات</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('جنائية')">
+          <div class="court-type-icon">🔨</div>
+          <div><div class="court-type-name">المحاكم الجنائية</div><div class="court-type-desc">الجنح والجنايات والتحقيقات</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('أسرة')">
+          <div class="court-type-icon">👨‍👩‍👧</div>
+          <div><div class="court-type-name">محاكم الأسرة</div><div class="court-type-desc">الطلاق والنفقة والحضانة</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('تجارية')">
+          <div class="court-type-icon">💼</div>
+          <div><div class="court-type-name">المحاكم التجارية</div><div class="court-type-desc">النزاعات التجارية والإفلاس</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('استئناف')">
+          <div class="court-type-icon">📋</div>
+          <div><div class="court-type-name">محاكم الاستئناف</div><div class="court-type-desc">الطعن في الأحكام الابتدائية</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services" class="fade-in">
+  <div class="section-tag">⚖️ الخدمات المتاحة</div>
+  <div class="section-title">خدمات المحاكم على المنصة</div>
+  <div class="section-sub">احجز موعدك وقدم مستنداتك بدون إجهاد الوقوف في طوابير لساعات</div>
+  <div class="services-grid">
+
+    <div class="svc-card" onclick="openBookModal('جلسة قضائية')">
+      <div class="svc-icon-wrap">📅</div>
+      <div class="svc-name">حجز جلسة قضائية</div>
+      <div class="svc-desc">احجز موعد جلسة في المحكمة المدنية أو الجنائية أو الأسرة — مع تحديد الدائرة والقاضي</div>
+      <div class="svc-time">⏱ يتحدد حسب جدول المحكمة</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">بطاقة قومية</span>
+        <span class="svc-doc-tag">ملف القضية</span>
+        <span class="svc-doc-tag">توكيل المحامي</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز جلسة</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('تقديم مستندات')">
+      <div class="svc-icon-wrap">📁</div>
+      <div class="svc-name">تقديم المستندات</div>
+      <div class="svc-desc">سلّم أوراق وملفات قضيتك لموظف التسجيل في المحكمة بدون انتظار في صالة الانتظار</div>
+      <div class="svc-time">⏱ 30–60 دقيقة</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">أوراق رسمية</span>
+        <span class="svc-doc-tag">صور موثقة</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز موعد التسليم</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('استعلام قضية')">
+      <div class="svc-icon-wrap">🔍</div>
+      <div class="svc-name">استعلام عن قضية</div>
+      <div class="svc-desc">تابع حالة قضيتك وتواريخ الجلسات القادمة وقرارات المحكمة بشكل فوري من خلال رقم القضية</div>
+      <div class="svc-time">⏱ فوري</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">رقم القضية</span>
+        <span class="svc-doc-tag">بطاقة قومية</span>
+      </div>
+      <button class="svc-book-btn" onclick="event.stopPropagation();scrollSec('#tracking')">🔍 تابع القضية الآن</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('استخراج حكم')">
+      <div class="svc-icon-wrap">📜</div>
+      <div class="svc-name">استخراج نسخة حكم</div>
+      <div class="svc-desc">احصل على نسخة رسمية وموثقة من حكم المحكمة لتقديمها للجهات المختلفة</div>
+      <div class="svc-time">⏱ 3–7 أيام عمل</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">رقم القضية</span>
+        <span class="svc-doc-tag">رسوم دمغة</span>
+        <span class="svc-doc-tag">بطاقة قومية</span>
+      </div>
+      <button class="svc-book-btn">📅 اطلب نسخة الحكم</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('توثيق مستند')">
+      <div class="svc-icon-wrap">✅</div>
+      <div class="svc-name">توثيق المستندات</div>
+      <div class="svc-desc">توثيق العقود والوكالات والإقرارات والمستندات الرسمية أمام كاتب العدل في المحكمة</div>
+      <div class="svc-time">⏱ نفس اليوم</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">المستند الأصلي</span>
+        <span class="svc-doc-tag">بطاقتان قوميتان</span>
+        <span class="svc-doc-tag">شهود</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز للتوثيق</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('طعن في حكم')">
+      <div class="svc-icon-wrap">⚡</div>
+      <div class="svc-name">تقديم استئناف / طعن</div>
+      <div class="svc-desc">قدّم طعنك في الحكم الابتدائي قبل انتهاء المهلة القانونية مع محامٍ أو بنفسك</div>
+      <div class="svc-time">⏱ خلال 30 يوم من الحكم</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">نسخة الحكم</span>
+        <span class="svc-doc-tag">مذكرة الطعن</span>
+        <span class="svc-doc-tag">رسوم قضائية</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز لتقديم الطعن</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('تحكيم تجاري')">
+      <div class="svc-icon-wrap">🤝</div>
+      <div class="svc-name">وساطة وتحكيم</div>
+      <div class="svc-desc">حل النزاعات ودياً عبر وساطة مرخصة قبل اللجوء للقضاء — أسرع وأقل تكلفة</div>
+      <div class="svc-time">⏱ 1–4 جلسات</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">موافقة الطرفين</span>
+        <span class="svc-doc-tag">ملخص النزاع</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز جلسة وساطة</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('دفع رسوم')">
+      <div class="svc-icon-wrap">💳</div>
+      <div class="svc-name">دفع الرسوم القضائية</div>
+      <div class="svc-desc">ادفع الرسوم والغرامات والأتعاب القضائية إلكترونياً بدون حاجة للتوجه لمكتب الصندوق</div>
+      <div class="svc-time">⏱ فوري</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">رقم القضية</span>
+        <span class="svc-doc-tag">بطاقة بنكية</span>
+      </div>
+      <button class="svc-book-btn">💳 ادفع الرسوم</button>
+    </div>
+
+    <div class="svc-card" style="background:linear-gradient(135deg,rgba(11,31,58,.02),rgba(184,134,11,.04));border-color:rgba(184,134,11,.2);" onclick="openBookModal('استشارة قانونية')">
+      <div class="svc-icon-wrap" style="background:rgba(11,31,58,.06)">👨‍⚖️</div>
+      <div class="svc-name">استشارة قانونية</div>
+      <div class="svc-desc">احجز استشارة مع محامٍ معتمد لدى المحكمة قبل رفع دعواك أو الرد عليها</div>
+      <div class="svc-time">⏱ 30–60 دقيقة</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">وثائق القضية</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز استشارة</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- COURTS LIST -->
+<div id="courts-list" class="courts-section">
+  <div class="courts-inner fade-in">
+    <div class="section-tag">🏛️ الفروع والمحاكم</div>
+    <div class="section-title">ابحث عن أقرب محكمة</div>
+    <div class="section-sub">اختار النوع وشوف التفاصيل الكاملة وأوقات الجلسات المتاحة</div>
+    <div class="courts-filter-bar">
+      <input class="filter-search" type="text" placeholder="ابحث باسم المحكمة أو المنطقة..." oninput="filterBySearch(this.value)">
+      <button class="filter-btn active" onclick="filterCourts('الكل',this)">الكل</button>
+      <button class="filter-btn" onclick="filterCourts('مدنية',this)">🏛️ مدنية</button>
+      <button class="filter-btn" onclick="filterCourts('جنائية',this)">🔨 جنائية</button>
+      <button class="filter-btn" onclick="filterCourts('أسرة',this)">👨‍👩‍👧 أسرة</button>
+      <button class="filter-btn" onclick="filterCourts('تجارية',this)">💼 تجارية</button>
+      <button class="filter-btn" onclick="filterCourts('استئناف',this)">📋 استئناف</button>
+    </div>
+    <div class="courts-grid" id="courtsGrid">
+      <partial name="_CourtsGrid" model="Model.Courts" />
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="fade-in">
+  <div class="section-tag">🔄 كيف يعمل النظام</div>
+  <div class="section-title">خطوات الحجز في 5 دقائق</div>
+  <div class="section-sub">من اختيار المحكمة لتأكيد الموعد وكود QR — كل شيء رقمي وبدون ورق</div>
+  <div class="steps-row">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-title">اختار المحكمة</div>
+      <div class="step-sub">ابحث باسمها أو الموقع الجغرافي الأقرب منك</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-title">اختار الخدمة</div>
+      <div class="step-sub">جلسة — تسليم مستندات — استشارة — استخراج حكم</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-title">حدد التاريخ والوقت</div>
+      <div class="step-sub">المواعيد المتاحة الفعلية محدثة من نظام المحكمة مباشرة</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-title">أدخل بياناتك</div>
+      <div class="step-sub">رقم قومي + رقم القضية + بيانات التواصل</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-title">احصل على كود QR</div>
+      <div class="step-sub">أبرزه عند الوصول + SMS تأكيد + تذكير قبل الموعد</div>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIRED DOCS -->
+<div class="docs-section">
+  <div class="docs-inner fade-in">
+    <div class="section-tag">📋 المستندات المطلوبة</div>
+    <div class="section-title" style="color:white">اعرف تجيب إيه معاك</div>
+    <div class="section-sub">قائمة المستندات المطلوبة لكل نوع من خدمات المحاكم حتى لا تضطر للعودة مرة أخرى</div>
+    <div class="docs-grid">
+      <div class="doc-category">
+        <div class="doc-cat-header">
+          <div class="doc-cat-icon">📅</div>
+          <div>
+            <div class="doc-cat-title">حجز جلسة قضائية</div>
+            <div class="doc-cat-sub">مدنية / جنائية / أسرة</div>
+          </div>
+        </div>
+        <div class="doc-list">
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">بطاقة الرقم القومي سارية</div><div class="doc-note">أصل + صورة</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">رقم القضية</div><div class="doc-note">من محضر الإيداع أو كشف القيد</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">توكيل المحامي (إن وجد)</div><div class="doc-note">موثق من الشهر العقاري</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">إيصال دفع الرسوم القضائية</div><div class="doc-note">من صندوق المحكمة أو إلكترونياً</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">أصول المستندات للقضية</div><div class="doc-note">عقود، عقارات، إيصالات حسب القضية</div></div></div>
+        </div>
+      </div>
+
+      <div class="doc-category">
+        <div class="doc-cat-header">
+          <div class="doc-cat-icon">📜</div>
+          <div>
+            <div class="doc-cat-title">استخراج نسخة حكم</div>
+            <div class="doc-cat-sub">رسمية — صالحة للتعامل</div>
+          </div>
+        </div>
+        <div class="doc-list">
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">بطاقة الرقم القومي</div><div class="doc-note">صاحب الصفة في القضية</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">رقم القضية وسنتها</div><div class="doc-note">المحكمة الابتدائية + الدائرة</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">دمغة رسوم الاستخراج</div><div class="doc-note">30–100 جنيه حسب عدد الصفحات</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">طلب كتابي بالاستخراج</div><div class="doc-note">نموذج متاح في المحكمة أو على المنصة</div></div></div>
+        </div>
+      </div>
+
+      <div class="doc-category">
+        <div class="doc-cat-header">
+          <div class="doc-cat-icon">✅</div>
+          <div>
+            <div class="doc-cat-title">توثيق المستندات</div>
+            <div class="doc-cat-sub">عقود • وكالات • إقرارات</div>
+          </div>
+        </div>
+        <div class="doc-list">
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">بطاقتا الرقم القومي للطرفين</div><div class="doc-note">ساريتان + صور</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">المستند الأصلي المراد توثيقه</div><div class="doc-note">3 نسخ أصلية</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">شاهدان بطاقاتهما</div><div class="doc-note">للعقود ذات الطابع الشخصي</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">دمغة التوثيق</div><div class="doc-note">50–200 جنيه حسب نوع المستند</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">رسم الطوابع الإضافية</div><div class="doc-note">للوكالات التجارية خصوصاً</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING FORM -->
+<div id="booking" class="booking-section">
+  <div class="booking-inner fade-in">
+    <div class="section-tag">📅 حجز موعد</div>
+    <div class="section-title">احجز موعدك في المحكمة الآن</div>
+    <div class="section-sub">بيانات الحجز محفوظة وهتوصلك رسالة SMS فورية بتأكيد الموعد</div>
+    <div class="booking-layout">
+
+      <!-- Form -->
+      <div class="booking-form-card">
+        <div class="booking-form-title">📅 بيانات الحجز</div>
+        <div class="booking-form-sub">اختار نوع الخدمة ثم أدخل بياناتك</div>
+
+        <div class="form-group">
+          <label class="form-label">نوع الخدمة</label>
+          <select class="form-select" id="bk-service" onchange="updateDept()">
+            <option value="جلسة">📅 حجز جلسة قضائية</option>
+            <option value="تسليم">📁 تسليم مستندات</option>
+            <option value="استخراج">📜 استخراج نسخة حكم</option>
+            <option value="توثيق">✅ توثيق مستند</option>
+            <option value="استئناف">⚡ تقديم استئناف</option>
+            <option value="وساطة">🤝 وساطة وتحكيم</option>
+            <option value="استشارة">👨‍⚖️ استشارة قانونية</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">اختار المحكمة</label>
+          <select class="form-select" id="bk-court">
+            <option>محكمة القاهرة الابتدائية — باب الخلق</option>
+            <option>محكمة الأسرة — القاهرة الجديدة</option>
+            <option>محكمة الجيزة الابتدائية</option>
+            <option>محكمة استئناف القاهرة</option>
+            <option>المحكمة الاقتصادية — القاهرة</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">الاسم بالكامل</label>
+            <input class="form-input" type="text" placeholder="محمد أحمد السيد" id="bk-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">رقم الهاتف</label>
+            <input class="form-input" type="tel" placeholder="01xxxxxxxxx" id="bk-phone">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">رقم القومي</label>
+            <input class="form-input" type="text" placeholder="3XXXXXXXXXXXXX" id="bk-nid">
+          </div>
+          <div class="form-group">
+            <label class="form-label">رقم القضية (اختياري)</label>
+            <input class="form-input" type="text" placeholder="2025/xxxx" id="bk-case">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">التاريخ المطلوب</label>
+            <input class="form-input" type="date" id="bk-date" min="">
+          </div>
+          <div class="form-group">
+            <label class="form-label">الدائرة / القسم</label>
+            <select class="form-select" id="bk-dept">
+              <option>دائرة مدنية أولى</option>
+              <option>دائرة مدنية ثانية</option>
+              <option>دائرة جنائية</option>
+              <option>دائرة الأحوال الشخصية</option>
+              <option>دائرة تجارية</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">اختار الوقت المناسب</label>
+          <div class="time-slots" id="timeSlots">
+            <button class="time-slot taken">9:00</button>
+            <button class="time-slot taken">9:30</button>
+            <button class="time-slot taken">10:00</button>
+            <button class="time-slot" onclick="selectTime(this,'10:30')">10:30</button>
+            <button class="time-slot" onclick="selectTime(this,'11:00')">11:00</button>
+            <button class="time-slot" onclick="selectTime(this,'11:30')">11:30</button>
+            <button class="time-slot taken">12:00</button>
+            <button class="time-slot" onclick="selectTime(this,'12:30')">12:30</button>
+            <button class="time-slot" onclick="selectTime(this,'1:00')">1:00</button>
+            <button class="time-slot" onclick="selectTime(this,'1:30')">1:30</button>
+            <button class="time-slot taken">2:00</button>
+            <button class="time-slot" onclick="selectTime(this,'2:30')">2:30</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ملاحظات إضافية (اختياري)</label>
+          <textarea class="form-textarea" placeholder="أي تفاصيل إضافية تريد إضافتها..."></textarea>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:14px">
+          <input type="checkbox" id="bk-sms" checked style="accent-color:var(--court)">
+          <label for="bk-sms">استلم تأكيد الحجز على الهاتف (SMS)</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:20px">
+          <input type="checkbox" id="bk-remind" checked style="accent-color:var(--court)">
+          <label for="bk-remind">تذكير قبل الموعد بيوم وقبله بساعة</label>
+        </div>
+
+        <button class="btn-book-full" onclick="submitBooking()">⚖️ تأكيد حجز الموعد</button>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="booking-sidebar">
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">🔢 الطابور الحالي</div>
+          <div class="queue-display">
+            <div class="queue-num" id="queueCurrent">47</div>
+            <div class="queue-label">الرقم يُستدعى الآن</div>
+            <div class="queue-status">المحكمة تعمل بشكل طبيعي</div>
+          </div>
+          <div style="margin-top:16px">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">أرقام في الانتظار</div>
+            <div class="queue-list">
+              <div class="queue-item"><div class="q-num">47</div><div class="q-name">حجز جلسة مدنية</div><div class="q-time">الآن</div><div class="q-badge current">جارٍ</div></div>
+              <div class="queue-item"><div class="q-num">48</div><div class="q-name">تسليم مستندات</div><div class="q-time">~10 دقائق</div><div class="q-badge wait">انتظار</div></div>
+              <div class="queue-item"><div class="q-num">49</div><div class="q-name">استخراج حكم</div><div class="q-time">~20 دقيقة</div><div class="q-badge wait">انتظار</div></div>
+              <div class="queue-item"><div class="q-num">50</div><div class="q-name">توثيق عقد</div><div class="q-time">~30 دقيقة</div><div class="q-badge wait">انتظار</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">💡 نصائح مهمة</div>
+          <div class="tips-list">
+            <div class="tip-item">
+              <div class="tip-icon">⏰</div>
+              <div class="tip-text"><strong>احضر قبل الموعد بـ 15 دقيقة</strong> — المحاكم تلتزم بالوقت تماماً وقد تفقد موعدك إذا تأخرت</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">📋</div>
+              <div class="tip-text"><strong>أحضر صور من كل المستندات</strong> — لا يُقبل أصل بدون صورة في أغلب الجلسات</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">💰</div>
+              <div class="tip-text"><strong>جهّز الرسوم مسبقاً</strong> — يفضل الدفع إلكترونياً لتوفير الوقت</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">📱</div>
+              <div class="tip-text"><strong>كود QR إلزامي للدخول</strong> — احتفظ به على هاتفك أو اطبعه</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">👨‍⚖️</div>
+              <div class="tip-text"><strong>إن لم يكن لديك محامٍ</strong> — يمكنك الاستعانة بالمحامين المتاحين في قائمة المنصة</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card" style="background:linear-gradient(135deg,rgba(184,134,11,.04),rgba(184,134,11,.08));border-color:rgba(184,134,11,.2)">
+          <div class="sidebar-card-title" style="color:var(--court)">📞 التواصل المباشر</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:10px;border:1px solid var(--border)">
+              <span style="font-size:20px">📞</span>
+              <div><div style="font-size:13px;font-weight:700;color:var(--navy)">هاتف المحكمة</div><div style="font-size:12px;color:var(--muted)">02-25940255</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:10px;border:1px solid var(--border)">
+              <span style="font-size:20px">🌐</span>
+              <div><div style="font-size:13px;font-weight:700;color:var(--navy)">الموقع الرسمي</div><div style="font-size:12px;color:var(--blue)">courts.gov.eg</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:10px;border:1px solid var(--border)">
+              <span style="font-size:20px">📧</span>
+              <div><div style="font-size:13px;font-weight:700;color:var(--navy)">البريد الإلكتروني</div><div style="font-size:12px;color:var(--muted)">info@@courts.gov.eg</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASE TRACKING -->
+<div id="tracking" class="tracking-section">
+  <div class="tracking-inner fade-in">
+    <div class="section-tag">🔍 متابعة القضية</div>
+    <div class="section-title">تابع قضيتك أون لاين</div>
+    <div class="section-sub">ادخل رقم القضية وهتعرف كل خطوة — الجلسات القادمة والأحكام والقرارات</div>
+    <div class="tracking-layout">
+
+      <!-- Form & Result -->
+      <div>
+        <div class="tracking-form-card">
+          <div class="tracking-form-title">🔍 استعلام عن قضية</div>
+          <div class="tracking-form-sub">ادخل رقم القضية وسنتها للاستعلام الفوري</div>
+          <div class="tracking-input-row">
+            <input class="tracking-input" type="text" id="caseInput" placeholder="مثال: 2025/4821 أو الرقم القومي">
+            <button class="btn-track" onclick="trackCase()">🔍 بحث</button>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <button onclick="trackCase('2025/4821')" style="flex:1;padding:10px;border-radius:10px;border:2px dashed var(--border);background:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;color:var(--muted)">مثال: 2025/4821</button>
+            <button onclick="trackCase('2024/1190')" style="flex:1;padding:10px;border-radius:10px;border:2px dashed var(--border);background:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;color:var(--muted)">مثال: 2024/1190</button>
+          </div>
+          <div id="caseResultContainer"></div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="tracking-stats">
+        <div class="tracking-stat-card">
+          <div class="ts-header">
+            <div class="ts-icon">📊</div>
+            <div class="ts-title">إحصائيات المحاكم اليوم</div>
+          </div>
+          <div class="ts-stats">
+            <div class="ts-stat"><div class="ts-num" id="sn1">0</div><div class="ts-label">جلسة اليوم</div><div class="ts-change up">↑ 8%</div></div>
+            <div class="ts-stat"><div class="ts-num" id="sn2">0</div><div class="ts-label">حكم صدر</div><div class="ts-change up">↑ 5%</div></div>
+            <div class="ts-stat"><div class="ts-num" id="sn3">0</div><div class="ts-label">قضية مؤجلة</div><div class="ts-change down">↑ 2%</div></div>
+          </div>
+        </div>
+
+        <div class="tracking-stat-card">
+          <div class="ts-header">
+            <div class="ts-icon">⏰</div>
+            <div class="ts-title">جلسات الأسبوع القادم</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
+              <span style="font-size:16px">📅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الأحد 20 يناير</div><div style="font-size:11px;color:var(--muted)">128 جلسة مقررة</div></div>
+              <div style="font-size:12px;font-weight:700;color:var(--teal)">متاح</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
+              <span style="font-size:16px">📅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الاثنين 21 يناير</div><div style="font-size:11px;color:var(--muted)">95 جلسة مقررة</div></div>
+              <div style="font-size:12px;font-weight:700;color:var(--teal)">متاح</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
+              <span style="font-size:16px">📅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الثلاثاء 22 يناير</div><div style="font-size:11px;color:var(--muted)">142 جلسة مقررة</div></div>
+              <div style="font-size:12px;font-weight:700;color:#E65100)">مزدحم</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tracking-stat-card">
+          <div class="ts-header">
+            <div class="ts-icon">🗺️</div>
+            <div class="ts-title">أقرب 3 محاكم منك الآن</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray);border-radius:10px">
+              <span style="font-size:20px">🏛️</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">محكمة القاهرة الابتدائية</div><div style="font-size:11px;color:var(--muted)">4.0 كم • باب الخلق</div></div>
+              <div style="background:#E8F5E9;color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px">متاح</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray);border-radius:10px">
+              <span style="font-size:20px">👨‍👩‍👧</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">محكمة الأسرة — العباسية</div><div style="font-size:11px;color:var(--muted)">3.5 كم</div></div>
+              <div style="background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px">مزدحم</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray);border-radius:10px">
+              <span style="font-size:20px">💼</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">المحكمة الاقتصادية</div><div style="font-size:11px;color:var(--muted)">5.2 كم • مدينة نصر</div></div>
+              <div style="background:#E8F5E9;color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px">متاح</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section fade-in">
+  <div class="section-tag">❓ الأسئلة الشائعة</div>
+  <div class="section-title">أسئلة وأجوبة</div>
+  <div class="section-sub">أكتر الأسئلة اللي بيتسألها المواطنون عن خدمات المحاكم</div>
+    <div class="faq-grid" id="faqGrid">
+      @for (int i = 0; i < Model.Faqs.Count; i++)
+      {
+          var faq = Model.Faqs[i];
+          <div class="faq-item" id="faq@(i)">
+            <div class="faq-q" onclick="toggleFaq(@i)">
+              <div class="faq-icon">@faq.Icon</div>
+              <span style="flex:1">@faq.Q</span>
+              <div class="faq-arrow">▼</div>
+            </div>
+            <div class="faq-a">@faq.A</div>
+          </div>
+      }
+    </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-title">⚖️ احجز موعدك في المحكمة الآن</div>
+  <div class="cta-sub">بدون طوابير — بدون ضياع وقت — كل شيء رقمي وآمن</div>
+  <div class="cta-btns">
+    <button class="btn-primary" onclick="openBookModal()">📅 احجز موعد مجانًا</button>
+    <button class="btn-outline" onclick="scrollSec('#tracking')">🔍 تابع قضيتك</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">مـوعـدي ⚖️</div>
+  <div class="footer-links">
+    <a class="footer-link" href="#">الرئيسية</a>
+    <a class="footer-link" href="#">المستشفيات</a>
+    <a class="footer-link" href="#">البنوك</a>
+    <a class="footer-link" href="#">المحاكم</a>
+    <a class="footer-link" href="#">الشكاوى</a>
+  </div>
+  <div class="footer-copy">ASP.NET Core 8 • Clean Architecture • Made for Egypt 🇪🇬</div>
+</footer>
+
+<!-- SUCCESS TOAST -->
+<div class="toast" id="bookingToast">
+  <button class="toast-close" onclick="document.getElementById('bookingToast').classList.remove('show')">✕</button>
+  <div class="toast-icon">✅</div>
+  <div>
+    <div class="toast-title">تم الحجز بنجاح! ⚖️</div>
+    <div class="toast-sub" id="toastMsg">موعدك محجوز — كود QR وصلك على رسالة SMS</div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal" id="successModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">تم تأكيد حجزك!</div>
+    <div class="modal-sub">موعدك في المحكمة محجوز رسمياً — وصلك رسالة SMS بالتفاصيل</div>
+    <div class="modal-info" id="modalInfo"></div>
+    <div class="modal-code">
+      <div class="modal-code-num" id="modalCode">⚖️-XXXX</div>
+      <div class="modal-code-label">أبرز هذا الكود عند الوصول للمحكمة</div>
+    </div>
+    <button class="btn-book-full" style="margin-top:16px" onclick="closeModal()">تمام، شكراً!</button>
+  </div>
+</div>
+
+<script src="/js/courts.js"></script>
+</body>
+</html>
