@@ -1,0 +1,27 @@
+@model Mawidy.Web.ViewModels.Courts.CourtViewModel
+
+<div class="court-card" onclick="openBookModal('جلسة قضائية','@Model.Name')">
+  <div class="court-card-header">
+    <div class="court-card-icon">@Model.Icon</div>
+    <div>
+      <div class="court-card-name">@Model.Name</div>
+      <div class="court-card-type">@Model.Type</div>
+      <div class="court-card-addr">📍 @Model.Addr</div>
+    </div>
+  </div>
+  <div class="court-card-badges">
+    <div class="badge @(Model.Status == "open" ? "open" : "busy")">@(Model.Status == "open" ? "✅ متاح الآن" : "🟡 مزدحم")</div>
+    <div class="badge dist">📍 @Model.Dist</div>
+    <div class="badge wait">⏱ @Model.Wait</div>
+  </div>
+  <div class="court-card-info">
+    <div class="court-info-item"><div class="court-info-label">في الطابور</div><div class="court-info-val">@Model.Queue شخص</div></div>
+    <div class="court-info-item"><div class="court-info-label">قاعات الجلسات</div><div class="court-info-val">@Model.Rooms قاعة</div></div>
+    <div class="court-info-item"><div class="court-info-label">جلسات اليوم</div><div class="court-info-val">@Model.Sessions</div></div>
+    <div class="court-info-item"><div class="court-info-label">هاتف المحكمة</div><div class="court-info-val" style="font-size:11px">@Model.Phone</div></div>
+  </div>
+  <div class="court-card-footer">
+    <button class="btn-details" onclick="event.stopPropagation()">📋 التفاصيل</button>
+    <button class="btn-book-court" onclick="event.stopPropagation();openBookModal('جلسة قضائية','@Model.Name')">📅 احجز موعد</button>
+  </div>
+</div>
