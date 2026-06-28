@@ -1,0 +1,297 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الخدمات - لوحة التحكم</title>
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <i class="bi bi-building-fill"></i>
+        السجل المدني - لوحة التحكم
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="/Admin/Dashboard" class="nav-link">الرئيسية</a></li>
+        <li><a href="/Home/Appointments" class="nav-link">المواعيد</a></li>
+        <li><a href="/Admin/Branches" class="nav-link">الفروع</a></li>
+        <li><a href="/Admin/Services" class="nav-link active">الخدمات</a></li>
+        <li><a href="/Admin/Complaints" class="nav-link">الشكاوى</a></li>
+        <li><a href="/Admin/Users" class="nav-link">المستخدمين</a></li>
+        <li>
+            <button class="btn btn-outline" onclick="logout()"
+                style="color:white;border-color:rgba(255,255,255,0.6)">
+                <i class="bi bi-box-arrow-right"></i>
+                خروج
+            </button>
+        </li>
+    </ul>
+</nav>
+
+<div class="sidebar">
+    <a href="/Admin/Dashboard" class="sidebar-link">
+        <i class="bi bi-speedometer2"></i> الرئيسية
+    </a>
+    <a href="/Home/Appointments" class="sidebar-link">
+        <i class="bi bi-calendar-check"></i> المواعيد
+    </a>
+    <a href="/Admin/Branches" class="sidebar-link">
+        <i class="bi bi-building"></i> الفروع
+    </a>
+    <a href="/Admin/Services" class="sidebar-link active">
+        <i class="bi bi-list-check"></i> الخدمات
+    </a>
+    <a href="/Admin/Complaints" class="sidebar-link">
+        <i class="bi bi-exclamation-circle"></i> الشكاوى
+    </a>
+    <a href="/Admin/Users" class="sidebar-link">
+        <i class="bi bi-people"></i> المستخدمين
+    </a>
+</div>
+
+<div class="main-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <h2 style="font-size:1.4rem;font-weight:900;color:var(--primary)">إدارة الخدمات</h2>
+        <button class="btn btn-primary" onclick="openServiceModal()">
+            <i class="bi bi-plus-lg"></i>
+            خدمة جديدة
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding:0">
+            <div id="servicesContainer">
+                <div class="empty-state">
+                    <div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:30px;height:30px;margin:0 auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Service Modal -->
+<div class="modal-overlay" id="serviceModal">
+    <div class="modal" style="max-width:540px">
+        <h3 class="modal-title" id="serviceModalTitle">
+            <i class="bi bi-list-check"></i>
+            خدمة جديدة
+        </h3>
+
+        <input type="hidden" id="serviceId">
+
+        <div class="form-group">
+            <label class="form-label">اسم الخدمة</label>
+            <input type="text" class="form-control" id="serviceName"
+                placeholder="مثال: بطاقة الرقم القومي">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">الوصف</label>
+            <textarea class="form-control" id="serviceDescription" rows="2"
+                placeholder="وصف مختصر للخدمة"></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">مدة الخدمة (بالدقائق)</label>
+            <div style="display:flex;align-items:center;gap:8px">
+                <input type="number" class="form-control" id="serviceDuration"
+                    placeholder="30" min="5" max="120">
+                <span style="color:var(--text-muted);white-space:nowrap">دقيقة</span>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">
+                المستندات المطلوبة
+                <span style="color:var(--text-muted);font-weight:400;font-size:0.85rem">
+                    (كل مستند في سطر)
+                </span>
+            </label>
+            <textarea class="form-control" id="serviceDocuments" rows="4"
+                placeholder="مثال:&#10;بطاقة الرقم القومي الأصلية&#10;صورة شخصية حديثة"></textarea>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-6">
+                <button class="btn btn-outline btn-block" onclick="closeServiceModal()">إلغاء</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary btn-block" onclick="saveService(this)">
+                    <i class="bi bi-save"></i>
+                    حفظ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/api.js"></script>
+<script>
+    let editingServiceId = null;
+
+    async function init() {
+        UI.redirectIfNotAdmin();
+        await loadServices();
+    }
+
+    async function loadServices() {
+        try {
+            const res = await API.admin.getServices();
+            const container = document.getElementById('servicesContainer');
+            const services = res.data || [];
+
+            if (!services.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-list-x" style="font-size:3rem;color:var(--text-muted)"></i>
+                        <p>لا توجد خدمات</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>اسم الخدمة</th>
+                            <th>الوصف</th>
+                            <th>المدة</th>
+                            <th>عدد المواعيد</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${services.map(s => `
+                            <tr>
+                                <td style="font-weight:700">${s.name}</td>
+                                <td style="color:var(--text-muted);font-size:0.85rem">${s.description}</td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        <i class="bi bi-clock"></i>
+                                        ${s.durationMinutes} دقيقة
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-primary">${s.totalAppointments} موعد</span>
+                                </td>
+                                <td>
+                                    <div style="display:flex;gap:6px">
+                                        <button class="btn btn-sm"
+                                            style="background:#FEF9E7;color:#7D6608"
+                                            onclick="editService(${JSON.stringify(s).replace(/"/g, '&quot;')})">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger"
+                                            onclick="deleteService(${s.id}, ${s.totalAppointments}, this)"
+                                            ${s.totalAppointments > 0 ? 'disabled title="لا يمكن حذف خدمة بها مواعيد"' : ''}>
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (err) {
+            UI.showToast('حدث خطأ في تحميل الخدمات', 'error');
+        }
+    }
+
+    function openServiceModal() {
+        editingServiceId = null;
+        document.getElementById('serviceModalTitle').innerHTML =
+            '<i class="bi bi-list-check"></i> خدمة جديدة';
+        document.getElementById('serviceName').value = '';
+        document.getElementById('serviceDescription').value = '';
+        document.getElementById('serviceDuration').value = '';
+        document.getElementById('serviceDocuments').value = '';
+        document.getElementById('serviceModal').classList.add('show');
+    }
+
+    function editService(service) {
+        editingServiceId = service.id;
+        document.getElementById('serviceModalTitle').innerHTML =
+            '<i class="bi bi-pencil"></i> تعديل الخدمة';
+        document.getElementById('serviceName').value = service.name;
+        document.getElementById('serviceDescription').value = service.description;
+        document.getElementById('serviceDuration').value = service.durationMinutes;
+        document.getElementById('serviceDocuments').value = service.requiredDocuments || '';
+        document.getElementById('serviceModal').classList.add('show');
+    }
+
+    async function saveService(btn) {
+        const name = document.getElementById('serviceName').value.trim();
+        const description = document.getElementById('serviceDescription').value.trim();
+        const duration = parseInt(document.getElementById('serviceDuration').value);
+
+        if (!name || !description || !duration) {
+            UI.showToast('ادخل جميع البيانات المطلوبة', 'error');
+            return;
+        }
+
+        const dto = {
+            name,
+            description,
+            durationMinutes: duration,
+            requiredDocuments: document.getElementById('serviceDocuments').value.trim() || null
+        };
+
+        UI.showLoading(btn);
+        try {
+            if (editingServiceId) {
+                await API.admin.updateService(editingServiceId, dto);
+                UI.showToast('تم تعديل الخدمة بنجاح');
+            } else {
+                await API.admin.createService(dto);
+                UI.showToast('تم إضافة الخدمة بنجاح');
+            }
+            closeServiceModal();
+            await loadServices();
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    async function deleteService(id, totalAppointments, btn) {
+        if (totalAppointments > 0) {
+            UI.showToast('لا يمكن حذف خدمة بها مواعيد', 'error');
+            return;
+        }
+        if (!confirm('متأكد إنك عاوز تحذف الخدمة دي؟')) return;
+
+        UI.showLoading(btn);
+        try {
+            await API.admin.deleteService(id);
+            UI.showToast('تم حذف الخدمة');
+            await loadServices();
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    function closeServiceModal() {
+        document.getElementById('serviceModal').classList.remove('show');
+    }
+
+    function logout() {
+        Auth.clearSession();
+        window.location.href = '/';
+    }
+
+    document.getElementById('serviceModal').addEventListener('click', function(e) {
+        if (e.target === this) closeServiceModal();
+    });
+
+    init();
+</script>
+</body>
+</html>
