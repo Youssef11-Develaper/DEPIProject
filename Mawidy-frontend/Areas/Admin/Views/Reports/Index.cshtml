@@ -1,0 +1,124 @@
+@model AdminReportsViewModel
+@{ ViewData["Title"] = "التقارير والإحصائيات"; ViewData["Page"] = "reports"; }
+
+<div class="page-toolbar">
+    <div>
+        <div class="page-title">📈 التقارير والإحصائيات</div>
+        <div class="page-sub">@Model.TotalAppts حجز — @Model.TotalBranches فرع</div>
+    </div>
+    <div style="display:flex;gap:6px">
+        <a href="?period=week"  class="btn-ghost @(Model.Period == "week"  ? "active-period" : "")">أسبوع</a>
+        <a href="?period=month" class="btn-ghost @(Model.Period == "month" ? "active-period" : "")">شهر</a>
+        <a href="?period=year"  class="btn-ghost @(Model.Period == "year"  ? "active-period" : "")">سنة</a>
+    </div>
+</div>
+
+<!-- Trend Chart -->
+<div class="dash-card">
+    <div class="dc-title">📊 اتجاه الحجوزات (آخر 12 شهر)</div>
+    <div class="trend-chart">
+        @{
+            int maxM = Model.MonthlyTrend.Any() ? Model.MonthlyTrend.Max(x => x.Count) : 1;
+            if (maxM == 0) maxM = 1;
+        }
+        @foreach (var m in Model.MonthlyTrend)
+        {
+            var h = (int)(m.Count * 100.0 / maxM);
+            <div class="trend-col">
+                <div class="trend-val">@m.Count</div>
+                <div class="trend-wrap"><div class="trend-fill" style="height:@h%"></div></div>
+                <div class="trend-lbl">@m.MonthLabel</div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="dash-row">
+    <!-- إحصائيات الشركات -->
+    <div class="dash-card" style="flex:1">
+        <div class="dc-title">📱 إحصائيات الشركات</div>
+        <table class="admin-table">
+            <thead><tr><th>الشركة</th><th>الفروع</th><th>متاح</th><th>الحجوزات</th><th>التقييم</th></tr></thead>
+            <tbody>
+                @foreach (var op in Model.OperatorStats)
+                {
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:7px">
+                                <div class="op-dot op-logo-@op.OperatorKey" style="background:@op.BgColor"></div>
+                                <span style="font-weight:700;font-size:12px">@op.NameAr</span>
+                            </div>
+                        </td>
+                        <td><span class="kpi-badge today">@op.BranchCount</span></td>
+                        <td><span class="kpi-badge open">@op.OpenCount</span></td>
+                        <td><span class="kpi-badge pending">@op.AppointmentCount</span></td>
+                        <td>⭐ @op.AvgRating</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- توزيع الخدمات -->
+    <div class="dash-card" style="flex:1">
+        <div class="dc-title">🛠️ توزيع الخدمات</div>
+        @if (!Model.ServiceStats.Any())
+        {
+            <div class="no-data">لا توجد بيانات في هذه الفترة</div>
+        }
+        else
+        {
+            @foreach (var s in Model.ServiceStats)
+            {
+                <div class="svc-row">
+                    <div class="svc-icon">@s.Icon</div>
+                    <div class="svc-body">
+                        <div style="display:flex;justify-content:space-between">
+                            <span class="svc-name">@s.NameAr</span>
+                            <span style="font-size:11px;font-weight:700;color:var(--purple)">@s.Percentage%</span>
+                        </div>
+                        <div class="svc-bar-wrap"><div class="svc-bar" style="width:@s.Percentage%"></div></div>
+                    </div>
+                    <div class="svc-cnt">@s.Count</div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- المحافظات -->
+<div class="dash-card">
+    <div class="dc-title">🗺️ توزيع الفروع على المحافظات</div>
+    <div class="table-wrap">
+        <table class="admin-table">
+            <thead>
+                <tr><th>المحافظة</th><th>الإقليم</th><th>المراكز</th><th>الفروع</th><th>الحجوزات</th><th>التوزيع</th></tr>
+            </thead>
+            <tbody>
+                @{
+                    int maxBr = Model.GovStats.Any() ? Model.GovStats.Max(g => g.BranchCount) : 1;
+                    if (maxBr == 0) maxBr = 1;
+                }
+                @foreach (var g in Model.GovStats)
+                {
+                    var pct = (int)(g.BranchCount * 100.0 / maxBr);
+                    <tr>
+                        <td>
+                            <span style="font-size:16px">@g.Emoji</span>
+                            <span style="font-weight:700;font-size:12px;margin-right:6px">@g.NameAr</span>
+                        </td>
+                        <td><span style="font-size:10px;color:var(--muted)">@g.Region</span></td>
+                        <td><span class="kpi-badge today">@g.DistrictCount</span></td>
+                        <td><span class="kpi-badge open">@g.BranchCount</span></td>
+                        <td><span class="kpi-badge pending">@g.AppointmentCount</span></td>
+                        <td style="width:120px">
+                            <div style="background:#f0f4ff;border-radius:4px;height:8px;overflow:hidden">
+                                <div style="background:var(--purple);height:100%;width:@pct%;transition:width .6s"></div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
