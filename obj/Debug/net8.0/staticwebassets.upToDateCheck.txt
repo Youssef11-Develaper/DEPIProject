@@ -1,0 +1,11 @@
+wwwroot\css\admin.css
+wwwroot\css\site.css
+wwwroot\images\logos\etisalat.svg
+wwwroot\images\logos\orange.svg
+wwwroot\images\logos\vodafone.png
+wwwroot\images\logos\vodafone.svg
+wwwroot\images\logos\we.svg
+wwwroot\js\admin.js
+wwwroot\js\branches.js
+wwwroot\js\geo.js
+wwwroot\js\site.js

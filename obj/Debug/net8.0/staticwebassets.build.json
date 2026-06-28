@@ -1,0 +1,1155 @@
+{
+  "Version": 1,
+  "Hash": "YirAJ7TU87mKnA/z/hFFlonJAb3eo/ZalNcX+tfG3LU=",
+  "Source": "TelecomBranches",
+  "BasePath": "_content/TelecomBranches",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "TelecomBranches\\wwwroot",
+      "Source": "TelecomBranches",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\css\\admin.css",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "css/admin#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "vbch5922qz",
+      "Integrity": "VR6zz1Ub6vSpZ1QE9SMbX+Z2MbiNIut3GLimfaM2SaA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\admin.css"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\css\\site.css",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "css/site#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "9toct9o8y3",
+      "Integrity": "Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\site.css"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\etisalat.svg",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "images/logos/etisalat#[.{fingerprint}]?.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "8k03vpyqv9",
+      "Integrity": "aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logos\\etisalat.svg"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\orange.svg",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "images/logos/orange#[.{fingerprint}]?.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "yvbiq6rosh",
+      "Integrity": "UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logos\\orange.svg"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\vodafone.png",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "images/logos/vodafone#[.{fingerprint}]?.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "nctqmu5eib",
+      "Integrity": "F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logos\\vodafone.png"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\vodafone.svg",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "images/logos/vodafone#[.{fingerprint}]?.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "xbiplt1vgx",
+      "Integrity": "DcIdZXAqrls26+8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logos\\vodafone.svg"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\we.svg",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "images/logos/we#[.{fingerprint}]?.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "r5p48zfzsk",
+      "Integrity": "oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\logos\\we.svg"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\admin.js",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "js/admin#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "wewxi7ws0y",
+      "Integrity": "WPBos7qrA05OBR/GC77+0ppiFNWrxvMi0VuTlgoDMf8=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\admin.js"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\branches.js",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "js/branches#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "3yrb0lqd5j",
+      "Integrity": "O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\branches.js"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\geo.js",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "js/geo#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "jrr8vc2x8y",
+      "Integrity": "cTKb8wz+xErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\geo.js"
+    },
+    {
+      "Identity": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\site.js",
+      "SourceId": "TelecomBranches",
+      "SourceType": "Discovered",
+      "ContentRoot": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\",
+      "BasePath": "_content/TelecomBranches",
+      "RelativePath": "js/site#[.{fingerprint}]?.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "xye7rdozjj",
+      "Integrity": "dymBAthKBbe0T5cEO6hEMUh+GNx60di54txGzoSJHTw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\site.js"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "css/admin.css",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\css\\admin.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "17631"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"VR6zz1Ub6vSpZ1QE9SMbX+Z2MbiNIut3GLimfaM2SaA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-VR6zz1Ub6vSpZ1QE9SMbX+Z2MbiNIut3GLimfaM2SaA="
+        }
+      ]
+    },
+    {
+      "Route": "css/admin.vbch5922qz.css",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\css\\admin.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "17631"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"VR6zz1Ub6vSpZ1QE9SMbX+Z2MbiNIut3GLimfaM2SaA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "vbch5922qz"
+        },
+        {
+          "Name": "label",
+          "Value": "css/admin.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-VR6zz1Ub6vSpZ1QE9SMbX+Z2MbiNIut3GLimfaM2SaA="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.9toct9o8y3.css",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "32016"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "9toct9o8y3"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "32016"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/etisalat.8k03vpyqv9.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\etisalat.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "392"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "8k03vpyqv9"
+        },
+        {
+          "Name": "label",
+          "Value": "images/logos/etisalat.svg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/etisalat.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\etisalat.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "392"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/orange.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\orange.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "262"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/orange.yvbiq6rosh.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\orange.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "262"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "yvbiq6rosh"
+        },
+        {
+          "Name": "label",
+          "Value": "images/logos/orange.svg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/vodafone.nctqmu5eib.png",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\vodafone.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "nctqmu5eib"
+        },
+        {
+          "Name": "label",
+          "Value": "images/logos/vodafone.png"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/vodafone.png",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\vodafone.png",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "21"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/png"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/vodafone.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\vodafone.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "570"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DcIdZXAqrls26+8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-DcIdZXAqrls26+8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/vodafone.xbiplt1vgx.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\vodafone.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "570"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"DcIdZXAqrls26+8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xbiplt1vgx"
+        },
+        {
+          "Name": "label",
+          "Value": "images/logos/vodafone.svg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-DcIdZXAqrls26+8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/we.r5p48zfzsk.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\we.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "258"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "r5p48zfzsk"
+        },
+        {
+          "Name": "label",
+          "Value": "images/logos/we.svg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI="
+        }
+      ]
+    },
+    {
+      "Route": "images/logos/we.svg",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\images\\logos\\we.svg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "258"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/svg+xml"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:48 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI="
+        }
+      ]
+    },
+    {
+      "Route": "js/admin.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\admin.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1528"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"WPBos7qrA05OBR/GC77+0ppiFNWrxvMi0VuTlgoDMf8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-WPBos7qrA05OBR/GC77+0ppiFNWrxvMi0VuTlgoDMf8="
+        }
+      ]
+    },
+    {
+      "Route": "js/admin.wewxi7ws0y.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\admin.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1528"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"WPBos7qrA05OBR/GC77+0ppiFNWrxvMi0VuTlgoDMf8=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "wewxi7ws0y"
+        },
+        {
+          "Name": "label",
+          "Value": "js/admin.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-WPBos7qrA05OBR/GC77+0ppiFNWrxvMi0VuTlgoDMf8="
+        }
+      ]
+    },
+    {
+      "Route": "js/branches.3yrb0lqd5j.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\branches.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12815"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "3yrb0lqd5j"
+        },
+        {
+          "Name": "label",
+          "Value": "js/branches.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE="
+        }
+      ]
+    },
+    {
+      "Route": "js/branches.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\branches.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "12815"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE="
+        }
+      ]
+    },
+    {
+      "Route": "js/geo.jrr8vc2x8y.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\geo.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3419"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cTKb8wz+xErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "jrr8vc2x8y"
+        },
+        {
+          "Name": "label",
+          "Value": "js/geo.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-cTKb8wz+xErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY="
+        }
+      ]
+    },
+    {
+      "Route": "js/geo.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\geo.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "3419"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"cTKb8wz+xErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-cTKb8wz+xErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY="
+        }
+      ]
+    },
+    {
+      "Route": "js/site.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "458"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dymBAthKBbe0T5cEO6hEMUh+GNx60di54txGzoSJHTw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-dymBAthKBbe0T5cEO6hEMUh+GNx60di54txGzoSJHTw="
+        }
+      ]
+    },
+    {
+      "Route": "js/site.xye7rdozjj.js",
+      "AssetFile": "D:\\me\\skiae\\OneDrive\\Desktop\\web\\TB_work\\TelecomBranches\\wwwroot\\js\\site.js",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "458"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/javascript"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"dymBAthKBbe0T5cEO6hEMUh+GNx60di54txGzoSJHTw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Sat, 30 May 2026 18:03:49 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "xye7rdozjj"
+        },
+        {
+          "Name": "label",
+          "Value": "js/site.js"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-dymBAthKBbe0T5cEO6hEMUh+GNx60di54txGzoSJHTw="
+        }
+      ]
+    }
+  ]
+}

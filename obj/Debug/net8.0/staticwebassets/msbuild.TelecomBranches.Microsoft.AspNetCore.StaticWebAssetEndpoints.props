@@ -1,0 +1,136 @@
+﻿<Project>
+  <ItemGroup>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/css/admin.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\admin.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-VR6zz1Ub6vSpZ1QE9SMbX\u002BZ2MbiNIut3GLimfaM2SaA="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"17631"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022VR6zz1Ub6vSpZ1QE9SMbX\u002BZ2MbiNIut3GLimfaM2SaA=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/css/admin.vbch5922qz.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\admin.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"vbch5922qz"},{"Name":"integrity","Value":"sha256-VR6zz1Ub6vSpZ1QE9SMbX\u002BZ2MbiNIut3GLimfaM2SaA="},{"Name":"label","Value":"_content/TelecomBranches/css/admin.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"17631"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022VR6zz1Ub6vSpZ1QE9SMbX\u002BZ2MbiNIut3GLimfaM2SaA=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/css/site.9toct9o8y3.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\site.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"9toct9o8y3"},{"Name":"integrity","Value":"sha256-Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es="},{"Name":"label","Value":"_content/TelecomBranches/css/site.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"32016"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/css/site.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\site.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"32016"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022Y3ZGOf/KzVnuzJOTsujdEkUvCp70SZFPbQckHJU34Es=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/etisalat.8k03vpyqv9.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\etisalat.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"8k03vpyqv9"},{"Name":"integrity","Value":"sha256-aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g="},{"Name":"label","Value":"_content/TelecomBranches/images/logos/etisalat.svg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"392"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/etisalat.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\etisalat.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"392"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022aLfDHOkiyRXdahFLdqjTWNNHoubOp/DUMSRq0dKPY0g=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/orange.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\orange.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"262"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/orange.yvbiq6rosh.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\orange.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"yvbiq6rosh"},{"Name":"integrity","Value":"sha256-UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E="},{"Name":"label","Value":"_content/TelecomBranches/images/logos/orange.svg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"262"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022UhFc26t8p3zefVFGs7dl8ZSLzWDa/AGOnLX1gxr7h2E=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/vodafone.nctqmu5eib.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\vodafone.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"nctqmu5eib"},{"Name":"integrity","Value":"sha256-F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4="},{"Name":"label","Value":"_content/TelecomBranches/images/logos/vodafone.png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"21"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/vodafone.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\vodafone.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"21"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022F/XmJMW0GjV9plS9N/uS5WP0ACGAnPNdgXMLsQARmA4=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/vodafone.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\vodafone.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-DcIdZXAqrls26\u002B8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"570"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022DcIdZXAqrls26\u002B8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/vodafone.xbiplt1vgx.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\vodafone.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"xbiplt1vgx"},{"Name":"integrity","Value":"sha256-DcIdZXAqrls26\u002B8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU="},{"Name":"label","Value":"_content/TelecomBranches/images/logos/vodafone.svg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"570"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022DcIdZXAqrls26\u002B8yKH5N0d6/vxDlZ4cmV5vbTlKtdMU=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/we.r5p48zfzsk.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\we.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"r5p48zfzsk"},{"Name":"integrity","Value":"sha256-oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI="},{"Name":"label","Value":"_content/TelecomBranches/images/logos/we.svg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"258"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/images/logos/we.svg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\logos\we.svg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"258"},{"Name":"Content-Type","Value":"image/svg\u002Bxml"},{"Name":"ETag","Value":"\u0022oYMqDdc2kYT1m/Ownh4d16dqGrGHa9GKxhL1NQtkiUI=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:48 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/admin.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\admin.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-WPBos7qrA05OBR/GC77\u002B0ppiFNWrxvMi0VuTlgoDMf8="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1528"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022WPBos7qrA05OBR/GC77\u002B0ppiFNWrxvMi0VuTlgoDMf8=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/admin.wewxi7ws0y.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\admin.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"wewxi7ws0y"},{"Name":"integrity","Value":"sha256-WPBos7qrA05OBR/GC77\u002B0ppiFNWrxvMi0VuTlgoDMf8="},{"Name":"label","Value":"_content/TelecomBranches/js/admin.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1528"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022WPBos7qrA05OBR/GC77\u002B0ppiFNWrxvMi0VuTlgoDMf8=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/branches.3yrb0lqd5j.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\branches.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"3yrb0lqd5j"},{"Name":"integrity","Value":"sha256-O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE="},{"Name":"label","Value":"_content/TelecomBranches/js/branches.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"12815"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/branches.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\branches.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"12815"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022O7bZBo37MtlcdQC1GidQ2jiVSBatUkT0Sh5uiwaFOeE=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/geo.jrr8vc2x8y.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\geo.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"jrr8vc2x8y"},{"Name":"integrity","Value":"sha256-cTKb8wz\u002BxErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY="},{"Name":"label","Value":"_content/TelecomBranches/js/geo.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"3419"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022cTKb8wz\u002BxErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/geo.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\geo.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-cTKb8wz\u002BxErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"3419"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022cTKb8wz\u002BxErBxzzxGCGoJ8ykxi8k82dkG4u8NlLVMIY=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/site.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-dymBAthKBbe0T5cEO6hEMUh\u002BGNx60di54txGzoSJHTw="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"458"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022dymBAthKBbe0T5cEO6hEMUh\u002BGNx60di54txGzoSJHTw=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/TelecomBranches/js/site.xye7rdozjj.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"xye7rdozjj"},{"Name":"integrity","Value":"sha256-dymBAthKBbe0T5cEO6hEMUh\u002BGNx60di54txGzoSJHTw="},{"Name":"label","Value":"_content/TelecomBranches/js/site.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"458"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022dymBAthKBbe0T5cEO6hEMUh\u002BGNx60di54txGzoSJHTw=\u0022"},{"Name":"Last-Modified","Value":"Sat, 30 May 2026 18:03:49 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+  </ItemGroup>
+</Project>
