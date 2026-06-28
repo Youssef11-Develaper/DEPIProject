@@ -22,5 +22,26 @@ namespace Mawidy.Domain.Entities
         public DateTime CreatedAt { get; set; }
 
         public Rating? Rating { get; set; }
+
+        // Telecom properties
+        public string ServiceKey { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerPhone { get; set; } = string.Empty;
+        public TimeSpan AppointmentTime { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    public class VirtualQueueEntry
+    {
+        public int Id { get; set; }
+        public int BranchId { get; set; }
+        public string CustomerName { get; set; } = string.Empty;
+        public string CustomerPhone { get; set; } = string.Empty;
+        public string ServiceKey { get; set; } = string.Empty;
+        public int Position { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
+
+        public Branch Branch { get; set; } = null!;
     }
 }

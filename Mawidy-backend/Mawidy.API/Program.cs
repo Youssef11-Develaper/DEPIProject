@@ -23,6 +23,12 @@ QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
 
+builder.Services.AddDbContext<TelecomDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
+
+builder.Services.AddScoped<IAppDbContext>(provider =>
+    provider.GetRequiredService<TelecomDbContext>());
+
 builder.Services.AddHostedService<ReminderService>();
 
 // Identity

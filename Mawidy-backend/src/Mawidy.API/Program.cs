@@ -33,11 +33,21 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-// Seed Database on startup
+// Seed Database and Roles on startup
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
     Mawidy.API.Data.DbInitializer.SeedAsync(context).Wait();
+
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    string[] roles = { "Citizen", "Admin", "Staff" };
+    foreach (var role in roles)
+    {
+        if (!roleManager.RoleExistsAsync(role).Result)
+        {
+            roleManager.CreateAsync(new IdentityRole(role)).Wait();
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -52,6 +62,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles();
+
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 app.UseAuthentication();
