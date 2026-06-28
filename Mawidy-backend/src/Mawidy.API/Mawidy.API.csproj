@@ -1,22 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MediatR" Version="14.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.7" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.7" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.14.11" />
-	  <ProjectReference Include="..\Mawidy.Application\Mawidy.Application.csproj" />
-	  <ProjectReference Include="..\Mawidy.Domain\Mawidy.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Mawidy.Infrastructure\Mawidy.Infrastructure.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="MediatR" Version="14.1.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.7" />
+		<PackageReference Include="Scalar.AspNetCore" Version="2.14.11" />
+		<ProjectReference Include="..\Mawidy.Application\Mawidy.Application.csproj" />
+		<ProjectReference Include="..\Mawidy.Domain\Mawidy.Domain.csproj" />
+		<ProjectReference Include="..\Mawidy.Infrastructure\Mawidy.Infrastructure.csproj" />
+	</ItemGroup>
 
 </Project>

@@ -1,10 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Mawidy.Application.Interfaces;
 using Mawidy.Domain.Entities;
 
 namespace Mawidy.Infrastructure.Persistence;
 
-public class ApplicationDbContext : DbContext, IApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
@@ -39,6 +41,15 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
         modelBuilder.Entity<LegalCase>().Property(e => e.RowVersion).IsRowVersion();
         modelBuilder.Entity<CaseTimelineEvent>().Property(e => e.RowVersion).IsRowVersion();
         modelBuilder.Entity<QueueTicket>().Property(e => e.RowVersion).IsRowVersion();
+
+        // Identity tables
+        modelBuilder.Entity<ApplicationUser>().ToTable("Users");
+        modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+        modelBuilder.Entity<IdentityUserRole<string>>().ToTable("UserRoles").HasKey(x => new { x.UserId, x.RoleId });
+        modelBuilder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
+        modelBuilder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins").HasKey(x => new { x.LoginProvider, x.ProviderKey });
+        modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
+        modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UserTokens").HasKey(x => new { x.UserId, x.LoginProvider, x.Name });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
