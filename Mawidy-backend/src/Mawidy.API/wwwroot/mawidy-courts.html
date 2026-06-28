@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مـوعـدي — خدمات المحاكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0B1F3A;
+  --blue: #1565C0;
+  --teal: #00897B;
+  --red: #E53935;
+  --gold: #F9A825;
+  --court: #B8860B;
+  --court-light: #FFF8DC;
+  --court-dark: #8B6914;
+  --light: #F0F4FF;
+  --white: #FFFFFF;
+  --gray: #F5F7FA;
+  --text: #1A2340;
+  --muted: #6B7A99;
+  --border: #E2E8F0;
+  --r: 16px;
+  --shadow: 0 4px 24px rgba(11,31,58,0.10);
+  --shadow-lg: 0 12px 48px rgba(11,31,58,0.16);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Tajawal',sans-serif; background:var(--white); color:var(--text); overflow-x:hidden; }
+
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:#f0f4ff; }
+::-webkit-scrollbar-thumb { background:var(--blue); border-radius:3px; }
+
+/* NAV */
+nav {
+  position:fixed; top:0; width:100%; z-index:1000;
+  background:rgba(255,255,255,0.95); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border); padding:0 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  height:70px; box-shadow:0 2px 20px rgba(11,31,58,0.06);
+}
+.nav-logo { display:flex; align-items:center; gap:12px; text-decoration:none; }
+.nav-logo-icon {
+  width:42px; height:42px; border-radius:12px;
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 12px rgba(21,101,192,0.3); font-size:22px;
+}
+.nav-logo-text { font-family:'Cairo',sans-serif; font-size:22px; font-weight:900; color:var(--navy); }
+.nav-logo-text span { color:var(--blue); }
+.nav-links { display:flex; gap:6px; align-items:center; }
+.nav-link {
+  padding:8px 16px; border-radius:10px; font-size:14px; font-weight:500;
+  color:var(--muted); text-decoration:none; cursor:pointer;
+  transition:all 0.2s; border:none; background:none; font-family:'Tajawal',sans-serif;
+}
+.nav-link:hover { background:var(--light); color:var(--blue); }
+.nav-link.active { background:rgba(184,134,11,.1); color:var(--court); font-weight:700; }
+.breadcrumb { display:flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); }
+.breadcrumb a { color:var(--blue); text-decoration:none; }
+.breadcrumb span { opacity:0.5; }
+.nav-btn {
+  padding:10px 22px; border-radius:12px; font-size:14px; font-weight:700;
+  background:linear-gradient(135deg,var(--blue),var(--teal));
+  color:white; border:none; cursor:pointer; font-family:'Tajawal',sans-serif;
+  box-shadow:0 4px 14px rgba(21,101,192,0.3); transition:all 0.2s;
+}
+.nav-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(21,101,192,0.4); }
+
+/* HERO */
+.hero {
+  min-height:85vh; padding-top:70px;
+  background:linear-gradient(160deg, #0B1F3A 0%, #1a3a6b 45%, #8B6914 100%);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.hero-pattern {
+  position:absolute; inset:0; pointer-events:none; overflow:hidden;
+}
+.hero-pattern::before {
+  content:''; position:absolute; inset:0;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(184,134,11,.04) 40px, rgba(184,134,11,.04) 41px),
+    repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,.02) 40px, rgba(255,255,255,.02) 41px);
+}
+.hero-circles span {
+  position:absolute; border-radius:50%; opacity:0.06; background:var(--gold);
+  animation:float 8s ease-in-out infinite;
+}
+.hero-circles span:nth-child(1) { width:500px;height:500px;top:-150px;right:-100px;animation-delay:0s; }
+.hero-circles span:nth-child(2) { width:300px;height:300px;bottom:0px;left:5%;animation-delay:3s; }
+.hero-circles span:nth-child(3) { width:180px;height:180px;top:40%;right:25%;animation-delay:6s;background:white; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-25px)} }
+
+.hero-inner {
+  position:relative; z-index:2; max-width:1200px; width:100%;
+  margin:0 auto; padding:60px 40px;
+  display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
+}
+.hero-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 18px; border-radius:30px; margin-bottom:24px;
+  background:rgba(184,134,11,.15); border:1px solid rgba(184,134,11,.3);
+  color:var(--gold); font-size:13px; font-weight:600;
+}
+.hero-badge .dot { width:7px;height:7px;border-radius:50%;background:var(--gold);animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
+.hero-title { font-family:'Cairo',sans-serif; font-size:58px; font-weight:900; color:white; line-height:1.1; margin-bottom:16px; }
+.hero-title .accent { color:var(--gold); }
+.hero-sub { font-size:17px; color:rgba(255,255,255,.7); line-height:1.9; margin-bottom:36px; }
+.hero-actions { display:flex; gap:14px; flex-wrap:wrap; }
+.btn-primary {
+  padding:15px 32px; border-radius:14px; font-size:15px; font-weight:700;
+  background:linear-gradient(135deg,var(--gold),#E6961A); color:var(--navy);
+  border:none; cursor:pointer; font-family:'Tajawal',sans-serif;
+  box-shadow:0 6px 24px rgba(184,134,11,.4); transition:all .3s;
+  display:flex; align-items:center; gap:10px;
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 10px 32px rgba(184,134,11,.5); }
+.btn-outline {
+  padding:15px 32px; border-radius:14px; font-size:15px; font-weight:700;
+  background:rgba(255,255,255,.08); color:white;
+  border:2px solid rgba(255,255,255,.2); cursor:pointer;
+  font-family:'Tajawal',sans-serif; transition:all .3s; backdrop-filter:blur(10px);
+}
+.btn-outline:hover { background:rgba(255,255,255,.15); border-color:white; }
+
+.hero-stats { display:flex; gap:36px; margin-top:44px; padding-top:36px; border-top:1px solid rgba(255,255,255,.12); }
+.hero-stat-num { font-family:'Cairo',sans-serif; font-size:32px; font-weight:900; color:var(--gold); }
+.hero-stat-label { font-size:12px; color:rgba(255,255,255,.55); margin-top:3px; }
+
+/* Court card (right side of hero) */
+.hero-card {
+  background:rgba(255,255,255,.06); border-radius:28px;
+  border:1px solid rgba(255,255,255,.1); padding:32px;
+  backdrop-filter:blur(16px);
+}
+.court-emblem { text-align:center; margin-bottom:24px; }
+.court-emblem-icon {
+  font-size:64px; display:block; margin-bottom:8px;
+  filter:drop-shadow(0 4px 12px rgba(184,134,11,.4));
+}
+.court-emblem-title { font-family:'Cairo',sans-serif; font-size:20px; font-weight:800; color:white; }
+.court-emblem-sub { font-size:12px; color:rgba(255,255,255,.5); margin-top:4px; }
+.court-types { display:flex; flex-direction:column; gap:10px; }
+.court-type-item {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,255,255,.06); border-radius:14px;
+  padding:12px 16px; border:1px solid rgba(255,255,255,.08);
+  transition:all .2s; cursor:pointer;
+}
+.court-type-item:hover { background:rgba(184,134,11,.15); border-color:rgba(184,134,11,.3); }
+.court-type-icon { font-size:22px; flex-shrink:0; }
+.court-type-name { font-size:14px; font-weight:700; color:white; }
+.court-type-desc { font-size:11px; color:rgba(255,255,255,.5); margin-top:1px; }
+.court-type-arrow { margin-right:auto; color:rgba(255,255,255,.3); font-size:14px; }
+
+/* SECTIONS */
+section { padding:80px 40px; max-width:1200px; margin:0 auto; }
+.section-tag {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 16px; border-radius:20px; font-size:12px; font-weight:700;
+  background:rgba(184,134,11,.08); color:var(--court);
+  text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;
+}
+.section-title { font-family:'Cairo',sans-serif; font-size:38px; font-weight:900; color:var(--navy); margin-bottom:12px; }
+.section-sub { font-size:16px; color:var(--muted); line-height:1.8; max-width:580px; }
+
+/* SERVICES GRID */
+.services-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px; }
+.svc-card {
+  background:white; border-radius:20px; padding:28px;
+  border:2px solid var(--border); box-shadow:var(--shadow);
+  transition:all .3s; cursor:pointer; position:relative; overflow:hidden;
+}
+.svc-card::after {
+  content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg,var(--gold),var(--court)); opacity:0; transition:opacity .3s;
+}
+.svc-card:hover { transform:translateY(-6px); box-shadow:var(--shadow-lg); border-color:var(--gold); }
+.svc-card:hover::after { opacity:1; }
+.svc-icon-wrap {
+  width:64px; height:64px; border-radius:18px; margin-bottom:18px;
+  display:flex; align-items:center; justify-content:center; font-size:30px;
+  background:rgba(184,134,11,.08);
+}
+.svc-name { font-family:'Cairo',sans-serif; font-size:18px; font-weight:800; color:var(--navy); margin-bottom:8px; }
+.svc-desc { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:14px; }
+.svc-time { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--court); font-weight:700; }
+.svc-docs { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px; }
+.svc-doc-tag { padding:3px 10px; border-radius:8px; font-size:11px; background:var(--gray); color:var(--muted); }
+.svc-book-btn {
+  display:flex; align-items:center; gap:6px; margin-top:16px;
+  padding:10px 18px; border-radius:10px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#E6961A); color:var(--navy);
+  font-family:'Tajawal',sans-serif; font-size:13px; font-weight:700;
+  transition:all .2s; width:100%; justify-content:center;
+}
+.svc-book-btn:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(184,134,11,.3); }
+
+/* COURTS LIST */
+.courts-section { background:var(--gray); max-width:100%; padding:80px 40px; }
+.courts-inner { max-width:1200px; margin:0 auto; }
+.courts-filter-bar { display:flex; gap:10px; margin:36px 0 28px; flex-wrap:wrap; align-items:center; }
+.filter-search {
+  flex:1; min-width:220px; padding:11px 16px; border-radius:12px;
+  border:2px solid var(--border); background:white;
+  font-family:'Tajawal',sans-serif; font-size:14px; outline:none;
+  transition:all .2s; direction:rtl;
+}
+.filter-search:focus { border-color:var(--gold); }
+.filter-btn {
+  padding:10px 18px; border-radius:12px; font-size:13px; font-weight:600;
+  background:white; border:2px solid var(--border); color:var(--muted);
+  cursor:pointer; transition:all .2s; font-family:'Tajawal',sans-serif;
+}
+.filter-btn.active { border-color:var(--gold); color:var(--court); background:var(--court-light); }
+.filter-btn:hover { border-color:var(--gold); color:var(--court); }
+
+.courts-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; }
+.court-card {
+  background:white; border-radius:20px; padding:24px;
+  border:1px solid var(--border); box-shadow:var(--shadow);
+  transition:all .3s; cursor:pointer;
+}
+.court-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); border-color:rgba(184,134,11,.3); }
+.court-card-header { display:flex; align-items:flex-start; gap:14px; margin-bottom:16px; }
+.court-card-icon {
+  width:52px; height:52px; border-radius:14px; flex-shrink:0;
+  background:rgba(184,134,11,.08); display:flex; align-items:center; justify-content:center; font-size:26px;
+}
+.court-card-name { font-family:'Cairo',sans-serif; font-size:17px; font-weight:800; color:var(--navy); margin-bottom:4px; }
+.court-card-type { font-size:12px; color:var(--court); font-weight:700; }
+.court-card-addr { font-size:12px; color:var(--muted); margin-top:2px; }
+.court-card-badges { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+.badge {
+  padding:3px 10px; border-radius:8px; font-size:11px; font-weight:700;
+  display:flex; align-items:center; gap:4px;
+}
+.badge.open { background:#E8F5E9; color:var(--teal); }
+.badge.busy { background:#FFF3E0; color:#E65100; }
+.badge.wait { background:#E3F2FD; color:var(--blue); }
+.badge.dist { background:var(--gray); color:var(--muted); }
+.court-card-info { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+.court-info-item { background:var(--gray); border-radius:10px; padding:10px 12px; }
+.court-info-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; }
+.court-info-val { font-size:13px; font-weight:700; color:var(--navy); margin-top:3px; }
+.court-card-footer { display:flex; gap:8px; }
+.btn-details {
+  flex:1; padding:10px; border-radius:10px; border:2px solid var(--border);
+  background:white; cursor:pointer; font-family:'Tajawal',sans-serif;
+  font-size:13px; font-weight:600; color:var(--muted); transition:all .2s;
+}
+.btn-details:hover { border-color:var(--navy); color:var(--navy); }
+.btn-book-court {
+  flex:1; padding:10px; border-radius:10px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#E6961A); color:var(--navy);
+  font-family:'Tajawal',sans-serif; font-size:13px; font-weight:700;
+  box-shadow:0 3px 12px rgba(184,134,11,.3); transition:all .2s;
+}
+.btn-book-court:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(184,134,11,.4); }
+
+/* HOW IT WORKS */
+.steps-row { display:grid; grid-template-columns:repeat(5,1fr); gap:0; margin-top:48px; position:relative; }
+.steps-row::before {
+  content:''; position:absolute; top:32px; right:10%; left:10%; height:2px;
+  background:linear-gradient(90deg,var(--gold),var(--court),var(--navy)); z-index:0;
+}
+.step-item { text-align:center; position:relative; z-index:1; }
+.step-num {
+  width:64px; height:64px; border-radius:50%; margin:0 auto 16px;
+  background:white; border:3px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Cairo',sans-serif; font-size:20px; font-weight:900; color:var(--court);
+  box-shadow:0 4px 20px rgba(184,134,11,.2);
+}
+.step-title { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+.step-sub { font-size:11px; color:var(--muted); line-height:1.6; padding:0 8px; }
+
+/* REQUIRED DOCS */
+.docs-section { background:var(--navy); max-width:100%; padding:80px 40px; }
+.docs-inner { max-width:1200px; margin:0 auto; }
+.docs-section .section-title { color:white; }
+.docs-section .section-tag { background:rgba(184,134,11,.15); color:var(--gold); }
+.docs-section .section-sub { color:rgba(255,255,255,.6); }
+.docs-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:48px; }
+.doc-category {
+  background:rgba(255,255,255,.05); border-radius:20px; padding:28px;
+  border:1px solid rgba(255,255,255,.08); transition:all .3s;
+}
+.doc-category:hover { background:rgba(255,255,255,.08); transform:translateY(-4px); }
+.doc-cat-header { display:flex; align-items:center; gap:12px; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid rgba(255,255,255,.08); }
+.doc-cat-icon { font-size:28px; }
+.doc-cat-title { font-family:'Cairo',sans-serif; font-size:16px; font-weight:800; color:white; }
+.doc-cat-sub { font-size:12px; color:rgba(255,255,255,.45); margin-top:2px; }
+.doc-list { display:flex; flex-direction:column; gap:10px; }
+.doc-item { display:flex; align-items:flex-start; gap:10px; }
+.doc-check {
+  width:26px; height:26px; flex-shrink:0; border-radius:8px;
+  background:rgba(184,134,11,.2); display:flex; align-items:center;
+  justify-content:center; color:var(--gold); font-size:12px; margin-top:1px;
+}
+.doc-text { font-size:13px; color:rgba(255,255,255,.8); font-weight:500; line-height:1.5; }
+.doc-note { font-size:11px; color:rgba(255,255,255,.4); margin-top:2px; }
+
+/* BOOKING FORM */
+.booking-section { background:white; max-width:100%; padding:80px 40px; border-top:1px solid var(--border); }
+.booking-inner { max-width:1200px; margin:0 auto; }
+.booking-layout { display:grid; grid-template-columns:1fr 420px; gap:40px; margin-top:48px; align-items:start; }
+.booking-form-card { background:var(--gray); border-radius:24px; padding:36px; }
+.booking-form-title { font-family:'Cairo',sans-serif; font-size:22px; font-weight:800; color:var(--navy); margin-bottom:4px; }
+.booking-form-sub { font-size:13px; color:var(--muted); margin-bottom:28px; }
+.form-group { margin-bottom:18px; }
+.form-label { font-size:13px; font-weight:700; color:var(--navy); margin-bottom:8px; display:block; }
+.form-input, .form-select, .form-textarea {
+  width:100%; padding:13px 16px; border-radius:12px;
+  border:2px solid var(--border); background:white;
+  font-family:'Tajawal',sans-serif; font-size:14px; color:var(--text);
+  outline:none; transition:all .2s; direction:rtl;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,134,11,.08);
+}
+.form-textarea { resize:none; height:100px; line-height:1.7; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.time-slots { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-top:8px; }
+.time-slot {
+  padding:10px 6px; border-radius:10px; border:2px solid var(--border);
+  background:white; text-align:center; font-size:12px; font-weight:700;
+  color:var(--navy); cursor:pointer; transition:all .2s; font-family:'Tajawal',sans-serif;
+}
+.time-slot:hover:not(.taken) { border-color:var(--gold); background:var(--court-light); }
+.time-slot.selected { border-color:var(--gold); background:var(--court-light); color:var(--court); }
+.time-slot.taken { opacity:.35; cursor:not-allowed; text-decoration:line-through; }
+.btn-book-full {
+  width:100%; padding:15px; border-radius:13px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#E6961A); color:var(--navy);
+  font-family:'Tajawal',sans-serif; font-size:16px; font-weight:800;
+  margin-top:6px; transition:all .3s; box-shadow:0 5px 18px rgba(184,134,11,.3);
+}
+.btn-book-full:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(184,134,11,.4); }
+
+/* Sidebar */
+.booking-sidebar { display:flex; flex-direction:column; gap:20px; }
+.sidebar-card { background:white; border-radius:20px; padding:24px; border:1px solid var(--border); box-shadow:var(--shadow); }
+.sidebar-card-title { font-family:'Cairo',sans-serif; font-size:16px; font-weight:800; color:var(--navy); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.queue-display { text-align:center; padding:20px 0; }
+.queue-num { font-family:'Cairo',sans-serif; font-size:56px; font-weight:900; color:var(--gold); line-height:1; }
+.queue-label { font-size:13px; color:var(--muted); margin-top:6px; }
+.queue-status { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:12px; font-size:13px; font-weight:700; color:var(--teal); }
+.queue-status::before { content:''; width:8px; height:8px; border-radius:50%; background:#4ade80; animation:blink 2s infinite; }
+.queue-list { display:flex; flex-direction:column; gap:8px; }
+.queue-item { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:10px; background:var(--gray); }
+.q-num { font-family:'Cairo',sans-serif; font-size:18px; font-weight:900; color:var(--navy); width:36px; }
+.q-name { font-size:13px; font-weight:600; color:var(--navy); flex:1; }
+.q-time { font-size:11px; color:var(--muted); }
+.q-badge { padding:2px 8px; border-radius:6px; font-size:10px; font-weight:700; }
+.q-badge.current { background:#FFF9C4; color:#E65100; }
+.q-badge.wait { background:#E3F2FD; color:var(--blue); }
+
+.tips-list { display:flex; flex-direction:column; gap:10px; }
+.tip-item { display:flex; gap:10px; align-items:flex-start; }
+.tip-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.tip-text { font-size:13px; color:var(--muted); line-height:1.6; }
+.tip-text strong { color:var(--navy); }
+
+/* CASE TRACKING */
+.tracking-section { background:var(--gray); max-width:100%; padding:80px 40px; }
+.tracking-inner { max-width:1200px; margin:0 auto; }
+.tracking-layout { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:48px; align-items:start; }
+.tracking-form-card { background:white; border-radius:24px; padding:32px; border:1px solid var(--border); box-shadow:var(--shadow); }
+.tracking-form-title { font-family:'Cairo',sans-serif; font-size:20px; font-weight:800; color:var(--navy); margin-bottom:4px; }
+.tracking-form-sub { font-size:13px; color:var(--muted); margin-bottom:24px; }
+.tracking-input-row { display:flex; gap:10px; }
+.tracking-input {
+  flex:1; padding:13px 16px; border-radius:12px; border:2px solid var(--border);
+  background:var(--gray); font-family:'Tajawal',sans-serif; font-size:14px;
+  outline:none; transition:all .2s; direction:rtl;
+}
+.tracking-input:focus { border-color:var(--gold); background:white; }
+.btn-track {
+  padding:13px 24px; border-radius:12px; border:none; cursor:pointer;
+  background:linear-gradient(135deg,var(--gold),#E6961A); color:var(--navy);
+  font-family:'Tajawal',sans-serif; font-size:14px; font-weight:700;
+  transition:all .2s; white-space:nowrap;
+}
+.btn-track:hover { transform:translateY(-1px); }
+.case-result { margin-top:24px; display:none; }
+.case-result.show { display:block; animation:fadeUp .3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.case-header { background:linear-gradient(135deg,var(--navy),var(--blue)); border-radius:16px; padding:20px; margin-bottom:16px; color:white; }
+.case-num { font-family:'Cairo',sans-serif; font-size:22px; font-weight:900; }
+.case-type { font-size:13px; opacity:.7; margin-top:2px; }
+.case-timeline { display:flex; flex-direction:column; gap:0; }
+.case-step { display:flex; gap:14px; padding:12px 0; position:relative; }
+.case-step::before { content:''; position:absolute; top:36px; right:18px; width:2px; height:calc(100% - 12px); background:var(--border); }
+.case-step:last-child::before { display:none; }
+.case-dot { width:36px; height:36px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:16px; position:relative; z-index:1; }
+.case-dot.done { background:#E8F5E9; }
+.case-dot.active { background:#FFF9C4; animation:pulse-dot 2s infinite; }
+.case-dot.pending { background:var(--gray); }
+@keyframes pulse-dot { 0%,100%{box-shadow:0 0 0 0 rgba(184,134,11,.3)} 50%{box-shadow:0 0 0 8px rgba(184,134,11,0)} }
+.case-content { flex:1; padding-top:4px; }
+.case-step-title { font-size:14px; font-weight:700; color:var(--navy); }
+.case-step-date { font-size:12px; color:var(--muted); margin-top:2px; }
+.case-step-note { font-size:12px; color:var(--teal); margin-top:4px; background:#E8F5E9; padding:4px 10px; border-radius:8px; display:inline-block; }
+
+/* Stats cards */
+.tracking-stats { display:grid; grid-template-columns:1fr; gap:16px; }
+.tracking-stat-card { background:white; border-radius:20px; padding:24px; border:1px solid var(--border); box-shadow:var(--shadow); }
+.ts-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.ts-icon { width:44px;height:44px;border-radius:12px;background:rgba(184,134,11,.08);display:flex;align-items:center;justify-content:center;font-size:22px; }
+.ts-title { font-family:'Cairo',sans-serif; font-size:16px; font-weight:800; color:var(--navy); }
+.ts-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.ts-stat { text-align:center; background:var(--gray); border-radius:12px; padding:12px 8px; }
+.ts-num { font-family:'Cairo',sans-serif; font-size:28px; font-weight:900; color:var(--navy); }
+.ts-label { font-size:11px; color:var(--muted); margin-top:2px; }
+.ts-change { font-size:11px; margin-top:3px; font-weight:700; }
+.ts-change.up { color:var(--teal); }
+.ts-change.down { color:var(--red); }
+
+/* FAQ */
+.faq-section { padding:80px 40px; max-width:1200px; margin:0 auto; }
+.faq-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:48px; }
+.faq-item { background:white; border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow); }
+.faq-q {
+  padding:18px 22px; display:flex; align-items:center; justify-content:space-between;
+  cursor:pointer; font-size:15px; font-weight:700; color:var(--navy);
+  transition:background .2s; gap:12px;
+}
+.faq-q:hover { background:var(--gray); }
+.faq-q .faq-icon { flex-shrink:0; font-size:18px; width:36px; height:36px; border-radius:10px; background:rgba(184,134,11,.08); display:flex; align-items:center; justify-content:center; }
+.faq-q .faq-arrow { flex-shrink:0; color:var(--muted); transition:transform .3s; font-size:14px; }
+.faq-item.open .faq-arrow { transform:rotate(180deg); }
+.faq-a { padding:0 22px; font-size:13px; color:var(--muted); line-height:1.8; max-height:0; overflow:hidden; transition:all .3s; }
+.faq-item.open .faq-a { max-height:200px; padding:0 22px 18px; }
+
+/* EMERGENCY NOTICE */
+.emergency-notice {
+  background:linear-gradient(135deg,#B71C1C,#E53935);
+  border-radius:20px; padding:28px 32px;
+  display:flex; align-items:center; gap:24px;
+  margin:0 40px 40px; max-width:1120px; margin-left:auto; margin-right:auto;
+}
+.en-icon { font-size:48px; flex-shrink:0; }
+.en-title { font-family:'Cairo',sans-serif; font-size:20px; font-weight:900; color:white; margin-bottom:4px; }
+.en-sub { font-size:14px; color:rgba(255,255,255,.8); line-height:1.6; }
+.en-btn {
+  margin-right:auto; padding:12px 28px; border-radius:12px; border:2px solid white;
+  background:rgba(255,255,255,.15); color:white; font-family:'Tajawal',sans-serif;
+  font-size:14px; font-weight:700; cursor:pointer; transition:all .2s; flex-shrink:0;
+  backdrop-filter:blur(10px);
+}
+.en-btn:hover { background:rgba(255,255,255,.25); }
+
+/* CTA */
+.cta-section {
+  background:linear-gradient(135deg,var(--navy) 0%, #1a3a6b 50%, #8B6914 100%);
+  max-width:100%; padding:80px 40px; text-align:center;
+}
+.cta-title { font-family:'Cairo',sans-serif; font-size:44px; font-weight:900; color:white; margin-bottom:16px; }
+.cta-sub { font-size:17px; color:rgba(255,255,255,.7); margin-bottom:40px; }
+.cta-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+
+/* FOOTER */
+footer {
+  background:var(--navy); padding:40px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+.footer-logo { font-family:'Cairo',sans-serif; font-size:24px; font-weight:900; color:white; }
+.footer-links { display:flex; gap:20px; }
+.footer-link { font-size:13px; color:rgba(255,255,255,.45); text-decoration:none; transition:color .2s; }
+.footer-link:hover { color:var(--gold); }
+.footer-copy { font-size:12px; color:rgba(255,255,255,.3); }
+
+/* TOAST */
+.toast {
+  position:fixed; bottom:28px; right:28px; z-index:9000;
+  background:white; border-radius:18px; padding:18px 22px;
+  box-shadow:0 20px 60px rgba(11,31,58,.2); border:1px solid var(--border);
+  display:none; max-width:340px; animation:fadeUp .4s ease;
+}
+.toast.show { display:flex; align-items:flex-start; gap:12px; }
+.toast-icon { width:44px;height:44px;border-radius:12px;background:rgba(184,134,11,.1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0; }
+.toast-title { font-family:'Cairo',sans-serif; font-size:16px; font-weight:800; color:var(--court); }
+.toast-sub { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.toast-close { position:absolute; top:10px; left:10px; background:var(--gray); border:none; cursor:pointer; width:26px; height:26px; border-radius:8px; font-size:14px; color:var(--muted); }
+
+/* MODAL */
+.modal {
+  display:none; position:fixed; inset:0; z-index:8000;
+  background:rgba(11,31,58,.7); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center;
+}
+.modal.show { display:flex; animation:fadeOver .3s ease; }
+@keyframes fadeOver { from{opacity:0} to{opacity:1} }
+.modal-card {
+  background:white; border-radius:28px; padding:36px; max-width:480px; width:100%;
+  box-shadow:0 40px 100px rgba(0,0,0,.4); animation:cardUp .4s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+@keyframes cardUp { from{opacity:0;transform:translateY(40px) scale(.96)} to{opacity:1;transform:translateY(0) scale(1)} }
+.modal-close { position:absolute; top:16px; left:16px; width:34px; height:34px; border-radius:10px; border:none; background:var(--gray); cursor:pointer; font-size:16px; color:var(--muted); }
+.modal-icon { font-size:48px; text-align:center; margin-bottom:12px; }
+.modal-title { font-family:'Cairo',sans-serif; font-size:22px; font-weight:900; color:var(--navy); text-align:center; margin-bottom:6px; }
+.modal-sub { font-size:14px; color:var(--muted); text-align:center; margin-bottom:24px; line-height:1.7; }
+.modal-info { background:var(--gray); border-radius:14px; padding:16px; margin-bottom:20px; }
+.modal-info-row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border); font-size:13px; }
+.modal-info-row:last-child { border:none; }
+.modal-info-label { color:var(--muted); }
+.modal-info-val { font-weight:700; color:var(--navy); }
+.modal-code { text-align:center; padding:16px; background:linear-gradient(135deg,rgba(184,134,11,.05),rgba(184,134,11,.1)); border-radius:14px; border:2px dashed rgba(184,134,11,.3); }
+.modal-code-num { font-family:'Cairo',sans-serif; font-size:36px; font-weight:900; color:var(--court); letter-spacing:3px; }
+.modal-code-label { font-size:11px; color:var(--muted); margin-top:2px; }
+
+/* FADE-IN */
+.fade-in { opacity:0; transform:translateY(28px); transition:all .7s ease; }
+.fade-in.visible { opacity:1; transform:translateY(0); }
+
+/* RESPONSIVE */
+@media(max-width:900px) {
+  .hero-inner { grid-template-columns:1fr; gap:40px; }
+  .services-grid { grid-template-columns:1fr 1fr; }
+  .courts-grid { grid-template-columns:1fr; }
+  .docs-grid { grid-template-columns:1fr; }
+  .booking-layout { grid-template-columns:1fr; }
+  .tracking-layout { grid-template-columns:1fr; }
+  .faq-grid { grid-template-columns:1fr; }
+  .steps-row { grid-template-columns:1fr; gap:24px; }
+  .steps-row::before { display:none; }
+  nav { padding:0 20px; }
+  .emergency-notice { margin:0 20px 40px; flex-direction:column; text-align:center; }
+  .en-btn { margin-right:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="User_front.html" class="nav-logo">
+    <div class="nav-logo-icon">⚖️</div>
+    <div class="nav-logo-text">مـوعـدي <span>Mawidy</span></div>
+  </a>
+  <div class="breadcrumb">
+    <a href="User_front.html">الرئيسية</a>
+    <span>/</span>
+    <a href="User_front.html">الخدمات</a>
+    <span>/</span>
+    <span style="color:var(--court);font-weight:700">⚖️ المحاكم</span>
+  </div>
+  <div class="nav-links">
+    <button class="nav-link" onclick="scrollSec('#services')">الخدمات</button>
+    <button class="nav-link" onclick="scrollSec('#courts-list')">الفروع</button>
+    <button class="nav-link" onclick="scrollSec('#tracking')">متابعة قضية</button>
+    <button class="nav-link" onclick="scrollSec('#booking')">احجز موعد</button>
+    <button class="nav-btn" onclick="openBookModal()">📅 احجز الآن</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-pattern"></div>
+  <div class="hero-circles"><span></span><span></span><span></span></div>
+  <div class="hero-inner">
+    <!-- Left -->
+    <div>
+      <div class="hero-badge"><div class="dot"></div>خدمات المحاكم المصرية — رقمياً</div>
+      <div class="hero-title">احجز موعدك في <span class="accent">المحكمة</span> بدون طوابير</div>
+      <div class="hero-sub">منصة مـوعـدي تتيح لك حجز جلسات، تقديم مستندات، ومتابعة قضاياك في المحاكم المدنية والجنائية وغيرها — من مكانك وبدون إهدار وقت</div>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="openBookModal()">📅 احجز موعد في المحكمة</button>
+        <button class="btn-outline" onclick="scrollSec('#tracking')">🔍 تابع قضيتك</button>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <div class="hero-stat-num">12</div>
+          <div class="hero-stat-label">محكمة مدعومة</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">7</div>
+          <div class="hero-stat-label">أنواع خدمات</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">24h</div>
+          <div class="hero-stat-label">وقت الرد على الشكاوى</div>
+        </div>
+        <div>
+          <div class="hero-stat-num">مجاني</div>
+          <div class="hero-stat-label">الحجز والمتابعة</div>
+        </div>
+      </div>
+    </div>
+    <!-- Right Card -->
+    <div class="hero-card">
+      <div class="court-emblem">
+        <span class="court-emblem-icon">⚖️</span>
+        <div class="court-emblem-title">المحاكم المصرية</div>
+        <div class="court-emblem-sub">خدمات قضائية رقمية</div>
+      </div>
+      <div class="court-types">
+        <div class="court-type-item" onclick="filterCourts('مدنية')">
+          <div class="court-type-icon">🏛️</div>
+          <div><div class="court-type-name">المحاكم المدنية</div><div class="court-type-desc">قضايا الملكية والعقود والمديونيات</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('جنائية')">
+          <div class="court-type-icon">🔨</div>
+          <div><div class="court-type-name">المحاكم الجنائية</div><div class="court-type-desc">الجنح والجنايات والتحقيقات</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('أسرة')">
+          <div class="court-type-icon">👨‍👩‍👧</div>
+          <div><div class="court-type-name">محاكم الأسرة</div><div class="court-type-desc">الطلاق والنفقة والحضانة</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('تجارية')">
+          <div class="court-type-icon">💼</div>
+          <div><div class="court-type-name">المحاكم التجارية</div><div class="court-type-desc">النزاعات التجارية والإفلاس</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+        <div class="court-type-item" onclick="filterCourts('استئناف')">
+          <div class="court-type-icon">📋</div>
+          <div><div class="court-type-name">محاكم الاستئناف</div><div class="court-type-desc">الطعن في الأحكام الابتدائية</div></div>
+          <div class="court-type-arrow">←</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section id="services" class="fade-in">
+  <div class="section-tag">⚖️ الخدمات المتاحة</div>
+  <div class="section-title">خدمات المحاكم على المنصة</div>
+  <div class="section-sub">احجز موعدك وقدم مستنداتك بدون إجهاد الوقوف في طوابير لساعات</div>
+  <div class="services-grid">
+
+    <div class="svc-card" onclick="openBookModal('جلسة قضائية')">
+      <div class="svc-icon-wrap">📅</div>
+      <div class="svc-name">حجز جلسة قضائية</div>
+      <div class="svc-desc">احجز موعد جلسة في المحكمة المدنية أو الجنائية أو الأسرة — مع تحديد الدائرة والقاضي</div>
+      <div class="svc-time">⏱ يتحدد حسب جدول المحكمة</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">بطاقة قومية</span>
+        <span class="svc-doc-tag">ملف القضية</span>
+        <span class="svc-doc-tag">توكيل المحامي</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز جلسة</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('تقديم مستندات')">
+      <div class="svc-icon-wrap">📁</div>
+      <div class="svc-name">تقديم المستندات</div>
+      <div class="svc-desc">سلّم أوراق وملفات قضيتك لموظف التسجيل في المحكمة بدون انتظار في صالة الانتظار</div>
+      <div class="svc-time">⏱ 30–60 دقيقة</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">أوراق رسمية</span>
+        <span class="svc-doc-tag">صور موثقة</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز موعد التسليم</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('استعلام قضية')">
+      <div class="svc-icon-wrap">🔍</div>
+      <div class="svc-name">استعلام عن قضية</div>
+      <div class="svc-desc">تابع حالة قضيتك وتواريخ الجلسات القادمة وقرارات المحكمة بشكل فوري من خلال رقم القضية</div>
+      <div class="svc-time">⏱ فوري</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">رقم القضية</span>
+        <span class="svc-doc-tag">بطاقة قومية</span>
+      </div>
+      <button class="svc-book-btn" onclick="event.stopPropagation();scrollSec('#tracking')">🔍 تابع القضية الآن</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('استخراج حكم')">
+      <div class="svc-icon-wrap">📜</div>
+      <div class="svc-name">استخراج نسخة حكم</div>
+      <div class="svc-desc">احصل على نسخة رسمية وموثقة من حكم المحكمة لتقديمها للجهات المختلفة</div>
+      <div class="svc-time">⏱ 3–7 أيام عمل</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">رقم القضية</span>
+        <span class="svc-doc-tag">رسوم دمغة</span>
+        <span class="svc-doc-tag">بطاقة قومية</span>
+      </div>
+      <button class="svc-book-btn">📅 اطلب نسخة الحكم</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('توثيق مستند')">
+      <div class="svc-icon-wrap">✅</div>
+      <div class="svc-name">توثيق المستندات</div>
+      <div class="svc-desc">توثيق العقود والوكالات والإقرارات والمستندات الرسمية أمام كاتب العدل في المحكمة</div>
+      <div class="svc-time">⏱ نفس اليوم</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">المستند الأصلي</span>
+        <span class="svc-doc-tag">بطاقتان قوميتان</span>
+        <span class="svc-doc-tag">شهود</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز للتوثيق</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('طعن في حكم')">
+      <div class="svc-icon-wrap">⚡</div>
+      <div class="svc-name">تقديم استئناف / طعن</div>
+      <div class="svc-desc">قدّم طعنك في الحكم الابتدائي قبل انتهاء المهلة القانونية مع محامٍ أو بنفسك</div>
+      <div class="svc-time">⏱ خلال 30 يوم من الحكم</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">نسخة الحكم</span>
+        <span class="svc-doc-tag">مذكرة الطعن</span>
+        <span class="svc-doc-tag">رسوم قضائية</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز لتقديم الطعن</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('تحكيم تجاري')">
+      <div class="svc-icon-wrap">🤝</div>
+      <div class="svc-name">وساطة وتحكيم</div>
+      <div class="svc-desc">حل النزاعات ودياً عبر وساطة مرخصة قبل اللجوء للقضاء — أسرع وأقل تكلفة</div>
+      <div class="svc-time">⏱ 1–4 جلسات</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">موافقة الطرفين</span>
+        <span class="svc-doc-tag">ملخص النزاع</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز جلسة وساطة</button>
+    </div>
+
+    <div class="svc-card" onclick="openBookModal('دفع رسوم')">
+      <div class="svc-icon-wrap">💳</div>
+      <div class="svc-name">دفع الرسوم القضائية</div>
+      <div class="svc-desc">ادفع الرسوم والغرامات والأتعاب القضائية إلكترونياً بدون حاجة للتوجه لمكتب الصندوق</div>
+      <div class="svc-time">⏱ فوري</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">رقم القضية</span>
+        <span class="svc-doc-tag">بطاقة بنكية</span>
+      </div>
+      <button class="svc-book-btn">💳 ادفع الرسوم</button>
+    </div>
+
+    <div class="svc-card" style="background:linear-gradient(135deg,rgba(11,31,58,.02),rgba(184,134,11,.04));border-color:rgba(184,134,11,.2);" onclick="openBookModal('استشارة قانونية')">
+      <div class="svc-icon-wrap" style="background:rgba(11,31,58,.06)">👨‍⚖️</div>
+      <div class="svc-name">استشارة قانونية</div>
+      <div class="svc-desc">احجز استشارة مع محامٍ معتمد لدى المحكمة قبل رفع دعواك أو الرد عليها</div>
+      <div class="svc-time">⏱ 30–60 دقيقة</div>
+      <div class="svc-docs">
+        <span class="svc-doc-tag">وثائق القضية</span>
+      </div>
+      <button class="svc-book-btn">📅 احجز استشارة</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- COURTS LIST -->
+<div id="courts-list" class="courts-section">
+  <div class="courts-inner fade-in">
+    <div class="section-tag">🏛️ الفروع والمحاكم</div>
+    <div class="section-title">ابحث عن أقرب محكمة</div>
+    <div class="section-sub">اختار النوع وشوف التفاصيل الكاملة وأوقات الجلسات المتاحة</div>
+    <div class="courts-filter-bar">
+      <input class="filter-search" type="text" placeholder="ابحث باسم المحكمة أو المنطقة..." oninput="filterBySearch(this.value)">
+      <button class="filter-btn active" onclick="filterCourts('الكل',this)">الكل</button>
+      <button class="filter-btn" onclick="filterCourts('مدنية',this)">🏛️ مدنية</button>
+      <button class="filter-btn" onclick="filterCourts('جنائية',this)">🔨 جنائية</button>
+      <button class="filter-btn" onclick="filterCourts('أسرة',this)">👨‍👩‍👧 أسرة</button>
+      <button class="filter-btn" onclick="filterCourts('تجارية',this)">💼 تجارية</button>
+      <button class="filter-btn" onclick="filterCourts('استئناف',this)">📋 استئناف</button>
+    </div>
+    <div class="courts-grid" id="courtsGrid"></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="fade-in">
+  <div class="section-tag">🔄 كيف يعمل النظام</div>
+  <div class="section-title">خطوات الحجز في 5 دقائق</div>
+  <div class="section-sub">من اختيار المحكمة لتأكيد الموعد وكود QR — كل شيء رقمي وبدون ورق</div>
+  <div class="steps-row">
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-title">اختار المحكمة</div>
+      <div class="step-sub">ابحث باسمها أو الموقع الجغرافي الأقرب منك</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-title">اختار الخدمة</div>
+      <div class="step-sub">جلسة — تسليم مستندات — استشارة — استخراج حكم</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-title">حدد التاريخ والوقت</div>
+      <div class="step-sub">المواعيد المتاحة الفعلية محدثة من نظام المحكمة مباشرة</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">4</div>
+      <div class="step-title">أدخل بياناتك</div>
+      <div class="step-sub">رقم قومي + رقم القضية + بيانات التواصل</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">5</div>
+      <div class="step-title">احصل على كود QR</div>
+      <div class="step-sub">أبرزه عند الوصول + SMS تأكيد + تذكير قبل الموعد</div>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIRED DOCS -->
+<div class="docs-section">
+  <div class="docs-inner fade-in">
+    <div class="section-tag">📋 المستندات المطلوبة</div>
+    <div class="section-title" style="color:white">اعرف تجيب إيه معاك</div>
+    <div class="section-sub">قائمة المستندات المطلوبة لكل نوع من خدمات المحاكم حتى لا تضطر للعودة مرة أخرى</div>
+    <div class="docs-grid">
+      <div class="doc-category">
+        <div class="doc-cat-header">
+          <div class="doc-cat-icon">📅</div>
+          <div>
+            <div class="doc-cat-title">حجز جلسة قضائية</div>
+            <div class="doc-cat-sub">مدنية / جنائية / أسرة</div>
+          </div>
+        </div>
+        <div class="doc-list">
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">بطاقة الرقم القومي سارية</div><div class="doc-note">أصل + صورة</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">رقم القضية</div><div class="doc-note">من محضر الإيداع أو كشف القيد</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">توكيل المحامي (إن وجد)</div><div class="doc-note">موثق من الشهر العقاري</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">إيصال دفع الرسوم القضائية</div><div class="doc-note">من صندوق المحكمة أو إلكترونياً</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">أصول المستندات للقضية</div><div class="doc-note">عقود، عقارات، إيصالات حسب القضية</div></div></div>
+        </div>
+      </div>
+
+      <div class="doc-category">
+        <div class="doc-cat-header">
+          <div class="doc-cat-icon">📜</div>
+          <div>
+            <div class="doc-cat-title">استخراج نسخة حكم</div>
+            <div class="doc-cat-sub">رسمية — صالحة للتعامل</div>
+          </div>
+        </div>
+        <div class="doc-list">
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">بطاقة الرقم القومي</div><div class="doc-note">صاحب الصفة في القضية</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">رقم القضية وسنتها</div><div class="doc-note">المحكمة الابتدائية + الدائرة</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">دمغة رسوم الاستخراج</div><div class="doc-note">30–100 جنيه حسب عدد الصفحات</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">طلب كتابي بالاستخراج</div><div class="doc-note">نموذج متاح في المحكمة أو على المنصة</div></div></div>
+        </div>
+      </div>
+
+      <div class="doc-category">
+        <div class="doc-cat-header">
+          <div class="doc-cat-icon">✅</div>
+          <div>
+            <div class="doc-cat-title">توثيق المستندات</div>
+            <div class="doc-cat-sub">عقود • وكالات • إقرارات</div>
+          </div>
+        </div>
+        <div class="doc-list">
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">بطاقتا الرقم القومي للطرفين</div><div class="doc-note">ساريتان + صور</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">المستند الأصلي المراد توثيقه</div><div class="doc-note">3 نسخ أصلية</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">شاهدان بطاقاتهما</div><div class="doc-note">للعقود ذات الطابع الشخصي</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">دمغة التوثيق</div><div class="doc-note">50–200 جنيه حسب نوع المستند</div></div></div>
+          <div class="doc-item"><div class="doc-check">✓</div><div><div class="doc-text">رسم الطوابع الإضافية</div><div class="doc-note">للوكالات التجارية خصوصاً</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING FORM -->
+<div id="booking" class="booking-section">
+  <div class="booking-inner fade-in">
+    <div class="section-tag">📅 حجز موعد</div>
+    <div class="section-title">احجز موعدك في المحكمة الآن</div>
+    <div class="section-sub">بيانات الحجز محفوظة وهتوصلك رسالة SMS فورية بتأكيد الموعد</div>
+    <div class="booking-layout">
+
+      <!-- Form -->
+      <div class="booking-form-card">
+        <div class="booking-form-title">📅 بيانات الحجز</div>
+        <div class="booking-form-sub">اختار نوع الخدمة ثم أدخل بياناتك</div>
+
+        <div class="form-group">
+          <label class="form-label">نوع الخدمة</label>
+          <select class="form-select" id="bk-service" onchange="updateDept()">
+            <option value="جلسة">📅 حجز جلسة قضائية</option>
+            <option value="تسليم">📁 تسليم مستندات</option>
+            <option value="استخراج">📜 استخراج نسخة حكم</option>
+            <option value="توثيق">✅ توثيق مستند</option>
+            <option value="استئناف">⚡ تقديم استئناف</option>
+            <option value="وساطة">🤝 وساطة وتحكيم</option>
+            <option value="استشارة">👨‍⚖️ استشارة قانونية</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">اختار المحكمة</label>
+          <select class="form-select" id="bk-court">
+            <option>محكمة القاهرة الابتدائية — باب الخلق</option>
+            <option>محكمة الأسرة — القاهرة الجديدة</option>
+            <option>محكمة الجيزة الابتدائية</option>
+            <option>محكمة استئناف القاهرة</option>
+            <option>المحكمة الاقتصادية — القاهرة</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">الاسم بالكامل</label>
+            <input class="form-input" type="text" placeholder="محمد أحمد السيد" id="bk-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">رقم الهاتف</label>
+            <input class="form-input" type="tel" placeholder="01xxxxxxxxx" id="bk-phone">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">رقم القومي</label>
+            <input class="form-input" type="text" placeholder="3XXXXXXXXXXXXX" id="bk-nid">
+          </div>
+          <div class="form-group">
+            <label class="form-label">رقم القضية (اختياري)</label>
+            <input class="form-input" type="text" placeholder="2025/xxxx" id="bk-case">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">التاريخ المطلوب</label>
+            <input class="form-input" type="date" id="bk-date" min="">
+          </div>
+          <div class="form-group">
+            <label class="form-label">الدائرة / القسم</label>
+            <select class="form-select" id="bk-dept">
+              <option>دائرة مدنية أولى</option>
+              <option>دائرة مدنية ثانية</option>
+              <option>دائرة جنائية</option>
+              <option>دائرة الأحوال الشخصية</option>
+              <option>دائرة تجارية</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">اختار الوقت المناسب</label>
+          <div class="time-slots" id="timeSlots">
+            <button class="time-slot taken">9:00</button>
+            <button class="time-slot taken">9:30</button>
+            <button class="time-slot taken">10:00</button>
+            <button class="time-slot" onclick="selectTime(this,'10:30')">10:30</button>
+            <button class="time-slot" onclick="selectTime(this,'11:00')">11:00</button>
+            <button class="time-slot" onclick="selectTime(this,'11:30')">11:30</button>
+            <button class="time-slot taken">12:00</button>
+            <button class="time-slot" onclick="selectTime(this,'12:30')">12:30</button>
+            <button class="time-slot" onclick="selectTime(this,'1:00')">1:00</button>
+            <button class="time-slot" onclick="selectTime(this,'1:30')">1:30</button>
+            <button class="time-slot taken">2:00</button>
+            <button class="time-slot" onclick="selectTime(this,'2:30')">2:30</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">ملاحظات إضافية (اختياري)</label>
+          <textarea class="form-textarea" placeholder="أي تفاصيل إضافية تريد إضافتها..."></textarea>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:14px">
+          <input type="checkbox" id="bk-sms" checked style="accent-color:var(--court)">
+          <label for="bk-sms">استلم تأكيد الحجز على الهاتف (SMS)</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:20px">
+          <input type="checkbox" id="bk-remind" checked style="accent-color:var(--court)">
+          <label for="bk-remind">تذكير قبل الموعد بيوم وقبله بساعة</label>
+        </div>
+
+        <button class="btn-book-full" onclick="submitBooking()">⚖️ تأكيد حجز الموعد</button>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="booking-sidebar">
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">🔢 الطابور الحالي</div>
+          <div class="queue-display">
+            <div class="queue-num" id="queueCurrent">47</div>
+            <div class="queue-label">الرقم يُستدعى الآن</div>
+            <div class="queue-status">المحكمة تعمل بشكل طبيعي</div>
+          </div>
+          <div style="margin-top:16px">
+            <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">أرقام في الانتظار</div>
+            <div class="queue-list">
+              <div class="queue-item"><div class="q-num">47</div><div class="q-name">حجز جلسة مدنية</div><div class="q-time">الآن</div><div class="q-badge current">جارٍ</div></div>
+              <div class="queue-item"><div class="q-num">48</div><div class="q-name">تسليم مستندات</div><div class="q-time">~10 دقائق</div><div class="q-badge wait">انتظار</div></div>
+              <div class="queue-item"><div class="q-num">49</div><div class="q-name">استخراج حكم</div><div class="q-time">~20 دقيقة</div><div class="q-badge wait">انتظار</div></div>
+              <div class="queue-item"><div class="q-num">50</div><div class="q-name">توثيق عقد</div><div class="q-time">~30 دقيقة</div><div class="q-badge wait">انتظار</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <div class="sidebar-card-title">💡 نصائح مهمة</div>
+          <div class="tips-list">
+            <div class="tip-item">
+              <div class="tip-icon">⏰</div>
+              <div class="tip-text"><strong>احضر قبل الموعد بـ 15 دقيقة</strong> — المحاكم تلتزم بالوقت تماماً وقد تفقد موعدك إذا تأخرت</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">📋</div>
+              <div class="tip-text"><strong>أحضر صور من كل المستندات</strong> — لا يُقبل أصل بدون صورة في أغلب الجلسات</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">💰</div>
+              <div class="tip-text"><strong>جهّز الرسوم مسبقاً</strong> — يفضل الدفع إلكترونياً لتوفير الوقت</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">📱</div>
+              <div class="tip-text"><strong>كود QR إلزامي للدخول</strong> — احتفظ به على هاتفك أو اطبعه</div>
+            </div>
+            <div class="tip-item">
+              <div class="tip-icon">👨‍⚖️</div>
+              <div class="tip-text"><strong>إن لم يكن لديك محامٍ</strong> — يمكنك الاستعانة بالمحامين المتاحين في قائمة المنصة</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-card" style="background:linear-gradient(135deg,rgba(184,134,11,.04),rgba(184,134,11,.08));border-color:rgba(184,134,11,.2)">
+          <div class="sidebar-card-title" style="color:var(--court)">📞 التواصل المباشر</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:10px;border:1px solid var(--border)">
+              <span style="font-size:20px">📞</span>
+              <div><div style="font-size:13px;font-weight:700;color:var(--navy)">هاتف المحكمة</div><div style="font-size:12px;color:var(--muted)">02-25940255</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:10px;border:1px solid var(--border)">
+              <span style="font-size:20px">🌐</span>
+              <div><div style="font-size:13px;font-weight:700;color:var(--navy)">الموقع الرسمي</div><div style="font-size:12px;color:var(--blue)">courts.gov.eg</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:white;border-radius:10px;border:1px solid var(--border)">
+              <span style="font-size:20px">📧</span>
+              <div><div style="font-size:13px;font-weight:700;color:var(--navy)">البريد الإلكتروني</div><div style="font-size:12px;color:var(--muted)">info@courts.gov.eg</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CASE TRACKING -->
+<div id="tracking" class="tracking-section">
+  <div class="tracking-inner fade-in">
+    <div class="section-tag">🔍 متابعة القضية</div>
+    <div class="section-title">تابع قضيتك أون لاين</div>
+    <div class="section-sub">ادخل رقم القضية وهتعرف كل خطوة — الجلسات القادمة والأحكام والقرارات</div>
+    <div class="tracking-layout">
+
+      <!-- Form & Result -->
+      <div>
+        <div class="tracking-form-card">
+          <div class="tracking-form-title">🔍 استعلام عن قضية</div>
+          <div class="tracking-form-sub">ادخل رقم القضية وسنتها للاستعلام الفوري</div>
+          <div class="tracking-input-row">
+            <input class="tracking-input" type="text" id="caseInput" placeholder="مثال: 2025/4821 أو الرقم القومي">
+            <button class="btn-track" onclick="trackCase()">🔍 بحث</button>
+          </div>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <button onclick="trackCase('2025/4821')" style="flex:1;padding:10px;border-radius:10px;border:2px dashed var(--border);background:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;color:var(--muted)">مثال: 2025/4821</button>
+            <button onclick="trackCase('2024/1190')" style="flex:1;padding:10px;border-radius:10px;border:2px dashed var(--border);background:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:12px;color:var(--muted)">مثال: 2024/1190</button>
+          </div>
+          <div class="case-result" id="caseResult">
+            <div class="case-header">
+              <div class="case-num" id="caseNum">قضية رقم 2025/4821</div>
+              <div class="case-type" id="caseType">دعوى مدنية — محكمة القاهرة الابتدائية — دائرة مدنية أولى</div>
+            </div>
+            <div class="case-timeline" id="caseTimeline"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="tracking-stats">
+        <div class="tracking-stat-card">
+          <div class="ts-header">
+            <div class="ts-icon">📊</div>
+            <div class="ts-title">إحصائيات المحاكم اليوم</div>
+          </div>
+          <div class="ts-stats">
+            <div class="ts-stat"><div class="ts-num" id="sn1">0</div><div class="ts-label">جلسة اليوم</div><div class="ts-change up">↑ 8%</div></div>
+            <div class="ts-stat"><div class="ts-num" id="sn2">0</div><div class="ts-label">حكم صدر</div><div class="ts-change up">↑ 5%</div></div>
+            <div class="ts-stat"><div class="ts-num" id="sn3">0</div><div class="ts-label">قضية مؤجلة</div><div class="ts-change down">↑ 2%</div></div>
+          </div>
+        </div>
+
+        <div class="tracking-stat-card">
+          <div class="ts-header">
+            <div class="ts-icon">⏰</div>
+            <div class="ts-title">جلسات الأسبوع القادم</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
+              <span style="font-size:16px">📅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الأحد 20 يناير</div><div style="font-size:11px;color:var(--muted)">128 جلسة مقررة</div></div>
+              <div style="font-size:12px;font-weight:700;color:var(--teal)">متاح</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
+              <span style="font-size:16px">📅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الاثنين 21 يناير</div><div style="font-size:11px;color:var(--muted)">95 جلسة مقررة</div></div>
+              <div style="font-size:12px;font-weight:700;color:var(--teal)">متاح</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
+              <span style="font-size:16px">📅</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الثلاثاء 22 يناير</div><div style="font-size:11px;color:var(--muted)">142 جلسة مقررة</div></div>
+              <div style="font-size:12px;font-weight:700;color:#E65100)">مزدحم</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tracking-stat-card">
+          <div class="ts-header">
+            <div class="ts-icon">🗺️</div>
+            <div class="ts-title">أقرب 3 محاكم منك الآن</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray);border-radius:10px">
+              <span style="font-size:20px">🏛️</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">محكمة القاهرة الابتدائية</div><div style="font-size:11px;color:var(--muted)">4.0 كم • باب الخلق</div></div>
+              <div style="background:#E8F5E9;color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px">متاح</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray);border-radius:10px">
+              <span style="font-size:20px">👨‍👩‍👧</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">محكمة الأسرة — العباسية</div><div style="font-size:11px;color:var(--muted)">3.5 كم</div></div>
+              <div style="background:#FFF3E0;color:#E65100;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px">مزدحم</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--gray);border-radius:10px">
+              <span style="font-size:20px">💼</span>
+              <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">المحكمة الاقتصادية</div><div style="font-size:11px;color:var(--muted)">5.2 كم • مدينة نصر</div></div>
+              <div style="background:#E8F5E9;color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px">متاح</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section fade-in">
+  <div class="section-tag">❓ الأسئلة الشائعة</div>
+  <div class="section-title">أسئلة وأجوبة</div>
+  <div class="section-sub">أكتر الأسئلة اللي بيتسألها المواطنون عن خدمات المحاكم</div>
+  <div class="faq-grid" id="faqGrid"></div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <div class="cta-title">⚖️ احجز موعدك في المحكمة الآن</div>
+  <div class="cta-sub">بدون طوابير — بدون ضياع وقت — كل شيء رقمي وآمن</div>
+  <div class="cta-btns">
+    <button class="btn-primary" onclick="openBookModal()">📅 احجز موعد مجانًا</button>
+    <button class="btn-outline" onclick="scrollSec('#tracking')">🔍 تابع قضيتك</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">مـوعـدي ⚖️</div>
+  <div class="footer-links">
+    <a class="footer-link" href="#">الرئيسية</a>
+    <a class="footer-link" href="#">المستشفيات</a>
+    <a class="footer-link" href="#">البنوك</a>
+    <a class="footer-link" href="#">المحاكم</a>
+    <a class="footer-link" href="#">الشكاوى</a>
+  </div>
+  <div class="footer-copy">ASP.NET Core 8 • Clean Architecture • Made for Egypt 🇪🇬</div>
+</footer>
+
+<!-- SUCCESS TOAST -->
+<div class="toast" id="bookingToast">
+  <button class="toast-close" onclick="document.getElementById('bookingToast').classList.remove('show')">✕</button>
+  <div class="toast-icon">✅</div>
+  <div>
+    <div class="toast-title">تم الحجز بنجاح! ⚖️</div>
+    <div class="toast-sub" id="toastMsg">موعدك محجوز — كود QR وصلك على رسالة SMS</div>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal" id="successModal">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">تم تأكيد حجزك!</div>
+    <div class="modal-sub">موعدك في المحكمة محجوز رسمياً — وصلك رسالة SMS بالتفاصيل</div>
+    <div class="modal-info" id="modalInfo"></div>
+    <div class="modal-code">
+      <div class="modal-code-num" id="modalCode">⚖️-XXXX</div>
+      <div class="modal-code-label">أبرز هذا الكود عند الوصول للمحكمة</div>
+    </div>
+    <button class="btn-book-full" style="margin-top:16px" onclick="closeModal()">تمام، شكراً!</button>
+  </div>
+</div>
+
+<script>
+// ══ SCROLL ══
+function scrollSec(id) { document.querySelector(id)?.scrollIntoView({behavior:'smooth'}); }
+
+// ══ FADE IN ══
+const obs = new IntersectionObserver(e=>{ e.forEach(x=>{ if(x.isIntersecting) x.target.classList.add('visible'); }); },{threshold:.1});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// ══ DATE MIN ══
+document.getElementById('bk-date').min = new Date().toISOString().split('T')[0];
+
+// ══ COURTS DATA ══
+const courtsData = [
+  { name:'محكمة القاهرة الابتدائية', type:'مدنية', icon:'🏛️', addr:'باب الخلق، القاهرة', dist:'4.0 كم', status:'busy', queue:47, wait:'~30 دقيقة', rooms:12, sessions:128, phone:'02-25940255' },
+  { name:'محكمة الأسرة — العباسية', type:'أسرة', icon:'👨‍👩‍👧', addr:'العباسية، القاهرة', dist:'3.5 كم', status:'open', queue:18, wait:'~10 دقائق', rooms:6, sessions:84, phone:'02-24829100' },
+  { name:'محكمة الجيزة الابتدائية', type:'مدنية', icon:'🏛️', addr:'الجيزة — ميدان الجيزة', dist:'6.2 كم', status:'open', queue:12, wait:'~7 دقائق', rooms:10, sessions:96, phone:'02-35729800' },
+  { name:'محكمة استئناف القاهرة', type:'استئناف', icon:'📋', addr:'باب الخلق، القاهرة', dist:'4.1 كم', status:'open', queue:9, wait:'~5 دقائق', rooms:8, sessions:62, phone:'02-25910022' },
+  { name:'المحكمة الاقتصادية — القاهرة', type:'تجارية', icon:'💼', addr:'مدينة نصر، القاهرة', dist:'5.2 كم', status:'open', queue:6, wait:'~3 دقائق', rooms:4, sessions:38, phone:'02-24010999' },
+  { name:'محكمة الجنايات — القاهرة', type:'جنائية', icon:'🔨', addr:'باب الخلق، القاهرة', dist:'4.0 كم', status:'busy', queue:34, wait:'~20 دقيقة', rooms:7, sessions:44, phone:'02-25940255' },
+  { name:'محكمة شمال القاهرة الابتدائية', type:'مدنية', icon:'🏛️', addr:'مصر الجديدة، القاهرة', dist:'7.8 كم', status:'open', queue:21, wait:'~12 دقيقة', rooms:9, sessions:110, phone:'02-24184900' },
+  { name:'محكمة الأسرة — مدينة نصر', type:'أسرة', icon:'👨‍👩‍👧', addr:'مدينة نصر، القاهرة', dist:'5.8 كم', status:'open', queue:14, wait:'~8 دقائق', rooms:5, sessions:76, phone:'02-24011800' },
+];
+
+let currentFilter = 'الكل';
+let searchQuery = '';
+
+function renderCourts() {
+  let filtered = courtsData.filter(c => {
+    const matchType = currentFilter === 'الكل' || c.type === currentFilter;
+    const matchSearch = !searchQuery || c.name.includes(searchQuery) || c.addr.includes(searchQuery);
+    return matchType && matchSearch;
+  });
+  const grid = document.getElementById('courtsGrid');
+  if(!filtered.length) { grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)"><div style="font-size:48px;margin-bottom:16px">🔍</div><div style="font-size:16px;font-weight:700">لا توجد نتائج مطابقة</div></div>`; return; }
+  grid.innerHTML = filtered.map(c=>`
+    <div class="court-card" onclick="openBookModal('جلسة قضائية','${c.name}')">
+      <div class="court-card-header">
+        <div class="court-card-icon">${c.icon}</div>
+        <div>
+          <div class="court-card-name">${c.name}</div>
+          <div class="court-card-type">${c.type}</div>
+          <div class="court-card-addr">📍 ${c.addr}</div>
+        </div>
+      </div>
+      <div class="court-card-badges">
+        <div class="badge ${c.status === 'open' ? 'open' : 'busy'}">${c.status === 'open' ? '✅ متاح الآن' : '🟡 مزدحم'}</div>
+        <div class="badge dist">📍 ${c.dist}</div>
+        <div class="badge wait">⏱ ${c.wait}</div>
+      </div>
+      <div class="court-card-info">
+        <div class="court-info-item"><div class="court-info-label">في الطابور</div><div class="court-info-val">${c.queue} شخص</div></div>
+        <div class="court-info-item"><div class="court-info-label">قاعات الجلسات</div><div class="court-info-val">${c.rooms} قاعة</div></div>
+        <div class="court-info-item"><div class="court-info-label">جلسات اليوم</div><div class="court-info-val">${c.sessions}</div></div>
+        <div class="court-info-item"><div class="court-info-label">هاتف المحكمة</div><div class="court-info-val" style="font-size:11px">${c.phone}</div></div>
+      </div>
+      <div class="court-card-footer">
+        <button class="btn-details" onclick="event.stopPropagation()">📋 التفاصيل</button>
+        <button class="btn-book-court" onclick="event.stopPropagation();openBookModal('جلسة قضائية','${c.name}')">📅 احجز موعد</button>
+      </div>
+    </div>`).join('');
+}
+
+function filterCourts(type, btn) {
+  currentFilter = type;
+  if(btn){ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+  renderCourts();
+  scrollSec('#courts-list');
+}
+function filterBySearch(val) { searchQuery = val; renderCourts(); }
+
+renderCourts();
+
+// ══ TIME SLOT ══
+let selectedTime = '';
+function selectTime(btn, time) {
+  selectedTime = time;
+  document.querySelectorAll('.time-slot:not(.taken)').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+// ══ BOOKING ══
+function openBookModal(service, court) {
+  if(service) document.getElementById('bk-service').value = service;
+  if(court) document.getElementById('bk-court').value = court;
+  scrollSec('#booking');
+}
+
+function submitBooking() {
+  const name = document.getElementById('bk-name').value.trim();
+  const phone = document.getElementById('bk-phone').value.trim();
+  const nid = document.getElementById('bk-nid').value.trim();
+  const court = document.getElementById('bk-court').value;
+  const service = document.getElementById('bk-service').value;
+  const date = document.getElementById('bk-date').value;
+  if(!name || !phone) { alert('من فضلك ادخل اسمك ورقم هاتفك'); return; }
+  if(!selectedTime && !date) { alert('اختار التاريخ والوقت المناسب'); return; }
+  const code = '⚖️-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  const qNum = Math.floor(Math.random()*30) + 50;
+  const timeStr = selectedTime || '10:30';
+  const dateStr = date ? new Date(date).toLocaleDateString('ar-EG') : '15 يناير';
+  document.getElementById('modalInfo').innerHTML = `
+    <div class="modal-info-row"><span class="modal-info-label">المحكمة</span><span class="modal-info-val">${court}</span></div>
+    <div class="modal-info-row"><span class="modal-info-label">الخدمة</span><span class="modal-info-val">${service}</span></div>
+    <div class="modal-info-row"><span class="modal-info-label">التاريخ</span><span class="modal-info-val">${dateStr}</span></div>
+    <div class="modal-info-row"><span class="modal-info-label">الوقت</span><span class="modal-info-val">${timeStr} ص</span></div>
+    <div class="modal-info-row"><span class="modal-info-label">رقم الطابور</span><span class="modal-info-val" style="color:var(--court);font-size:18px;font-weight:900">${qNum}</span></div>`;
+  document.getElementById('modalCode').textContent = code;
+  document.getElementById('successModal').classList.add('show');
+  // Update queue counter
+  document.getElementById('queueCurrent').textContent = parseInt(document.getElementById('queueCurrent').textContent) + 1;
+}
+
+function closeModal() { document.getElementById('successModal').classList.remove('show'); }
+document.getElementById('successModal').addEventListener('click', e=>{ if(e.target.id==='successModal') closeModal(); });
+
+// ══ CASE TRACKING ══
+const caseData = {
+  '2025/4821': {
+    title:'قضية رقم 2025/4821',
+    type:'دعوى مدنية — محكمة القاهرة الابتدائية — دائرة مدنية أولى',
+    steps:[
+      { icon:'✅', status:'done', title:'إيداع الدعوى', date:'10 أكتوبر 2025', note:'' },
+      { icon:'✅', status:'done', title:'قيد القضية بالجدول', date:'12 أكتوبر 2025', note:'' },
+      { icon:'✅', status:'done', title:'الجلسة الأولى — تأجيل للإعلان', date:'5 نوفمبر 2025', note:'' },
+      { icon:'✅', status:'done', title:'الجلسة الثانية — تقديم مستندات', date:'10 ديسمبر 2025', note:'' },
+      { icon:'⚡', status:'active', title:'الجلسة القادمة — مرافعة', date:'20 يناير 2026', note:'الجلسة القادمة بعد 5 أيام — احضر قبل الموعد بـ 15 دقيقة' },
+      { icon:'⏳', status:'pending', title:'صدور الحكم المتوقع', date:'فبراير 2026', note:'' },
+    ]
+  },
+  '2024/1190': {
+    title:'قضية رقم 2024/1190',
+    type:'دعوى أسرة — محكمة الأسرة بالعباسية',
+    steps:[
+      { icon:'✅', status:'done', title:'إيداع الدعوى', date:'15 مارس 2024', note:'' },
+      { icon:'✅', status:'done', title:'جلسة التوفيق والوساطة', date:'10 أبريل 2024', note:'' },
+      { icon:'✅', status:'done', title:'الجلسة الأولى — نظر في الموضوع', date:'20 مايو 2024', note:'' },
+      { icon:'✅', status:'done', title:'الجلسة الثانية — تقديم دفوع', date:'15 يوليو 2024', note:'' },
+      { icon:'✅', status:'done', title:'الجلسة الثالثة — مرافعة ختامية', date:'20 سبتمبر 2024', note:'' },
+      { icon:'⚡', status:'active', title:'صدور الحكم', date:'يناير 2026', note:'✅ صدر الحكم — يمكنك استخراج نسخة رسمية الآن' },
+    ]
+  }
+};
+
+function trackCase(caseNum) {
+  const input = document.getElementById('caseInput');
+  const num = caseNum || input.value.trim();
+  if(!num) { alert('ادخل رقم القضية'); return; }
+  input.value = num;
+  const data = caseData[num] || caseData['2025/4821'];
+  document.getElementById('caseNum').textContent = data.title;
+  document.getElementById('caseType').textContent = data.type;
+  document.getElementById('caseTimeline').innerHTML = data.steps.map(s=>`
+    <div class="case-step">
+      <div class="case-dot ${s.status}">${s.icon}</div>
+      <div class="case-content">
+        <div class="case-step-title">${s.title}</div>
+        <div class="case-step-date">${s.date}</div>
+        ${s.note ? `<div class="case-step-note">${s.note}</div>` : ''}
+      </div>
+    </div>`).join('');
+  document.getElementById('caseResult').classList.add('show');
+}
+
+// ══ STATS ANIMATION ══
+function animNum(id, target) {
+  let cur=0; const step=Math.ceil(target/40);
+  const t = setInterval(()=>{ cur=Math.min(cur+step,target); document.getElementById(id).textContent=cur; if(cur>=target)clearInterval(t); },30);
+}
+const statsObs = new IntersectionObserver(e=>{
+  e.forEach(x=>{ if(x.isIntersecting){ animNum('sn1',128); animNum('sn2',34); animNum('sn3',17); statsObs.disconnect(); } });
+},{threshold:.3});
+const trackEl = document.getElementById('tracking');
+if(trackEl) statsObs.observe(trackEl);
+
+// ══ FAQ ══
+const faqs = [
+  { icon:'❓', q:'هل الحجز على منصة مـوعـدي مجاني؟', a:'نعم، الحجز والمتابعة على منصة مـوعـدي مجانية تماماً. الرسوم الوحيدة هي الرسوم القضائية الرسمية للمحكمة والتي تُدفع مباشرة للمحكمة.' },
+  { icon:'⏰', q:'كم وقت يستغرق تأكيد الحجز؟', a:'يصلك تأكيد الحجز فوراً عبر SMS في غضون ثوانٍ من إتمام الحجز. كود QR يكون جاهزاً للعرض مباشرة على الهاتف.' },
+  { icon:'📋', q:'ماذا لو لم أحضر في الموعد المحدد؟', a:'إذا لم تتمكن من الحضور، يُفضل إلغاء الحجز قبل الموعد بـ 24 ساعة على الأقل حتى يتاح الموعد لشخص آخر. يمكنك إعادة الحجز مرة أخرى مجاناً.' },
+  { icon:'🔄', q:'هل يمكنني تغيير أو تعديل الموعد؟', a:'نعم، يمكنك تعديل أو إلغاء الحجز من خلال صفحة "مواعيدي" في منصة مـوعـدي حتى 12 ساعة قبل الموعد.' },
+  { icon:'👨‍⚖️', q:'هل أحتاج لمحامٍ لحجز الجلسة؟', a:'لا، يمكنك حجز جلسة بدون محامٍ في كثير من القضايا. لكن يُنصح بالاستعانة بمحامٍ خاصة في القضايا المعقدة. المنصة تتيح قائمة بمحامين معتمدين.' },
+  { icon:'📱', q:'هل يمكن متابعة أكثر من قضية؟', a:'نعم، بعد تسجيل الدخول يمكنك متابعة عدد غير محدود من القضايا وإضافتها لصفحة "متابعة قضاياي" في حسابك.' },
+  { icon:'💳', q:'ما هي طرق دفع الرسوم القضائية؟', a:'تتيح المنصة دفع الرسوم إلكترونياً بالبطاقات البنكية وبطاقات المحافظ الرقمية (فودافون كاش، اتصالات كاش). يمكن أيضاً الدفع نقداً في صندوق المحكمة.' },
+  { icon:'🔒', q:'هل بياناتي الشخصية آمنة؟', a:'نعم، جميع البيانات الشخصية وبيانات القضايا مشفرة بالكامل (AES-256) وفق أعلى معايير الأمان. لا تُشارك البيانات مع أي طرف ثالث دون موافقتك.' },
+];
+
+document.getElementById('faqGrid').innerHTML = faqs.map((f,i)=>`
+  <div class="faq-item" id="faq${i}">
+    <div class="faq-q" onclick="toggleFaq(${i})">
+      <div class="faq-icon">${f.icon}</div>
+      <span style="flex:1">${f.q}</span>
+      <div class="faq-arrow">▼</div>
+    </div>
+    <div class="faq-a">${f.a}</div>
+  </div>`).join('');
+
+function toggleFaq(i) {
+  const item = document.getElementById('faq'+i);
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(el=>el.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+
+// ══ QUEUE LIVE ANIMATION ══
+setInterval(()=>{
+  const el = document.getElementById('queueCurrent');
+  if(el && Math.random() > .7) {
+    const cur = parseInt(el.textContent);
+    const delta = Math.random() > .5 ? 1 : -1;
+    el.textContent = Math.max(1, cur + delta);
+  }
+}, 5000);
+</script>
+</body>
+</html>
