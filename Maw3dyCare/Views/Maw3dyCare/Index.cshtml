@@ -1,0 +1,381 @@
+﻿@* ده الـ View بتاع صفحة الـ Dashboard الرئيسية *@
+@* بيستخدم الـ DashboardViewModel اللي جابه الكونترولر *@
+@* بيعرض الـ Stats Cards والمستشفيات *@
+
+@model Maw3dyCare.ViewModels.DashboardViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml"; @* استخدم الـ Layout بتاع الـ Sidebar *@
+}
+
+<style>
+    /* ===== الـ Stats Cards اللي فوق ===== */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); /* 4 كاردز في صف واحد */
+        gap: 20px;
+        margin-bottom: 36px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        /* لما الماوس يعدي على الكارد يطلع لفوق شوية */
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+    .stat-info p {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+    }
+
+    .stat-info h2 {
+        font-size: 32px;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    /* الأيقونة في كل كارد */
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    /* ألوان مختلفة لكل أيقونة */
+    .icon-blue {
+        background: #eff6ff;
+        color: #3b82f6;
+    }
+    /* أزرق - للمستشفيات */
+    .icon-purple {
+        background: #f5f3ff;
+        color: #8b5cf6;
+    }
+    /* بنفسجي - للسراير الكلية */
+    .icon-green {
+        background: #f0fdf4;
+        color: #22c55e;
+    }
+    /* أخضر - المتاحة */
+    .icon-red {
+        background: #fff1f2;
+        color: #ef4444;
+    }
+    /* أحمر - المشغولة */
+
+    /* ===== الـ Section Header (Hospitals + View all) ===== */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .section-header p {
+            font-size: 13px;
+            color: #94a3b8;
+            margin: 2px 0 0;
+        }
+
+    .view-all {
+        font-size: 13px;
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    /* ===== كاردز المستشفيات ===== */
+    .hospitals-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3 كاردز في صف */
+        gap: 20px;
+    }
+
+    .hospital-card {
+        background: white;
+        border-radius: 16px;
+        padding: 22px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .hospital-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+    /* اسم المستشفى والـ Badge في نفس السطر */
+    .hospital-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 12px;
+    }
+
+    .hospital-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0 0 4px;
+    }
+
+    /* الموقع مع أيقونة البن الموقع */
+    .hospital-location {
+        font-size: 12px;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Badge الخضرا للـ Active */
+    .badge-active {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    /* Badge الرمادية للـ Offline */
+    .badge-offline {
+        background: #f8fafc;
+        color: #94a3b8;
+        border: 1px solid #e2e8f0;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    /* الخط الفاصل */
+    .hospital-divider {
+        border: none;
+        border-top: 1px solid #f1f5f9;
+        margin: 14px 0;
+    }
+
+    /* السراير وزرار View Details في نفس السطر */
+    .hospital-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .beds-info p {
+        font-size: 11px;
+        color: #94a3b8;
+        margin: 0 0 2px;
+        text-transform: uppercase;
+    }
+
+    .beds-info h3 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    /* زرار View Details */
+    .btn-view {
+        background: #f8fafc;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+        /* لما يدوس عليه يبقى أزرق */
+        .btn-view:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+</style>
+
+<!-- عنوان الصفحة -->
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:flex-start;">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Live overview of hospital bed availability</p>
+    </div>
+
+    <!-- التاريخ والوقت + الجرس -->
+    <div style="display:flex; align-items:center; gap:16px;">
+        <div style="text-align:right;">
+            @* <span style="font-size:14px; font-weight:600; color:#1e293b;">
+                @DateTime.Now.ToString("ddd, MMM dd")
+            </span> *@
+            <span id="liveTime"
+                  style="font-size:14px; color:#64748b; margin-left:12px;">
+            </span>
+            @* <span style="font-size:14px; color:#64748b; margin-left:12px;">
+                @DateTime.Now.ToString("hh:mm tt")
+            </span> *@
+        </div>
+        <!-- أيقونة الجرس -->
+        <div style="width:38px; height:38px; border-radius:50%; background:#f1f5f9;
+                    display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <i class="fas fa-bell" style="color:#64748b; font-size:16px;"></i>
+        </div>
+    </div>
+</div>
+
+<!-- ===== الـ Stats Cards الأربعة ===== -->
+<div class="stats-grid">
+
+    <!-- كارد عدد المستشفيات -->
+    <div class="stat-card">
+        <div class="stat-info">
+            <p>Total Hospitals</p>
+            <h2>@Model.TotalHospitals</h2>
+        </div>
+        <div class="stat-icon icon-blue">
+            <i class="fas fa-hospital-alt"></i>
+        </div>
+    </div>
+
+    <!-- كارد عدد السراير الكلي -->
+    <div class="stat-card">
+        <div class="stat-info">
+            <p>Total Beds</p>
+            <h2>@Model.TotalBeds</h2>
+        </div>
+        <div class="stat-icon icon-purple">
+            <i class="fas fa-bed"></i>
+        </div>
+    </div>
+
+    <!-- كارد السراير المتاحة -->
+    <div class="stat-card">
+        <div class="stat-info">
+            <p>Available</p>
+            <h2>@Model.AvailableBeds</h2>
+        </div>
+        <div class="stat-icon icon-green">
+            <i class="fas fa-check-circle"></i>
+        </div>
+    </div>
+
+    <!-- كارد السراير المشغولة -->
+    <div class="stat-card">
+        <div class="stat-info">
+            <p>Occupied</p>
+            <h2>@Model.OccupiedBeds</h2>
+        </div>
+        <div class="stat-icon icon-red">
+            <i class="fas fa-times-circle"></i>
+        </div>
+    </div>
+
+</div>
+
+<!-- ===== Section Header (Hospitals + View All) ===== -->
+<div class="section-header">
+    <div>
+        <h2>Hospitals</h2>
+        <p>Quick preview of registered facilities</p>
+    </div>
+    <a href="/Maw3dyCare/HospitalsList">View all →</a>
+</div>
+
+<!-- ===== كاردز المستشفيات ===== -->
+<div class="hospitals-grid">
+
+    @* لكل مستشفى في القائمة اعمل كارد *@
+    @foreach (var h in Model.Hospitals)
+    {
+        <div class="hospital-card">
+
+            <!-- اسم المستشفى + Badge Active/Offline -->
+            <div class="hospital-card-header">
+                <div>
+                    <p class="hospital-name">@h.Name</p>
+                    <span class="hospital-location">
+                        <i class="fas fa-map-marker-alt" style="color:#3b82f6;"></i>
+                        @h.City
+                    </span>
+                </div>
+                @* لو IsActive = true اعرض أخضر، لو لا اعرض رمادي *@
+                @if (h.IsActive)
+                {
+                    <span class="badge-active">● Active</span>
+                }
+                else
+                {
+                    <span class="badge-offline">● Offline</span>
+                }
+            </div>
+
+            <!-- خط فاصل -->
+            <hr class="hospital-divider" />
+
+            <!-- عدد السراير + زرار View Details -->
+            <div class="hospital-card-footer">
+                <div class="beds-info">
+                    <p>Total beds</p>
+                    <h3>@h.TotalBeds</h3>
+                </div>
+                @* الزرار بيروح لصفحة تفاصيل المستشفى بالـ ID بتاعها *@
+                <a href="/Maw3dyCare/HospitalDetail/@h.HospitalId">View Details</a>
+            </div>
+
+        </div>
+    }
+
+</div>
+
+<script>
+    function updateTime() {
+        const now = new Date();
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const day = days[now.getDay()];
+        const month = months[now.getMonth()];
+        const date = now.getDate();
+        let hours = now.getHours();
+        const minutes = now.getMinutes().toString().padStart(2,'0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+
+        document.getElementById('liveTime').textContent =
+            `${day}, ${month} ${date}   ${hours}:${minutes} ${ampm}`;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000); // بيتحدث كل ثانية
+</script>
