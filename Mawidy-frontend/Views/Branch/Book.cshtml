@@ -1,0 +1,144 @@
+@model AppointmentCreateViewModel
+@{ ViewData["Title"] = "حجز موعد — " + Model.BranchName; }
+
+<div class="ph" style="padding-bottom:60px">
+    <div class="hc"></div><div class="hc"></div>
+    <div class="hi">
+        <a class="back" href="@Url.Action("Index","Branch")">← العودة للفروع</a>
+        <div class="hbadge"><div class="hdot"></div> حجز موعد جديد</div>
+        <div class="htitle" style="font-size:32px">📅 @Model.BranchName</div>
+        <div class="hsub">@Model.OperatorName — اختر الخدمة والموعد المناسب</div>
+    </div>
+</div>
+
+<div class="main" style="transform:translateY(-32px)">
+    <div style="max-width:640px;margin:0 auto">
+        <form asp-action="Book" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="BranchId" />
+            <input type="hidden" asp-for="BranchName" />
+            <input type="hidden" asp-for="OperatorName" />
+
+            <div class="form-card">
+                <div class="form-card-title">🛠️ الخدمة المطلوبة</div>
+                <div class="svgrid">
+                    @foreach (var svc in Model.AvailableServices)
+                    {
+                        <div class="svitem @(Model.ServiceKey == svc.Key ? "sel" : "")"
+                             onclick="selectService('@svc.Key',this)">
+                            <div class="svi">@svc.Icon</div>
+                            <div>
+                                <div class="svn">@svc.NameAr</div>
+                                <div class="svt">@svc.EstimatedTime</div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <input type="hidden" asp-for="ServiceKey" id="ServiceKey" />
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">👤 بياناتك</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>الاسم الكامل</label>
+                        <input asp-for="CustomerName" class="form-input" placeholder="مثال: أحمد محمد علي" />
+                    </div>
+                    <div class="form-group">
+                        <label>رقم الهاتف</label>
+                        <input asp-for="CustomerPhone" class="form-input" placeholder="01XXXXXXXXX" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">📆 اختر التاريخ</div>
+                <div class="week-grid" id="weekGrid"></div>
+                <div class="form-card-title" style="margin-top:16px">⏰ اختار الوقت</div>
+                <div class="slots-row" id="slotsRow">
+                    <div style="color:var(--muted);font-size:12px">اختر تاريخاً أولاً</div>
+                </div>
+                <input type="hidden" asp-for="AppointmentDate"    id="AppointmentDate" />
+                <input type="hidden" asp-for="AppointmentTimeSlot" id="AppointmentTimeSlot" />
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">📝 ملاحظات (اختياري)</div>
+                <textarea asp-for="Notes" class="form-input" rows="3" placeholder="أي تفاصيل إضافية..."></textarea>
+            </div>
+
+            <button type="submit" class="bkfull" id="submitBtn" disabled>📅 تأكيد الحجز</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const BRANCH_ID = @Model.BranchId;
+const SLOTS_URL = "@Url.Action("Slots","Branch")";
+let selDate = null, selSlot = null;
+
+function buildWeekGrid() {
+    const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    const grid = document.getElementById('weekGrid');
+    const today = new Date();
+    let html = '';
+    for (let i = 1; i <= 7; i++) {
+        const d = new Date(today);
+        d.setDate(today.getDate() + i);
+        const isFri = d.getDay() === 5;
+        const ds    = d.toISOString().split('T')[0];
+        html += `<div class="week-day${isFri ? ' closed' : ''}" data-date="${ds}"
+                      onclick="${isFri ? '' : `selectDay(this,'${ds}')`}">
+                    <div class="wd-day">${days[d.getDay()]}</div>
+                    <div class="wd-num">${d.getDate()}</div>
+                    ${isFri ? '<div class="wd-closed">مغلق</div>' : ''}
+                 </div>`;
+    }
+    grid.innerHTML = html;
+}
+
+async function selectDay(el, ds) {
+    document.querySelectorAll('.week-day').forEach(d => d.classList.remove('sel'));
+    el.classList.add('sel');
+    selDate = ds;
+    document.getElementById('AppointmentDate').value = ds;
+    selSlot = null;
+    document.getElementById('AppointmentTimeSlot').value = '';
+    const res   = await fetch(`${SLOTS_URL}?branchId=${BRANCH_ID}&date=${ds}`);
+    const slots = await res.json();
+    const row   = document.getElementById('slotsRow');
+    row.innerHTML = slots.length
+        ? slots.map(s => `<div class="slot-btn" onclick="selectSlot(this,'${s}')">${s}</div>`).join('')
+        : '<div style="color:var(--red);font-size:12px">لا توجد مواعيد متاحة</div>';
+    checkSubmit();
+}
+
+function selectSlot(el, slot) {
+    document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('sel'));
+    el.classList.add('sel');
+    selSlot = slot;
+    document.getElementById('AppointmentTimeSlot').value = slot;
+    checkSubmit();
+}
+
+function selectService(key, el) {
+    document.querySelectorAll('.svitem').forEach(i => i.classList.remove('sel'));
+    el.classList.add('sel');
+    document.getElementById('ServiceKey').value = key;
+    checkSubmit();
+}
+
+function checkSubmit() {
+    const name  = document.getElementById('CustomerName')?.value?.trim();
+    const phone = document.getElementById('CustomerPhone')?.value?.trim();
+    const svc   = document.getElementById('ServiceKey').value;
+    document.getElementById('submitBtn').disabled = !(name && phone && svc && selDate && selSlot);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    buildWeekGrid();
+    document.querySelectorAll('.form-input').forEach(el => el.addEventListener('input', checkSubmit));
+});
+</script>
+}

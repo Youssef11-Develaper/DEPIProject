@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الشكاوى - لوحة التحكم</title>
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <i class="bi bi-building-fill"></i>
+        السجل المدني - لوحة التحكم
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="/Admin/Dashboard" class="nav-link">الرئيسية</a></li>
+        <li><a href="/Home/Appointments" class="nav-link">المواعيد</a></li>
+        <li><a href="/Admin/Branches" class="nav-link">الفروع</a></li>
+        <li><a href="/Admin/Services" class="nav-link">الخدمات</a></li>
+        <li><a href="/Admin/Complaints" class="nav-link active">الشكاوى</a></li>
+        <li><a href="/Admin/Users" class="nav-link">المستخدمين</a></li>
+        <li>
+            <button class="btn btn-outline" onclick="logout()"
+                style="color:white;border-color:rgba(255,255,255,0.6)">
+                <i class="bi bi-box-arrow-right"></i>
+                خروج
+            </button>
+        </li>
+    </ul>
+</nav>
+
+<div class="sidebar">
+    <a href="/Admin/Dashboard" class="sidebar-link">
+        <i class="bi bi-speedometer2"></i> الرئيسية
+    </a>
+    <a href="/Home/Appointments" class="sidebar-link">
+        <i class="bi bi-calendar-check"></i> المواعيد
+    </a>
+    <a href="/Admin/Branches" class="sidebar-link">
+        <i class="bi bi-building"></i> الفروع
+    </a>
+    <a href="/Admin/Services" class="sidebar-link">
+        <i class="bi bi-list-check"></i> الخدمات
+    </a>
+    <a href="/Admin/Complaints" class="sidebar-link active">
+        <i class="bi bi-exclamation-circle"></i> الشكاوى
+    </a>
+    <a href="/Admin/Users" class="sidebar-link">
+        <i class="bi bi-people"></i> المستخدمين
+    </a>
+</div>
+
+<div class="main-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <h2 style="font-size:1.4rem;font-weight:900;color:var(--primary)">إدارة الشكاوى</h2>
+        <div style="display:flex;gap:8px">
+            <button class="btn btn-sm" onclick="filterComplaints(null, this)"
+                style="background:var(--primary);color:white">الكل</button>
+            <button class="btn btn-sm btn-outline" onclick="filterComplaints(0, this)">تم الإرسال</button>
+            <button class="btn btn-sm btn-outline" onclick="filterComplaints(1, this)">قيد المراجعة</button>
+            <button class="btn btn-sm btn-outline" onclick="filterComplaints(2, this)">تم الحل</button>
+            <button class="btn btn-sm btn-outline" onclick="filterComplaints(3, this)">مغلقة</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="padding:0">
+            <div id="complaintsContainer">
+                <div class="empty-state">
+                    <div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:30px;height:30px;margin:0 auto"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Respond Modal -->
+<div class="modal-overlay" id="respondModal">
+    <div class="modal" style="max-width:540px">
+        <h3 class="modal-title">
+            <i class="bi bi-reply"></i>
+            الرد على الشكوى
+        </h3>
+
+        <div class="alert alert-info" id="complaintDetails"></div>
+
+        <div class="form-group">
+            <label class="form-label">الرد</label>
+            <textarea class="form-control" id="adminResponse" rows="4"
+                placeholder="اكتب ردك هنا..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">تغيير الحالة</label>
+            <select class="form-control" id="complaintStatus">
+                <option value="0">تم الإرسال</option>
+                <option value="1">قيد المراجعة</option>
+                <option value="2">تم الحل</option>
+                <option value="3">مغلقة</option>
+            </select>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-6">
+                <button class="btn btn-outline btn-block" onclick="closeRespondModal()">إلغاء</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary btn-block" onclick="submitResponse(this)">
+                    <i class="bi bi-send"></i>
+                    إرسال الرد
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/api.js"></script>
+<script>
+    let currentComplaintId = null;
+    let currentFilter = null;
+
+    async function init() {
+        UI.redirectIfNotAdmin();
+        await loadComplaints();
+    }
+
+    async function loadComplaints(status = null) {
+        currentFilter = status;
+        const container = document.getElementById('complaintsContainer');
+        container.innerHTML = '<div style="padding:30px;text-align:center"><div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:30px;height:30px;margin:0 auto"></div></div>';
+
+        try {
+            const res = await API.admin.getComplaints(status);
+            const complaints = res.data || [];
+
+            if (!complaints.length) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-chat-left-x" style="font-size:3rem;color:var(--text-muted)"></i>
+                        <p>لا توجد شكاوى</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>المواطن</th>
+                            <th>العنوان</th>
+                            <th>الموعد</th>
+                            <th>الحالة</th>
+                            <th>التاريخ</th>
+                            <th>رد</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${complaints.map(c => `
+                            <tr>
+                                <td style="font-weight:700">${c.userFullName}</td>
+                                <td>
+                                    <div style="font-weight:600">${c.title}</div>
+                                    <div style="font-size:0.8rem;color:var(--text-muted)">
+                                        ${c.description.substring(0, 60)}...
+                                    </div>
+                                </td>
+                                <td>
+                                    ${c.appointmentId
+                                        ? `<span class="badge badge-info">#${c.appointmentId}</span>`
+                                        : '<span style="color:var(--text-muted)">-</span>'
+                                    }
+                                </td>
+                                <td>${UI.getComplaintStatusBadge(c.status)}</td>
+                                <td style="color:var(--text-muted);font-size:0.85rem">
+                                    ${UI.formatDate(c.createdAt)}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary"
+                                        onclick="openRespondModal(${c.id}, '${c.title.replace(/'/g, "\\'")}', '${c.description.substring(0, 100).replace(/'/g, "\\'")}', ${c.status === 'Submitted' ? 0 : c.status === 'UnderReview' ? 1 : c.status === 'Resolved' ? 2 : 3})">
+                                        <i class="bi bi-reply"></i>
+                                        رد
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (err) {
+            UI.showToast('حدث خطأ في تحميل الشكاوى', 'error');
+        }
+    }
+
+    function filterComplaints(status, btn) {
+        document.querySelectorAll('.main-content .btn-sm').forEach(b => {
+            b.style.background = '';
+            b.style.color = '';
+            b.classList.add('btn-outline');
+        });
+        btn.style.background = 'var(--primary)';
+        btn.style.color = 'white';
+        btn.classList.remove('btn-outline');
+        loadComplaints(status);
+    }
+
+    function openRespondModal(id, title, description, currentStatus) {
+        currentComplaintId = id;
+        document.getElementById('complaintDetails').innerHTML = `
+            <strong>${title}</strong><br>
+            <span style="font-size:0.85rem">${description}...</span>
+        `;
+        document.getElementById('complaintStatus').value = currentStatus;
+        document.getElementById('adminResponse').value = '';
+        document.getElementById('respondModal').classList.add('show');
+    }
+
+    async function submitResponse(btn) {
+        const response = document.getElementById('adminResponse').value.trim();
+        const status = parseInt(document.getElementById('complaintStatus').value);
+
+        if (!response) {
+            UI.showToast('اكتب ردك على الشكوى', 'error');
+            return;
+        }
+
+        UI.showLoading(btn);
+        try {
+            await API.admin.respondToComplaint(currentComplaintId, {
+                adminResponse: response,
+                status
+            });
+
+            UI.showToast('تم الرد على الشكوى بنجاح');
+            closeRespondModal();
+            await loadComplaints(currentFilter);
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    function closeRespondModal() {
+        document.getElementById('respondModal').classList.remove('show');
+    }
+
+    function logout() {
+        Auth.clearSession();
+        window.location.href = '/';
+    }
+
+    document.getElementById('respondModal').addEventListener('click', function(e) {
+        if (e.target === this) closeRespondModal();
+    });
+
+    init();
+</script>
+</body>
+</html>

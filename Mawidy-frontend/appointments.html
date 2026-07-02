@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حجز موعد - السجل المدني</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #1B4F72, #2E86C1);
+            padding: 30px 0;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .page-header p {
+            opacity: 0.8;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+        }
+
+        .slot-time {
+            font-size: 1rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .slot-info {
+            font-size: 0.75rem;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .branch-list {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .branch-item {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+            display: block;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .branch-item:hover {
+            background: #EAF2FB;
+        }
+
+        .branch-item:last-child {
+            border-bottom: none;
+        }
+
+        .branch-name {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .branch-address {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        #map {
+            height: 450px;
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .legend {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid;
+        }
+
+        .unavailable-msg {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .unavailable-msg i {
+            font-size: 3rem;
+            color: var(--warning);
+            display: block;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <a href="index.html" class="navbar-brand">
+        <i class="bi bi-building-fill"></i>
+        السجل المدني الرقمي
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="index.html" class="nav-link">الرئيسية</a></li>
+        <li><a href="my-appointments.html" class="nav-link">مواعيدي</a></li>
+        <li><a href="profile.html" class="nav-link">حسابي</a></li>
+    </ul>
+</nav>
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <!-- Stepper -->
+        <div class="stepper" style="max-width:500px;margin:0 auto 20px">
+            <div class="step">
+                <div class="step-circle" id="step1Circle">1</div>
+                <span class="step-label" id="step1Label">الخدمة</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step">
+                <div class="step-circle" id="step2Circle">2</div>
+                <span class="step-label" id="step2Label">الفرع</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step">
+                <div class="step-circle" id="step3Circle">3</div>
+                <span class="step-label" id="step3Label">الموعد</span>
+            </div>
+        </div>
+        <h1 class="text-center" id="pageTitle">اختر الخدمة</h1>
+        <p class="text-center" id="pageSubtitle">اختر الخدمة التي تحتاجها</p>
+    </div>
+</div>
+
+<div class="container" style="padding-bottom:40px">
+
+    <!-- Step 1: Services -->
+    <div id="step1">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px" id="servicesGrid">
+            <div class="empty-state">
+                <div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:30px;height:30px;margin:0 auto"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Branches -->
+    <div id="step2" style="display:none">
+        <div class="alert alert-info" id="governorateAlert" style="display:none">
+            <i class="bi bi-geo-alt"></i>
+            <span id="governorateText"></span>
+            <a href="profile.html" style="margin-right:auto;color:var(--primary);font-size:0.85rem">تغيير المنطقة</a>
+        </div>
+
+        <div class="row">
+            <div class="col-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-building"></i>
+                        الفروع المتاحة
+                    </div>
+                    <div class="branch-list" id="branchesList"></div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="bi bi-map"></i>
+                        خريطة الفروع
+                    </div>
+                    <div id="map"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <button class="btn btn-outline" onclick="goToStep(1)">
+                <i class="bi bi-arrow-right"></i>
+                رجوع
+            </button>
+        </div>
+    </div>
+
+    <!-- Step 3: Slots -->
+    <div id="step3" style="display:none">
+        <div class="card">
+            <div class="card-header" style="justify-content:space-between">
+                <span id="slotsBranchName"></span>
+                <input type="date" class="form-control" id="datePicker"
+                    style="width:auto;padding:6px 12px;font-size:0.85rem"
+                    onchange="loadSlots()">
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info" id="busiestAlert" style="display:none">
+                    <i class="bi bi-graph-up"></i>
+                    <span id="busiestText"></span>
+                </div>
+
+                <div id="slotsContent"></div>
+            </div>
+        </div>
+
+        <div class="mt-2">
+            <button class="btn btn-outline" onclick="goToStep(2)">
+                <i class="bi bi-arrow-right"></i>
+                رجوع
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal">
+        <div style="text-align:center;margin-bottom:20px">
+            <i class="bi bi-calendar-check" style="font-size:3rem;color:var(--primary)"></i>
+        </div>
+        <h3 class="modal-title text-center">تأكيد الحجز</h3>
+
+        <div class="alert alert-info" id="confirmDetails"></div>
+
+        <div class="alert alert-warning" id="confirmDocs" style="display:none">
+            <p style="font-weight:700;margin-bottom:8px">
+                <i class="bi bi-exclamation-circle"></i>
+                المستندات المطلوبة:
+            </p>
+            <ul id="confirmDocsList" style="padding-right:16px;margin:0;font-size:0.85rem"></ul>
+        </div>
+
+        <div class="row mt-2">
+            <div class="col-6">
+                <button class="btn btn-outline btn-block" onclick="closeModal()">إلغاء</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-primary btn-block" onclick="confirmBooking(this)">
+                    <i class="bi bi-check-lg"></i>
+                    تأكيد الحجز
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    let currentStep = 1;
+    let selectedService = null;
+    let selectedBranch = null;
+    let selectedSlot = null;
+    let map = null;
+
+    async function init() {
+        UI.redirectIfNotLoggedIn();
+
+        // لو في serviceId في الـ URL
+        const params = new URLSearchParams(window.location.search);
+        const serviceId = params.get('serviceId');
+
+        await loadServices(serviceId);
+    }
+
+    async function loadServices(preSelectedId = null) {
+        try {
+            const res = await API.branches.getServices();
+            const grid = document.getElementById('servicesGrid');
+
+            const icons = ['bi-credit-card', 'bi-person-badge', 'bi-heart', 'bi-file-earmark-text', 'bi-people'];
+
+            grid.innerHTML = res.data.map((s, i) => `
+                <div class="card" style="cursor:pointer;border:2px solid transparent;transition:all 0.2s"
+                    onclick="selectService(${JSON.stringify(s).replace(/"/g, '&quot;')})"
+                    onmouseover="this.style.borderColor='var(--primary-light)';this.style.transform='translateY(-3px)'"
+                    onmouseout="this.style.borderColor='transparent';this.style.transform='translateY(0)'">
+                    <div class="card-body">
+                        <div style="width:50px;height:50px;background:linear-gradient(135deg,#EAF2FB,#D6EAF8);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:var(--primary);margin-bottom:14px">
+                            <i class="bi ${icons[i % icons.length]}"></i>
+                        </div>
+                        <h3 style="font-size:1rem;font-weight:700;margin-bottom:6px">${s.name}</h3>
+                        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:10px">${s.description}</p>
+                        <span style="font-size:0.8rem;color:var(--primary-light);font-weight:600">
+                            <i class="bi bi-clock"></i> ${s.durationMinutes} دقيقة
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+
+            if (preSelectedId) {
+                const service = res.data.find(s => s.id == preSelectedId);
+                if (service) selectService(service);
+            }
+        } catch (err) {
+            UI.showToast('حدث خطأ في تحميل الخدمات', 'error');
+        }
+    }
+
+    async function selectService(service) {
+        selectedService = service;
+        goToStep(2);
+        await loadBranches();
+    }
+
+    async function loadBranches() {
+        const user = Auth.getUser();
+        const branchesList = document.getElementById('branchesList');
+        branchesList.innerHTML = '<div style="padding:20px;text-align:center"><div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:24px;height:24px;margin:0 auto"></div></div>';
+
+        try {
+            let res;
+            if (user.governorateId) {
+                res = await API.branches.getByGovernorate(user.governorateId);
+                const alert = document.getElementById('governorateAlert');
+                alert.style.display = 'flex';
+                document.getElementById('governorateText').textContent =
+                    `يعرض فروع ${user.governorateName || 'محافظتك'} - منطقة ${user.area || ''}`;
+            } else {
+                res = await API.branches.getAll();
+            }
+
+            const branches = res.data;
+
+            if (!branches.length) {
+                branchesList.innerHTML = '<div class="empty-state"><i class="bi bi-building-x"></i><p>لا توجد فروع متاحة</p></div>';
+                return;
+            }
+
+            branchesList.innerHTML = branches.map(b => `
+                <div class="branch-item" onclick="selectBranch(${JSON.stringify(b).replace(/"/g, '&quot;')})">
+                    <div class="branch-name">${b.name}</div>
+                    <div class="branch-address">
+                        <i class="bi bi-geo-alt"></i> ${b.address}
+                    </div>
+                    <div style="display:flex;gap:8px;margin-top:6px">
+                        <span style="font-size:0.75rem;background:#EAF2FB;color:var(--primary);padding:2px 8px;border-radius:10px;font-weight:600">
+                            ${b.governorateName}
+                        </span>
+                        <span style="font-size:0.75rem;background:#EAF2FB;color:var(--primary);padding:2px 8px;border-radius:10px;font-weight:600">
+                            <i class="bi bi-star-fill" style="color:#D4AC0D"></i> ${b.averageRating || '0.0'}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Initialize Map
+            initMap(branches, user);
+
+        } catch (err) {
+            UI.showToast('حدث خطأ في تحميل الفروع', 'error');
+        }
+    }
+
+    function initMap(branches, user) {
+        if (map) {
+            map.remove();
+            map = null;
+        }
+
+        const centerLat = user.governorateLat || 26.8206;
+        const centerLng = user.governorateLng || 30.8025;
+
+        map = L.map('map').setView([centerLat, centerLng], 11);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap © CARTO',
+            maxZoom: 19
+        }).addTo(map);
+
+        // User location
+        const userIcon = L.divIcon({
+            className: '',
+            html: `<div style="background:#E74C3C;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4)"></div>`,
+            iconSize: [16, 16],
+            iconAnchor: [8, 8]
+        });
+
+        const branchIcon = L.divIcon({
+            className: '',
+            html: `<div style="background:#1B4F72;width:22px;height:22px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center">
+                <i class="bi bi-building" style="color:white;font-size:10px"></i>
+            </div>`,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11]
+        });
+
+        branches.forEach(branch => {
+            if (!branch.latitude || !branch.longitude) return;
+
+            L.marker([branch.latitude, branch.longitude], { icon: branchIcon })
+                .addTo(map)
+                .bindPopup(`
+                    <div style="text-align:right;min-width:180px;font-family:Cairo,sans-serif">
+                        <b style="font-size:13px">${branch.name}</b><br>
+                        <span style="color:#666;font-size:11px">${branch.address}</span><br><br>
+                        <div style="display:flex;gap:6px;justify-content:center">
+                            <button onclick="selectBranchById(${branch.id})"
+                                style="padding:5px 12px;background:#1B4F72;color:white;border:none;border-radius:6px;font-family:Cairo,sans-serif;cursor:pointer;font-size:11px">
+                                احجز هنا
+                            </button>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=${branch.latitude},${branch.longitude}"
+                                target="_blank"
+                                style="padding:5px 12px;background:#1E8449;color:white;border-radius:6px;text-decoration:none;font-size:11px">
+                                وجهني
+                            </a>
+                        </div>
+                    </div>
+                `);
+        });
+
+        // Real user location
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(pos => {
+                L.marker([pos.coords.latitude, pos.coords.longitude], { icon: userIcon })
+                    .addTo(map)
+                    .bindPopup('<b>موقعك</b>');
+                map.setView([pos.coords.latitude, pos.coords.longitude], 12);
+            });
+        }
+
+        // Store branches for selectBranchById
+        window._branches = branches;
+    }
+
+    function selectBranchById(id) {
+        const branch = window._branches?.find(b => b.id === id);
+        if (branch) selectBranch(branch);
+    }
+
+    async function selectBranch(branch) {
+        selectedBranch = branch;
+        goToStep(3);
+
+        document.getElementById('slotsBranchName').textContent =
+            `${selectedBranch.name} - ${selectedService.name}`;
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('datePicker').value = today;
+        document.getElementById('datePicker').min = today;
+
+        await loadSlots();
+    }
+
+    async function loadSlots() {
+        const date = document.getElementById('datePicker').value;
+        const content = document.getElementById('slotsContent');
+
+        content.innerHTML = '<div style="text-align:center;padding:30px"><div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:30px;height:30px;margin:0 auto"></div></div>';
+
+        try {
+            const res = await API.appointments.getSlots(
+                selectedBranch.id,
+                selectedService.id,
+                date
+            );
+
+            const data = res.data;
+
+            if (!data.isAvailable) {
+                content.innerHTML = `
+                    <div class="unavailable-msg">
+                        <i class="bi bi-calendar-x"></i>
+                        <h3>${data.unavailabilityMessage}</h3>
+                        <p>اختر يوماً آخر أو فرعاً آخر</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Busiest info
+            const busiestAlert = document.getElementById('busiestAlert');
+            if (data.busiestDayName || data.busiestPeriod) {
+                busiestAlert.style.display = 'flex';
+                let text = 'إحصائيات الفرع: ';
+                if (data.busiestDayName) text += `أكثر يوم ازدحاماً: ${data.busiestDayName} `;
+                if (data.busiestPeriod) text += `| أكثر وقت في الشهر: ${data.busiestPeriod}`;
+                document.getElementById('busiestText').textContent = text;
+            }
+
+            if (!data.slots?.length) {
+                content.innerHTML = '<div class="empty-state"><i class="bi bi-calendar-x"></i><p>لا توجد مواعيد متاحة في هذا اليوم</p></div>';
+                return;
+            }
+
+            content.innerHTML = `
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#EAFAF1;border-color:#1E8449"></div>
+                        متاح
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#FEF9E7;border-color:#D4AC0D"></div>
+                        ذروة
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-dot" style="background:#FDEDEC;border-color:#E74C3C"></div>
+                        محجوز
+                    </div>
+                </div>
+                <div class="slots-grid">
+                    ${data.slots.map(slot => {
+                        const time = UI.formatTime(slot.time);
+                        if (slot.isBooked) {
+                            return `
+                                <div class="slot-btn slot-booked">
+                                    <span class="slot-time">${time}</span>
+                                    <span class="slot-info">مكتمل ${slot.maxCount}/${slot.maxCount}</span>
+                                </div>
+                            `;
+                        } else if (slot.isPeak) {
+                            return `
+                                <button class="slot-btn slot-peak" onclick="openConfirm('${slot.time}', '${time}')">
+                                    <span class="slot-time"><i class="bi bi-fire"></i> ${time}</span>
+                                    <span class="slot-info">${slot.bookedCount}/${slot.maxCount}
+                                        ${slot.remainingCount <= 2 ? '<br>فاضل ' + slot.remainingCount + ' بس' : ''}
+                                    </span>
+                                </button>
+                            `;
+                        } else {
+                            return `
+                                <button class="slot-btn slot-available" onclick="openConfirm('${slot.time}', '${time}')">
+                                    <span class="slot-time">${time}</span>
+                                    <span class="slot-info">
+                                        ${slot.bookedCount === 0 ? 'أنت الأول!' : slot.bookedCount + '/' + slot.maxCount}
+                                        ${slot.remainingCount <= 2 && slot.bookedCount > 0 ? '<br>فاضل ' + slot.remainingCount : ''}
+                                    </span>
+                                </button>
+                            `;
+                        }
+                    }).join('')}
+                </div>
+            `;
+
+        } catch (err) {
+            UI.showToast('حدث خطأ في تحميل المواعيد', 'error');
+        }
+    }
+
+    function openConfirm(timeSpan, displayTime) {
+        selectedSlot = timeSpan;
+
+        document.getElementById('confirmDetails').innerHTML = `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div><strong>الخدمة</strong><br>${selectedService.name}</div>
+                <div><strong>الفرع</strong><br>${selectedBranch.name}</div>
+                <div><strong>التاريخ</strong><br>${document.getElementById('datePicker').value}</div>
+                <div><strong>الوقت</strong><br>${displayTime}</div>
+            </div>
+        `;
+
+        if (selectedService.requiredDocuments) {
+            document.getElementById('confirmDocs').style.display = 'block';
+            document.getElementById('confirmDocsList').innerHTML =
+                selectedService.requiredDocuments.split('\n')
+                    .filter(d => d.trim())
+                    .map(d => `<li>${d.trim()}</li>`)
+                    .join('');
+        }
+
+        document.getElementById('confirmModal').classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('confirmModal').classList.remove('show');
+    }
+
+    async function confirmBooking(btn) {
+        UI.showLoading(btn);
+        try {
+            const date = document.getElementById('datePicker').value;
+            await API.appointments.create({
+                branchId: selectedBranch.id,
+                serviceTypeId: selectedService.id,
+                appointmentDate: new Date(date).toISOString(),
+                timeSlot: selectedSlot
+            });
+
+            UI.showToast('تم حجز موعدك بنجاح!');
+            closeModal();
+            setTimeout(() => window.location.href = 'my-appointments.html', 1500);
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    function goToStep(step) {
+        currentStep = step;
+        document.getElementById('step1').style.display = step === 1 ? 'block' : 'none';
+        document.getElementById('step2').style.display = step === 2 ? 'block' : 'none';
+        document.getElementById('step3').style.display = step === 3 ? 'block' : 'none';
+
+        const titles = ['اختر الخدمة', 'اختر الفرع', 'اختر الموعد'];
+        const subtitles = [
+            'اختر الخدمة التي تحتاجها',
+            'اختر أقرب فرع إليك',
+            'اختر اليوم والوقت المناسب'
+        ];
+
+        document.getElementById('pageTitle').textContent = titles[step - 1];
+        document.getElementById('pageSubtitle').textContent = subtitles[step - 1];
+
+        for (let i = 1; i <= 3; i++) {
+            const circle = document.getElementById(`step${i}Circle`);
+            const label = document.getElementById(`step${i}Label`);
+            if (i < step) {
+                circle.className = 'step-circle done';
+                circle.innerHTML = '<i class="bi bi-check"></i>';
+                label.className = 'step-label done';
+            } else if (i === step) {
+                circle.className = 'step-circle active';
+                circle.innerHTML = i;
+                label.className = 'step-label active';
+            } else {
+                circle.className = 'step-circle pending';
+                circle.innerHTML = i;
+                label.className = 'step-label pending';
+            }
+        }
+    }
+
+    document.getElementById('confirmModal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    init();
+</script>
+</body>
+</html>

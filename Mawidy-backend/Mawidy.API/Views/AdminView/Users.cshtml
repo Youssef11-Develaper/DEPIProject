@@ -1,0 +1,267 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المستخدمين - لوحة التحكم</title>
+    <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="/" class="navbar-brand">
+        <i class="bi bi-building-fill"></i>
+        السجل المدني - لوحة التحكم
+    </a>
+    <ul class="navbar-nav">
+        <li><a href="/Admin/Dashboard" class="nav-link">الرئيسية</a></li>
+        <li><a href="/Home/Appointments" class="nav-link">المواعيد</a></li>
+        <li><a href="/Admin/Branches" class="nav-link">الفروع</a></li>
+        <li><a href="/Admin/Services" class="nav-link">الخدمات</a></li>
+        <li><a href="/Admin/Complaints" class="nav-link">الشكاوى</a></li>
+        <li><a href="/Admin/Users" class="nav-link active">المستخدمين</a></li>
+        <li>
+            <button class="btn btn-outline" onclick="logout()"
+                style="color:white;border-color:rgba(255,255,255,0.6)">
+                <i class="bi bi-box-arrow-right"></i>
+                خروج
+            </button>
+        </li>
+    </ul>
+</nav>
+
+<div class="sidebar">
+    <a href="/Admin/Dashboard" class="sidebar-link">
+        <i class="bi bi-speedometer2"></i> الرئيسية
+    </a>
+    <a href="/Home/Appointments" class="sidebar-link">
+        <i class="bi bi-calendar-check"></i> المواعيد
+    </a>
+    <a href="/Admin/Branches" class="sidebar-link">
+        <i class="bi bi-building"></i> الفروع
+    </a>
+    <a href="/Admin/Services" class="sidebar-link">
+        <i class="bi bi-list-check"></i> الخدمات
+    </a>
+    <a href="/Admin/Complaints" class="sidebar-link">
+        <i class="bi bi-exclamation-circle"></i> الشكاوى
+    </a>
+    <a href="/Admin/Users" class="sidebar-link active">
+        <i class="bi bi-people"></i> المستخدمين
+    </a>
+</div>
+
+<div class="main-content">
+    <h2 style="font-size:1.4rem;font-weight:900;color:var(--primary);margin-bottom:24px">
+        إدارة الصلاحيات
+    </h2>
+
+    <div class="row">
+        <!-- Add Role Form -->
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-person-badge"></i>
+                    إضافة أو تغيير صلاحية
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" id="userEmail"
+                            placeholder="ادخل إيميل المستخدم">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">الصلاحية</label>
+                        <select class="form-control" id="userRole"
+                            onchange="toggleBranchSelect(this.value)">
+                            <option value="Citizen">مواطن</option>
+                            <option value="BranchAdmin">مسؤول فرع</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="branchSelectGroup" style="display:none">
+                        <label class="form-label">الفرع</label>
+                        <select class="form-control" id="userBranch">
+                            <option value="">اختر الفرع</option>
+                        </select>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" onclick="changeRole(this)">
+                        <i class="bi bi-save"></i>
+                        حفظ الصلاحية
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branch Admins List -->
+        <div class="col-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-people"></i>
+                    مسؤولو الفروع الحاليون
+                </div>
+                <div id="branchAdminsContainer" style="padding:0">
+                    <div class="empty-state">
+                        <div class="spinner" style="border-color:var(--border);border-top-color:var(--primary);width:24px;height:24px;margin:0 auto"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/api.js"></script>
+<script>
+    async function init() {
+        UI.redirectIfNotAdmin();
+        await Promise.all([loadBranches(), loadBranchAdmins()]);
+    }
+
+    async function loadBranches() {
+        try {
+            const res = await API.admin.getBranches();
+            const select = document.getElementById('userBranch');
+            select.innerHTML = '<option value="">اختر الفرع</option>' +
+                res.data.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+        } catch (err) {}
+    }
+
+    async function loadBranchAdmins() {
+        try {
+            const res = await fetch(`${API_BASE}/admin/users`, {
+                headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+            });
+            const data = await res.json();
+            const container = document.getElementById('branchAdminsContainer');
+            const admins = data.data || [];
+
+            if (!admins.length) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding:30px">
+                        <i class="bi bi-person-x" style="font-size:2rem;color:var(--text-muted)"></i>
+                        <p style="margin-top:8px">لا يوجد مسؤولو فروع</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <table class="table" style="margin:0">
+                    <thead>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>الإيميل</th>
+                            <th>الفرع</th>
+                            <th>إزالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${admins.map(a => `
+                            <tr>
+                                <td style="font-weight:700">${a.user.firstName} ${a.user.lastName}</td>
+                                <td style="font-size:0.85rem;color:var(--text-muted)">${a.user.email}</td>
+                                <td>
+                                    <span class="badge badge-info">
+                                        ${a.user.branchName || '-'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger"
+                                        onclick="removeRole('${a.user.email}', this)">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+        } catch (err) {}
+    }
+
+    function toggleBranchSelect(role) {
+        document.getElementById('branchSelectGroup').style.display =
+            role === 'BranchAdmin' ? 'block' : 'none';
+    }
+
+    async function changeRole(btn) {
+        const email = document.getElementById('userEmail').value.trim();
+        const role = document.getElementById('userRole').value;
+        const branchId = document.getElementById('userBranch').value;
+
+        if (!email) {
+            UI.showToast('ادخل البريد الإلكتروني', 'error');
+            return;
+        }
+
+        if (role === 'BranchAdmin' && !branchId) {
+            UI.showToast('اختر الفرع', 'error');
+            return;
+        }
+
+        UI.showLoading(btn);
+        try {
+            const res = await fetch(`${API_BASE}/admin/change-role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Auth.getToken()}`
+                },
+                body: JSON.stringify({
+                    email,
+                    newRole: role,
+                    branchId: branchId ? parseInt(branchId) : null
+                })
+            });
+
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            UI.showToast(data.message);
+            document.getElementById('userEmail').value = '';
+            await loadBranchAdmins();
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    async function removeRole(email, btn) {
+        if (!confirm('متأكد إنك عاوز تشيل الصلاحية؟')) return;
+
+        UI.showLoading(btn);
+        try {
+            const res = await fetch(`${API_BASE}/admin/change-role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Auth.getToken()}`
+                },
+                body: JSON.stringify({ email, newRole: 'Citizen', branchId: null })
+            });
+
+            const data = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            UI.showToast('تم إزالة الصلاحية');
+            await loadBranchAdmins();
+        } catch (err) {
+            UI.showToast(err.message, 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    function logout() {
+        Auth.clearSession();
+        window.location.href = '/';
+    }
+
+    init();
+</script>
+</body>
+</html>
