@@ -1,0 +1,172 @@
+﻿@model Maw3dyCare.ViewModels.ReportVM
+@{
+    ViewData["Title"] = "Report a Hospital";
+}
+
+<style>
+    .report-wrapper {
+        max-width: 520px;
+        margin: 40px auto;
+        padding: 0 16px;
+    }
+
+    .report-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    }
+
+    .report-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: #fff1f2;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 14px;
+    }
+
+    .report-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 4px;
+    }
+
+    .report-sub {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 24px;
+    }
+
+    .form-field {
+        margin-bottom: 16px;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-muted);
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 11px 14px;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        font-size: 14px;
+        color: var(--text-main);
+        background: var(--input-bg);
+        outline: none;
+        transition: border-color .2s;
+    }
+
+        .form-input:focus {
+            border-color: #ef4444;
+        }
+
+    .field-error {
+        font-size: 12px;
+        color: #ef4444;
+        margin-top: 4px;
+        display: block;
+    }
+
+    .btn-report {
+        width: 100%;
+        padding: 13px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .2s;
+        margin-bottom: 10px;
+    }
+
+        .btn-report:hover {
+            background: #dc2626;
+        }
+
+    .btn-cancel {
+        display: block;
+        width: 100%;
+        padding: 11px;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 14px;
+        text-decoration: none;
+        border: 1.5px solid var(--border);
+        text-align: center;
+        transition: all .2s;
+    }
+
+        .btn-cancel:hover {
+            background: var(--badge-bg);
+            color: var(--text-main);
+        }
+</style>
+
+<div class="report-wrapper">
+    <div class="report-card">
+
+        <div class="report-icon"><i class="fas fa-flag"></i></div>
+        <div class="report-title">Report a Hospital</div>
+        <div class="report-sub">Help us improve by reporting bad experiences</div>
+
+        <form asp-action="Report" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="form-field">
+                <label class="form-label">Your Name <span style="color:#ef4444">*</span></label>
+                <input asp-for="PatientName" class="form-input" placeholder="Your full name" />
+                <span asp-validation-for="PatientName" class="field-error"></span>
+            </div>
+
+            <div class="form-field">
+                <label class="form-label">Phone Number <span style="color:#ef4444">*</span></label>
+                <input asp-for="PatientPhone" class="form-input" placeholder="01xxxxxxxxx" maxlength="11" />
+                <span asp-validation-for="PatientPhone" class="field-error"></span>
+            </div>
+
+            <div class="form-field">
+                <label class="form-label">Hospital Name <span style="color:#ef4444">*</span></label>
+                <select asp-for="HospitalName" class="form-input">
+                    <option value="">— Select Hospital —</option>
+                    @foreach (var h in (List<string>)ViewBag.Hospitals)
+                    {
+                        <option value="@h">@h</option>
+                    }
+                </select>
+                <span asp-validation-for="HospitalName" class="field-error"></span>
+            </div>
+
+            <div class="form-field">
+                <label class="form-label">Your Complaint <span style="color:#ef4444">*</span></label>
+                <textarea asp-for="Complaint" class="form-input"
+                          style="min-height:90px; resize:vertical;"
+                          placeholder="Describe your experience..."></textarea>
+                <span asp-validation-for="Complaint" class="field-error"></span>
+            </div>
+
+            <button type="submit" class="btn-report">
+                <i class="fas fa-paper-plane"></i> Submit Report
+            </button>
+        </form>
+
+        <a href="javascript:history.back()" class="btn-cancel">
+            <i class="fas fa-arrow-left"></i> Cancel
+        </a>
+
+    </div>
+</div>

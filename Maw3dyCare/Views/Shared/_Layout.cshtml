@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html lang="en" id="htmlRoot">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Maw3dyCare</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-nav: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --input-bg: #ffffff;
+            --badge-bg: #f1f5f9;
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-nav: #1e293b;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --input-bg: #1e293b;
+            --badge-bg: #334155;
+        }
+
+        * {
+            transition: background-color .3s, color .3s, border-color .3s;
+        }
+
+        body {
+            background: var(--bg-main) !important;
+            color: var(--text-main) !important;
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .main-navbar {
+            background: var(--bg-nav) !important;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .nav-brand-icon {
+            width: 36px;
+            height: 36px;
+            background: #3b82f6;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .nav-brand-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .theme-toggle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            font-size: 16px;
+            transition: all .2s;
+        }
+
+            .theme-toggle:hover {
+                border-color: #3b82f6;
+                color: #3b82f6;
+                transform: rotate(15deg);
+            }
+
+        .card {
+            background: var(--bg-card) !important;
+            border-color: var(--border) !important;
+            color: var(--text-main) !important;
+        }
+
+        .form-control, .form-select, select {
+            background: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border) !important;
+        }
+
+            .form-control::placeholder {
+                color: var(--text-muted) !important;
+            }
+
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-main) !important;
+        }
+
+        .table {
+            color: var(--text-main) !important;
+            border-color: var(--border) !important;
+        }
+
+        .modal-content {
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border) !important;
+        }
+
+        .modal-header, .modal-footer {
+            border-color: var(--border) !important;
+        }
+
+        /* ===== Dark Mode - Fix كل الكاردز ===== */
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .main-card,
+        [data-theme="dark"] .big-card,
+        [data-theme="dark"] .confirm-wrapper,
+        [data-theme="dark"] .confirm-box,
+        [data-theme="dark"] .status-box,
+        [data-theme="dark"] .report-card,
+        [data-theme="dark"] .rate-box,
+        [data-theme="dark"] .phone-card,
+        [data-theme="dark"] .info-card,
+        [data-theme="dark"] .hosp-banner,
+        [data-theme="dark"] .reserve-card {
+            background: var(--bg-card) !important;
+            border-color: var(--border) !important;
+            color: var(--text-main) !important;
+        }
+
+        /* ===== Dark Mode - Fix كل div فيه background أبيض ===== */
+        [data-theme="dark"] div[style*="background: white"],
+        [data-theme="dark"] div[style*="background:white"],
+        [data-theme="dark"] div[style*="background: #fff"],
+        [data-theme="dark"] div[style*="background:#fff"],
+        [data-theme="dark"] div[style*="background: #ffffff"],
+        [data-theme="dark"] div[style*="background:#ffffff"],
+        [data-theme="dark"] div[style*="background:#f8fafc"],
+        [data-theme="dark"] div[style*="background: #f8fafc"] {
+            background: var(--bg-card) !important;
+            border-color: var(--border) !important;
+        }
+
+        /* النصوص */
+        [data-theme="dark"] .info-label,
+        [data-theme="dark"] .info-value,
+        [data-theme="dark"] .confirm-title,
+        [data-theme="dark"] .welcome-name,
+        [data-theme="dark"] .card-title,
+        [data-theme="dark"] p,
+        [data-theme="dark"] span,
+        [data-theme="dark"] label {
+            color: var(--text-main) !important;
+        }
+
+        /* Input Fields */
+        [data-theme="dark"] input,
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border) !important;
+        }
+
+        /* Muted Text */
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] small,
+        [data-theme="dark"] .info-label {
+            color: var(--text-muted) !important;
+        }
+
+        /* Borders */
+        [data-theme="dark"] [style*="border-bottom: 1px solid #f0f0f0"],
+        [data-theme="dark"] [style*="border-bottom: 1px solid #f1f5f9"],
+        [data-theme="dark"] [style*="border-bottom:1px solid #f0f0f0"],
+        [data-theme="dark"] [style*="border-bottom:1px solid #f1f5f9"] {
+            border-color: var(--border) !important;
+        }
+
+        /* Directions Button */
+        [data-theme="dark"] .directions-btn {
+            background: var(--bg-card) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border) !important;
+        }
+
+        /* Status Banners */
+        [data-theme="dark"] .banner-pending {
+            background: #2d2a1a !important;
+            border-color: #78610a !important;
+        }
+
+        [data-theme="dark"] .banner-accepted {
+            background: #0f2a1a !important;
+            border-color: #166534 !important;
+        }
+
+        [data-theme="dark"] .banner-rejected {
+            background: #2a0f0f !important;
+            border-color: #7f1d1d !important;
+        }
+
+        /* ===== Back to Hospital Button في Dark Mode ===== */
+        [data-theme="dark"] .btn-outline-secondary,
+        [data-theme="dark"] a.btn-outline-secondary,
+        [data-theme="dark"] button.btn-outline-secondary {
+            background: var(--badge-bg) !important;
+            color: var(--text-muted) !important;
+            border-color: var(--border) !important;
+        }
+
+            [data-theme="dark"] .btn-outline-secondary:hover {
+                background: var(--border) !important;
+                color: var(--text-main) !important;
+            }
+
+        /* زرار Back to Hospital اللي بـ style مباشر */
+        [data-theme="dark"] a[href*="HospitalDetails"],
+        [data-theme="dark"] a[href*="Hospitals"] {
+            background: var(--badge-bg);
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+    </style>
+
+    <script>
+        (function() {
+            var saved = localStorage.getItem('maw3dy-theme');
+            if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+        })();
+    </script>
+</head>
+
+<body>
+
+    <nav class="main-navbar">
+        <a href="/Maw3dyCare/Landing" class="nav-brand">
+            <div class="nav-brand-icon">M</div>
+            <span class="nav-brand-text">Maw3dyCare</span>
+        </a>
+        <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <i class="fas fa-moon" id="themeIcon"></i>
+        </button>
+    </nav>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function toggleTheme() {
+            var html = document.documentElement;
+            var icon = document.getElementById('themeIcon');
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                icon.className = 'fas fa-moon';
+                localStorage.setItem('maw3dy-theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+                localStorage.setItem('maw3dy-theme', 'dark');
+            }
+        }
+
+        (function() {
+            var saved = localStorage.getItem('maw3dy-theme');
+            var icon  = document.getElementById('themeIcon');
+            if (saved === 'dark' && icon) icon.className = 'fas fa-sun';
+        })();
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

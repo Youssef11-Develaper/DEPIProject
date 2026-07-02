@@ -1,0 +1,470 @@
+﻿@model List<Maw3dyCare.ViewModels.ManageBedItemVM>
+@{
+    // صفحة إدارة وتعديل حالة السراير
+    ViewData["Title"] = "Manage Beds";
+    ViewData["ActivePage"] = "ManageBeds";
+    Layout = "~/Views/Shared/_HospitalLayout.cshtml";
+}
+
+<style>
+    .search-bar {
+        position: relative;
+        max-width: 400px;
+    }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+            .search-bar input:focus {
+                border-color: #3b82f6;
+            }
+
+        .search-bar i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+    .filter-btn {
+        padding: 6px 16px;
+        border-radius: 20px;
+        border: 1.5px solid #e2e8f0;
+        background: white;
+        font-size: 13px;
+        color: #64748b;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+    .beds-table {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        overflow: hidden;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+
+    thead {
+        background: #f8fafc;
+    }
+
+    th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    td {
+        padding: 12px 16px;
+        border-top: 1px solid #f1f5f9;
+        color: #1e293b;
+        vertical-align: middle;
+    }
+
+    tr:hover td {
+        background: #fafbfc;
+    }
+
+    .badge-type {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .badge-icu {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .badge-nicu {
+        background: #fdf4ff;
+        color: #a855f7;
+    }
+
+    .badge-cicu {
+        background: #fff7ed;
+        color: #f97316;
+    }
+
+    .badge-vent {
+        background: #f0fdfa;
+        color: #14b8a6;
+    }
+
+    .badge-available {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .badge-occupied {
+        background: #fff1f2;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .btn-edit-status {
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background: white;
+        font-size: 13px;
+        color: #475569;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+        .btn-edit-status:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+    .btn-view-detail {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #64748b;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+        .btn-view-detail:hover {
+            background: #eff6ff;
+            color: #3b82f6;
+            border-color: #bfdbfe;
+        }
+
+    /* Detail Drawer */
+    .drawer-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.4);
+        z-index: 50;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+        .drawer-overlay.open {
+            display: flex;
+        }
+
+    .drawer-box {
+        background: white;
+        width: 360px;
+        height: 100vh;
+        padding: 28px;
+        overflow-y: auto;
+    }
+
+    .drawer-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+    }
+
+    .detail-row {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-bottom: 16px;
+    }
+
+        .detail-row label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .detail-row p {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1e293b;
+            margin: 0;
+        }
+
+    /* Edit Status Modal */
+    .status-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.5);
+        z-index: 60;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .status-modal.open {
+            display: flex;
+        }
+
+    .status-box {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        width: 360px;
+    }
+
+    .status-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 16px;
+    }
+
+    .status-options {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    .status-option {
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        color: #475569;
+        transition: all .15s;
+    }
+
+        .status-option:hover, .status-option.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            color: #2563eb;
+        }
+
+    .btn-save-status {
+        width: 100%;
+        padding: 11px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+</style>
+
+<!-- Header -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+    <div>
+        <h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Manage Beds</h1>
+        <p style="color:#94a3b8;font-size:13px;margin:3px 0 0"><span id="liveTime"></span></p>
+    </div>
+    <span style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;font-size:12px;padding:5px 12px;border-radius:20px;font-weight:600;">● System Active</span>
+</div>
+
+<!-- Search + Filters -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap;">
+    <form method="get" asp-action="ManageBeds" style="flex:1;max-width:380px;margin:0">
+        <input type="hidden" name="filterType" value="@ViewBag.FilterType" />
+        <input type="hidden" name="filterStatus" value="@ViewBag.FilterStatus" />
+        <div class="search-bar">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" value="@ViewBag.CurrentSearch" placeholder="Search by bed number..." />
+        </div>
+    </form>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        @foreach (var t in new[] { "All", "ICU", "NICU", "CICU", "VENT" })
+        {
+            <a href="?filterType=@t&filterStatus=@ViewBag.FilterStatus&search=@ViewBag.CurrentSearch"
+               class="filter-btn @(ViewBag.FilterType == t ? "active" : "")">@t</a>
+        }
+        &nbsp;
+        @foreach (var s in new[] { "All", "Available", "Occupied" })
+        {
+            <a href="?filterStatus=@s&filterType=@ViewBag.FilterType&search=@ViewBag.CurrentSearch"
+               class="filter-btn @(ViewBag.FilterStatus == s ? "active" : "")">@s</a>
+        }
+    </div>
+</div>
+
+<!-- Table -->
+<div class="beds-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Bed Number</th>
+                <th>Bed Type</th>
+                <th>Status</th>
+                <th>Assigned Patient</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var b in Model)
+            {
+                <tr>
+                    <td style="font-weight:600;">@b.BedNumber</td>
+                    <td>
+                        <span class="badge-type badge-@b.BedTypeName.ToLower()">@b.BedTypeName</span>
+                    </td>
+                    <td>
+                        @if (b.Status == "Available")
+                        {
+                            <span class="badge-available">● Available</span>
+                        }
+                        else
+                        {
+                            <span class="badge-occupied">● Occupied</span>
+                        }
+                    </td>
+                    <td style="color:@(b.AssignedPatient != null ? "#1e293b" : "#94a3b8")">
+                        @(b.AssignedPatient ?? "—")
+                    </td>
+                    <td>
+                        <div style="display:flex;align-items:center;gap:8px;">
+                            <button class="btn-edit-status"
+                                    onclick="openEditStatus(@b.BedId, '@b.Status')">
+                                Edit Status
+                            </button>
+                            @if (b.AssignedPatient != null)
+                            {
+                                <button class="btn-view-detail"
+                                        onclick="openDrawer('@b.AssignedPatient','@b.PatientPhone','@b.CaseDescription','@b.BedTypeName','@b.BedNumber')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Patient Detail Drawer -->
+<div class="drawer-overlay" id="drawerOverlay">
+    <div class="drawer-box">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <div class="drawer-title">Patient Details</div>
+            <button onclick="closeDrawer()" style="background:none;border:none;font-size:22px;color:#94a3b8;cursor:pointer;">×</button>
+        </div>
+        <div class="detail-row"><label>Bed Number</label><p id="dBedNum">—</p></div>
+        <div class="detail-row"><label>Bed Type</label><p id="dBedType">—</p></div>
+        <hr style="border:none;border-top:1px solid #f1f5f9;margin:12px 0 16px;" />
+        <div class="detail-row"><label>Patient Name</label><p id="dName">—</p></div>
+        <div class="detail-row"><label>Phone</label><p id="dPhone">—</p></div>
+        <div class="detail-row"><label>Case Description</label><p id="dCase">—</p></div>
+    </div>
+</div>
+
+<!-- Edit Status Modal -->
+<div class="status-modal" id="statusModal">
+    <div class="status-box">
+        <div class="status-title">Change Bed Status</div>
+        <input type="hidden" id="editBedId" />
+        <div class="status-options">
+            <div class="status-option" onclick="selectStatus('Available', this)">
+                <i class="fas fa-check-circle" style="color:#16a34a;margin-right:8px;"></i> Available
+            </div>
+            <div class="status-option" onclick="selectStatus('Occupied', this)">
+                <i class="fas fa-circle" style="color:#ef4444;margin-right:8px;"></i> Occupied
+            </div>
+        </div>
+        <input type="hidden" id="selectedStatus" />
+        <div style="display:flex;gap:10px;">
+            <button class="btn-save-status" style="background:white;color:#64748b;border:1.5px solid #e2e8f0;" onclick="closeStatusModal()">Cancel</button>
+            <button class="btn-save-status" onclick="saveStatus()">Save</button>
+        </div>
+    </div>
+</div>
+
+<form style="display:none">@Html.AntiForgeryToken()</form>
+
+<script>
+    function openDrawer(name, phone, caseDesc, bedType, bedNum) {
+        document.getElementById('dName').textContent    = name    || '—';
+        document.getElementById('dPhone').textContent   = phone   || '—';
+        document.getElementById('dCase').textContent    = caseDesc|| '—';
+        document.getElementById('dBedType').textContent = bedType  || '—';
+        document.getElementById('dBedNum').textContent  = bedNum   || '—';
+        document.getElementById('drawerOverlay').classList.add('open');
+    }
+    function closeDrawer() { document.getElementById('drawerOverlay').classList.remove('open'); }
+
+    function openEditStatus(bedId, currentStatus) {
+        document.getElementById('editBedId').value = bedId;
+        document.getElementById('selectedStatus').value = currentStatus;
+        document.querySelectorAll('.status-option').forEach(o => {
+            o.classList.toggle('selected', o.textContent.trim().startsWith(currentStatus));
+        });
+        document.getElementById('statusModal').classList.add('open');
+    }
+    function closeStatusModal() { document.getElementById('statusModal').classList.remove('open'); }
+
+    function selectStatus(status, el) {
+        document.getElementById('selectedStatus').value = status;
+        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    function saveStatus() {
+        const bedId  = document.getElementById('editBedId').value;
+        const status = document.getElementById('selectedStatus').value;
+        if (!status) return;
+        fetch('/HospitalDashboard/EditBedStatus', {
+            method:'POST',
+            headers:{'Content-Type':'application/x-www-form-urlencoded',
+                     'RequestVerificationToken':document.querySelector('input[name="__RequestVerificationToken"]').value},
+            body:`bedId=${bedId}&newStatus=${status}`
+        }).then(r=>r.json()).then(data=>{
+            if(data.success){ location.reload(); }
+        });
+    }
+
+    function updateTime() {
+        const now=new Date();
+        const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        let h=now.getHours(), m=now.getMinutes().toString().padStart(2,'0');
+        const ap=h>=12?'PM':'AM'; h=h%12||12;
+        document.getElementById('liveTime').textContent=
+            `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} · ${h}:${m} ${ap}`;
+    }
+    updateTime(); setInterval(updateTime,1000);
+</script>
