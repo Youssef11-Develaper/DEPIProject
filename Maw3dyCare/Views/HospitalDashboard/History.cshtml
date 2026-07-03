@@ -1,0 +1,267 @@
+﻿@model List<Maw3dyCare.ViewModels.HistoryItemVM>
+@{
+    ViewData["Title"] = "History";
+    ViewData["ActivePage"] = "History";
+    Layout = "~/Views/Shared/_HospitalLayout.cshtml";
+}
+
+<style>
+    .history-item {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        padding: 16px 22px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        transition: box-shadow .2s;
+    }
+
+        .history-item:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,.08);
+        }
+
+    .h-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .h-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    .badge-accepted {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .badge-rejected {
+        background: #fff1f2;
+        color: #ef4444;
+        border: 1px solid #fecaca;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .badge-type {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .search-wrap {
+        position: relative;
+        max-width: 400px;
+    }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+            .search-wrap input:focus {
+                border-color: #3b82f6;
+            }
+
+        .search-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.5);
+        z-index: 50;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+    .modal-box {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        width: 440px;
+        max-width: 90vw;
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin: 16px 0;
+    }
+
+    .detail-field label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .detail-field p {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #94a3b8;
+    }
+
+        .empty-state i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 12px;
+        }
+</style>
+
+<!-- Header -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+    <div>
+        <h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">History</h1>
+        <p style="color:#94a3b8;font-size:13px;margin:3px 0 0"><span id="liveTime"></span></p>
+    </div>
+    <span style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;font-size:12px;padding:5px 12px;border-radius:20px;font-weight:600;">● System Active</span>
+</div>
+
+<!-- Search -->
+<div style="margin-bottom:20px;">
+    <form method="get" asp-action="History" style="margin:0">
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" value="@ViewBag.CurrentSearch" placeholder="Search history..." />
+        </div>
+    </form>
+</div>
+
+<!-- History Items -->
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fas fa-history"></i>
+        No history records found
+    </div>
+}
+else
+{
+    @foreach (var h in Model)
+    {
+        <div class="history-item"
+             onclick="openDetail('@h.PatientName','@h.PatientPhone',
+                        '@h.BedTypeName','@h.CaseDescription',
+                        @h.ETA,'@h.Status',
+                        '@h.ReservedAt.ToString("MMM dd, yyyy · hh:mm tt")',
+                        @h.ReservationId)">
+            <div style="flex:1;">
+                <div class="h-name">
+                    @h.PatientName
+                    <span style="font-size:12px;color:#94a3b8;font-weight:400;">
+                        · RES-@h.ReservationId.ToString("D5")
+                    </span>
+                </div>
+                <div class="h-meta">
+                    <span class="badge-type">@h.BedTypeName</span>
+                    <span>@h.ReservedAt.ToString("MMM dd, hh:mm tt")</span>
+                </div>
+            </div>
+            @if (h.Status == "Accepted")
+            {
+                <span class="badge-accepted">Accepted</span>
+            }
+            else
+            {
+                <span class="badge-rejected">Rejected</span>
+            }
+        </div>
+    }
+}
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <div class="modal-title">Reservation Details</div>
+            <button onclick="closeModal()" style="background:none;border:none;font-size:22px;color:#94a3b8;cursor:pointer;">×</button>
+        </div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:4px;" id="dReservedAt">—</div>
+
+        <div class="detail-grid">
+            <div class="detail-field"><label>Patient Name</label><p id="dName">—</p></div>
+            <div class="detail-field"><label>Phone</label><p id="dPhone">—</p></div>
+            <div class="detail-field"><label>Bed Type</label><p id="dBedType">—</p></div>
+            <div class="detail-field"><label>ETA</label><p id="dETA">—</p></div>
+            <div class="detail-field" style="grid-column:1/-1;"><label>Case Description</label><p id="dCase">—</p></div>
+            <div class="detail-field"><label>Status</label><p id="dStatus">—</p></div>
+        </div>
+
+        <button onclick="closeModal()" style="width:100%;padding:11px;border-radius:10px;border:1.5px solid #e2e8f0;background:white;color:#64748b;font-size:14px;font-weight:600;cursor:pointer;">Close</button>
+    </div>
+</div>
+
+<script>
+    function openDetail(name, phone, bedType, caseDesc, eta, status, reservedAt, id) {
+        document.getElementById('dReservedAt').textContent = `RES-${String(id).padStart(5,'0')} · ${reservedAt}`;
+        document.getElementById('dName').textContent    = name;
+        document.getElementById('dPhone').textContent   = phone;
+        document.getElementById('dBedType').textContent = bedType;
+        document.getElementById('dETA').textContent     = eta + ' minutes';
+        document.getElementById('dCase').textContent    = caseDesc;
+        document.getElementById('dStatus').textContent  = status;
+        document.getElementById('detailModal').classList.add('open');
+    }
+    function closeModal() { document.getElementById('detailModal').classList.remove('open'); }
+
+    function updateTime() {
+        const now=new Date();
+        const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        let h=now.getHours(), m=now.getMinutes().toString().padStart(2,'0');
+        const ap=h>=12?'PM':'AM'; h=h%12||12;
+        document.getElementById('liveTime').textContent=
+            `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} · ${h}:${m} ${ap}`;
+    }
+    updateTime(); setInterval(updateTime,1000);
+</script>

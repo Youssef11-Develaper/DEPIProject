@@ -1,0 +1,609 @@
+﻿@model List<Maw3dyCare.ViewModels.ReservationListItemVM>
+@{
+    // صفحة طلبات الحجز المنتظرة مع Countdown Timer
+    ViewData["Title"] = "Reservation Requests";
+    ViewData["ActivePage"] = "Reservations";
+    Layout = "~/Views/Shared/_HospitalLayout.cshtml";
+}
+
+<style>
+    .res-card {
+        background: white;
+        border-radius: 14px;
+        border: 1px solid #fecaca;
+        padding: 18px 22px;
+        margin-bottom: 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: box-shadow .2s;
+    }
+
+        .res-card:hover {
+            box-shadow: 0 4px 20px rgba(239,68,68,.1);
+        }
+
+    .alert-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #fff1f2;
+        color: #ef4444;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .res-info {
+        flex: 1;
+    }
+
+    .res-name {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .res-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .badge-type {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .badge-icu {
+        background: #eff6ff;
+        color: #2563eb;
+    }
+
+    .badge-nicu {
+        background: #fdf4ff;
+        color: #a855f7;
+    }
+
+    .badge-cicu {
+        background: #fff7ed;
+        color: #f97316;
+    }
+
+    .badge-vent {
+        background: #f0fdfa;
+        color: #14b8a6;
+    }
+
+    .badge-condition {
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        background: #fff1f2;
+        color: #ef4444;
+        font-weight: 600;
+    }
+
+    .eta-label {
+        font-size: 12px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    /* Countdown */
+    .arriving-in {
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .arriving-label {
+        font-size: 10px;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 2px;
+    }
+
+    .countdown {
+        font-size: 22px;
+        font-weight: 800;
+        color: #1e293b;
+        font-variant-numeric: tabular-nums;
+    }
+
+        .countdown.urgent {
+            color: #ef4444;
+        }
+
+    /* Filter Buttons */
+    .filter-bar {
+        display: flex;
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 7px 18px;
+        border-radius: 20px;
+        border: 1.5px solid #e2e8f0;
+        background: white;
+        font-size: 13px;
+        color: #64748b;
+        cursor: pointer;
+        transition: all .15s;
+    }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+    /* Search */
+    .search-wrap {
+        position: relative;
+    }
+
+        .search-wrap input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            outline: none;
+            background: white;
+        }
+
+            .search-wrap input:focus {
+                border-color: #3b82f6;
+            }
+
+        .search-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+    /* Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.5);
+        z-index: 50;
+        align-items: center;
+        justify-content: center;
+    }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+    .modal-box {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        width: 480px;
+        max-width: 90vw;
+        box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    }
+
+    .modal-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .modal-sub {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 20px;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 20px;
+    }
+
+    .detail-field label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 3px;
+    }
+
+    .detail-field p {
+        font-size: 15px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-reject {
+        flex: 1;
+        padding: 11px;
+        border-radius: 10px;
+        border: 1.5px solid #fecaca;
+        background: #fff1f2;
+        color: #ef4444;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s;
+    }
+
+        .btn-reject:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+    .btn-accept {
+        flex: 1;
+        padding: 11px;
+        border-radius: 10px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity .2s;
+    }
+
+        .btn-accept:hover {
+            opacity: .9;
+        }
+
+    /* Confirm Modal */
+    .confirm-box {
+        background: white;
+        border-radius: 20px;
+        padding: 28px;
+        width: 400px;
+        max-width: 90vw;
+    }
+
+    .confirm-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 8px;
+    }
+
+    .confirm-sub {
+        font-size: 14px;
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+    .btn-confirm {
+        flex: 1;
+        padding: 11px;
+        border-radius: 10px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn-cancel-modal {
+        flex: 1;
+        padding: 11px;
+        border-radius: 10px;
+        border: 1.5px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* Success Toast */
+    .success-toast {
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: 1.5px solid #bbf7d0;
+        border-radius: 12px;
+        padding: 14px 20px;
+        align-items: center;
+        gap: 10px;
+        color: #16a34a;
+        font-size: 14px;
+        font-weight: 600;
+        z-index: 200;
+        box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #94a3b8;
+    }
+
+        .empty-state i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 12px;
+        }
+</style>
+
+<!-- Header -->
+<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;">
+    <div>
+        <h1 style="font-size:22px;font-weight:700;color:#1e293b;margin:0">Reservation Requests</h1>
+        <p style="color:#94a3b8;font-size:13px;margin:3px 0 0"><span id="liveTime"></span></p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+        <span style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0;font-size:12px;padding:5px 12px;border-radius:20px;font-weight:600;">● System Active</span>
+        <button style="width:36px;height:36px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;color:#64748b;">
+            <i class="fas fa-bell"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Search + Filters -->
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:16px;">
+    <form method="get" asp-action="Reservations" style="flex:1;max-width:400px;margin:0">
+        <input type="hidden" name="bedType" value="@ViewBag.CurrentBedType" />
+        <div class="search-wrap">
+            <i class="fas fa-search"></i>
+            <input type="text" name="search" value="@ViewBag.CurrentSearch"
+                   placeholder="Search by patient or phone..." />
+        </div>
+    </form>
+    <div class="filter-bar">
+        @foreach (var t in new[] { "All", "ICU", "NICU", "CICU", "VENT" })
+        {
+            <a href="?bedType=@t&search=@ViewBag.CurrentSearch"
+               class="filter-btn @(ViewBag.CurrentBedType == t ? "active" : "")">@t</a>
+        }
+    </div>
+</div>
+
+<!-- Reservation Cards -->
+@if (!Model.Any())
+{
+    <div class="empty-state">
+        <i class="fas fa-clipboard-check"></i>
+        No pending reservation requests
+    </div>
+}
+else
+{
+    @foreach (var r in Model)
+    {
+        <div class="res-card"
+             onclick="openDetail(@r.ReservationId, '@r.PatientName',
+                        '@r.PatientPhone', '@r.BedTypeName',
+                        '@r.CaseDescription', @r.ETA, '@r.Status',
+                        '@r.ReservedAt.ToString("MMM dd, hh:mm tt")')">
+
+            <div class="alert-icon"><i class="fas fa-triangle-exclamation"></i></div>
+
+            <div class="res-info">
+                <div class="res-name">
+                    @r.PatientName
+                    <span style="font-size:12px;color:#94a3b8;font-weight:400;">
+                        · Requested @((int)(DateTime.Now - r.ReservedAt).TotalMinutes) mins ago
+                    </span>
+                </div>
+                <div class="res-meta">
+                    <span class="badge-type badge-@r.BedTypeName.ToLower()">@r.BedTypeName</span>
+                    <span class="badge-condition">Critical Condition</span>
+                    <span class="eta-label">
+                        <i class="fas fa-clock"></i> ETA @r.ETA min
+                    </span>
+                </div>
+            </div>
+
+            <div class="arriving-in">
+                <div class="arriving-label">Arriving In</div>
+                <div class="countdown" id="cd-@r.ReservationId"
+                     data-seconds="@r.RemainingSeconds">
+                    --:--
+                </div>
+            </div>
+        </div>
+    }
+}
+
+<!-- Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+    <div class="modal-box">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+            <div class="modal-title">Reservation details</div>
+            <button onclick="closeModal()" style="background:none;border:none;font-size:20px;color:#94a3b8;cursor:pointer;">×</button>
+        </div>
+        <div class="modal-sub" id="modalSub">RES-000 · Requested just now</div>
+
+        <div class="detail-grid">
+            <div class="detail-field">
+                <label>Patient Name</label>
+                <p id="dPatientName">—</p>
+            </div>
+            <div class="detail-field">
+                <label><i class="fas fa-phone" style="color:#94a3b8;"></i> Phone</label>
+                <p id="dPhone">—</p>
+            </div>
+            <div class="detail-field">
+                <label>Condition</label>
+                <p id="dCondition">—</p>
+            </div>
+            <div class="detail-field">
+                <label>Bed Type</label>
+                <p id="dBedType">—</p>
+            </div>
+            <div class="detail-field">
+                <label>ETA</label>
+                <p id="dETA">—</p>
+            </div>
+            <div class="detail-field">
+                <label>Status</label>
+                <p id="dStatus">—</p>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-reject" onclick="rejectRes()">
+                <i class="fas fa-times"></i> Reject reservation
+            </button>
+            <button class="btn-accept" onclick="showConfirm()">
+                <i class="fas fa-check"></i> Accept reservation
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box" style="max-width:400px;">
+        <div class="confirm-title">Accept this reservation?</div>
+        <div class="confirm-sub">
+            An available bed of the requested type will be assigned automatically and marked Occupied.
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-cancel-modal" onclick="closeConfirm()">Cancel</button>
+            <button class="btn-confirm" onclick="acceptRes()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="success-toast" id="successToast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMsg"></span>
+</div>
+
+<script>
+    let currentResId = null;
+
+    // فتح Modal التفاصيل
+    function openDetail(id, name, phone, bedType, condition, eta, status, reservedAt) {
+        currentResId = id;
+        document.getElementById('modalSub').textContent =
+            `RES-${String(id).padStart(5,'0')} · ${reservedAt}`;
+        document.getElementById('dPatientName').textContent = name;
+        document.getElementById('dPhone').textContent       = phone;
+        document.getElementById('dCondition').textContent   = condition || 'Critical';
+        document.getElementById('dBedType').textContent     = bedType;
+        document.getElementById('dETA').textContent         = eta + ' minutes';
+        document.getElementById('dStatus').textContent      = status;
+        document.getElementById('detailModal').classList.add('open');
+    }
+
+    function closeModal()   { document.getElementById('detailModal').classList.remove('open'); }
+    function showConfirm()  { document.getElementById('confirmModal').classList.add('open'); }
+    function closeConfirm() { document.getElementById('confirmModal').classList.remove('open'); }
+
+    // قبول الحجز
+    function acceptRes() {
+        closeConfirm(); closeModal();
+        fetch(`/HospitalDashboard/AcceptReservation`, {
+            method:'POST',
+            headers:{'Content-Type':'application/x-www-form-urlencoded',
+                     'RequestVerificationToken': getToken()},
+            body:`id=${currentResId}`
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast(`✓ Bed ${data.bedNumber} (${data.bedType}) assigned successfully`, 10000);
+                setTimeout(() => location.reload(), 2000);
+            } else {
+                showToast(`✗ ${data.message}`, 4000, true);
+            }
+        });
+    }
+
+    // رفض الحجز
+    function rejectRes() {
+        closeModal();
+        fetch(`/HospitalDashboard/RejectReservation`, {
+            method:'POST',
+            headers:{'Content-Type':'application/x-www-form-urlencoded',
+                     'RequestVerificationToken': getToken()},
+            body:`id=${currentResId}`
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Reservation rejected', 3000);
+                setTimeout(() => location.reload(), 1500);
+            }
+        });
+    }
+
+    // إظهار Toast
+    function showToast(msg, duration = 4000, isError = false) {
+        const toast = document.getElementById('successToast');
+        document.getElementById('toastMsg').textContent = msg;
+        toast.style.borderColor = isError ? '#fecaca' : '#bbf7d0';
+        toast.style.color       = isError ? '#ef4444' : '#16a34a';
+        toast.style.display = 'flex';
+        setTimeout(() => toast.style.display = 'none', duration);
+    }
+
+    // جيب الـ AntiForgery Token
+    function getToken() {
+        return document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+    }
+
+    // Countdown Timers
+    function startCountdowns() {
+        document.querySelectorAll('.countdown').forEach(el => {
+            let seconds = parseInt(el.dataset.seconds) || 0;
+            const tick = () => {
+                if (seconds <= 0) { el.textContent = '00:00'; el.classList.add('urgent'); return; }
+                const m = Math.floor(seconds / 60).toString().padStart(2,'0');
+                const s = (seconds % 60).toString().padStart(2,'0');
+                el.textContent = `${m}:${s}`;
+                if (seconds <= 300) el.classList.add('urgent');
+                seconds--;
+                setTimeout(tick, 1000);
+            };
+            tick();
+        });
+    }
+    startCountdowns();
+
+    // Live Time
+    function updateTime() {
+        const now = new Date();
+        const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        let h=now.getHours(), m=now.getMinutes().toString().padStart(2,'0');
+        const ap=h>=12?'PM':'AM'; h=h%12||12;
+        document.getElementById('liveTime').textContent=
+            `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} · ${h}:${m} ${ap}`;
+    }
+    updateTime(); setInterval(updateTime,1000);
+</script>
+
+@* AntiForgery Token مخفي للـ AJAX *@
+<form style="display:none">@Html.AntiForgeryToken()</form>

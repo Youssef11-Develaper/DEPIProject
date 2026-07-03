@@ -1,0 +1,145 @@
+﻿@model Maw3dyCare.Models.Maw3dyCareDB.Reservations
+
+@{
+    ViewData["Title"] = "Reserve a Bed";
+}
+
+<!-- Navigation Arrows -->
+<div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+    <a href="/Maw3dyCare/HospitalDetails/@ViewBag.HospitalId"
+       style="display:flex; align-items:center; gap:6px; font-size:13px;
+          color:var(--text-muted); text-decoration:none; padding:6px 12px;
+          border-radius:8px; border:1.5px solid var(--border);
+          background:var(--bg-card);">
+        <i class="fas fa-arrow-left"></i> Back to Hospital
+    </a>
+</div>
+
+<style>
+    /* body {
+        background-color: #f0f4ff;
+    } */
+    body {
+        background: var(--bg-main);
+    }
+
+    .form-wrapper {
+        max-width: 500px;
+        margin: 0 auto;
+        background: var(--bg-card);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 2px 16px rgba(13, 110, 253, 0.08);
+        border: 1px solid var(--border);
+    }
+    /* عشان الكارد يتأثر بالـ Dark Mode */
+    .reserve-card {
+        background: var(--bg-card) !important;
+        color: var(--text-main) !important;
+    }
+
+        .reserve-card label {
+            color: var(--text-muted) !important;
+        }
+
+        .reserve-card .form-control {
+            background: var(--input-bg) !important;
+            color: var(--text-main) !important;
+            border-color: var(--border) !important;
+        }
+</style>
+
+<div class="container mt-5">
+
+    @* --- عنوان الصفحة --- *@
+    <h4 class="fw-bold text-center mb-4">Reserve a Bed</h4>
+    <p class="text-muted text-center mb-4">@ViewBag.HospitalName</p>
+
+    <div class="form-wrapper reserve-card">
+        @* --- الفورم --- *@
+        <form method="post" action="/Maw3dyCare/Reserve">
+
+            @* HospitalId مخفي *@
+            <input type="hidden" name="HospitalId" value="@ViewBag.HospitalId" />
+
+            @* --- اسم المريض --- *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Patient Name</label>
+                <input type="text" name="PatientName" class="form-control"
+                       placeholder="Enter patient name"
+                       value="@Model?.PatientName" />
+                @if (!ViewData.ModelState.IsValid &&
+                                ViewData.ModelState["PatientName"]?.Errors.Count > 0)
+                {
+                    <span class="text-danger small">
+                        ⚠️ Please fill out this field.
+                    </span>
+                }
+            </div>
+
+            @* --- رقم التليفون --- *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Phone Number</label>
+                <input type="text" name="PatientPhone" class="form-control"
+                       placeholder="01xxxxxxxxx"
+                       value="@Model?.PatientPhone" />
+                @if (!ViewData.ModelState.IsValid &&
+                                ViewData.ModelState["PatientPhone"]?.Errors.Count > 0)
+                {
+                    <span class="text-danger small">
+                        ⚠️ Please enter a valid Egyptian phone number.
+                    </span>
+                }
+            </div>
+
+            @* --- وصف الحالة --- *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Patient Condition</label>
+                <input type="text" name="CaseDescription" class="form-control"
+                       placeholder="e.g., Critical care needed"
+                       value="@Model?.CaseDescription" />
+                @if (!ViewData.ModelState.IsValid &&
+                                ViewData.ModelState["CaseDescription"]?.Errors.Count > 0)
+                {
+                    <span class="text-danger small">
+                        ⚠️ Please fill out this field.
+                    </span>
+                }
+            </div>
+
+            @* --- نوع السرير --- *@
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Bed Type</label>
+                <select name="BedTypeId" class="form-select">
+                    @foreach (var bedType in ViewBag.BedTypes as List<Maw3dyCare.Models.Maw3dyCareDB.BedTypes>)
+                    {
+                        <option value="@bedType.BedTypeId">@bedType.Name - @bedType.Description</option>
+                    }
+                </select>
+            </div>
+
+            @* --- وقت الوصول --- *@
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Estimated Arrival (minutes)</label>
+                <input type="number" name="ETA" class="form-control"
+                       placeholder="e.g., 15"
+                       value="@Model?.ETA" min="1" max="120" />
+                @if (!ViewData.ModelState.IsValid &&
+                                ViewData.ModelState["ETA"]?.Errors.Count > 0)
+                {
+                    <span class="text-danger small">
+                        ⚠️ Arrival time must be between 1 and 120 minutes.
+                    </span>
+                }
+            </div>
+
+            @* --- زرار التأكيد --- *@
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-lg rounded-3">
+                    Confirm Reservation
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
