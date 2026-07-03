@@ -6,9 +6,26 @@ using Mawidy.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Resolve Mawidy-frontend path ─────────────────────────────────────────────
-var frontendPath = Path.GetFullPath(
-    Path.Combine(builder.Environment.ContentRootPath, "..", "..", "Mawidy-frontend"));
+// ── Resolve Mawidy-frontend path robustly ─────────────────────────────────────
+string? frontendPath = null;
+var dir = new DirectoryInfo(builder.Environment.ContentRootPath);
+while (dir != null)
+{
+    var candidate = Path.Combine(dir.FullName, "Mawidy-frontend");
+    if (Directory.Exists(candidate))
+    {
+        frontendPath = candidate;
+        break;
+    }
+    candidate = Path.Combine(dir.FullName, "..", "Mawidy-frontend");
+    if (Directory.Exists(Path.GetFullPath(candidate)))
+    {
+        frontendPath = Path.GetFullPath(candidate);
+        break;
+    }
+    dir = dir.Parent;
+}
+frontendPath ??= Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "..", "..", "Mawidy-frontend"));
 
 // ── Add Mawidy-frontend as a file provider so Razor can discover views ───────
 builder.Environment.ContentRootFileProvider = new CompositeFileProvider(
@@ -18,9 +35,14 @@ builder.Environment.ContentRootFileProvider = new CompositeFileProvider(
 
 // ── Set web root to Mawidy-frontend/wwwroot for static files ─────────────────
 builder.Environment.WebRootPath = Path.Combine(frontendPath, "wwwroot");
+builder.Environment.WebRootFileProvider = new PhysicalFileProvider(builder.Environment.WebRootPath);
 
 // ── Razor Views: configure view location formats ─────────────────────────────
 builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation(options =>
+    {
+        options.FileProviders.Add(new PhysicalFileProvider(frontendPath));
+    })
     .AddRazorOptions(options =>
     {
         options.ViewLocationFormats.Clear();
