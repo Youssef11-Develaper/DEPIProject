@@ -6,7 +6,7 @@ namespace Mawidy.API.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return Redirect("/index.html");
         }
 
         public IActionResult Appointments()

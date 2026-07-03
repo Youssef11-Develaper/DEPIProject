@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>التقارير والإحصائيات - لوحة التحكم v2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/admin-v2/css/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header id="header-container" class="admin-header"></header>
+        
+        <main class="page-content">
+            <div class="page-title-area">
+                <div>
+                    <h1 class="page-title">مركز التقارير والإحصائيات</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="/admin-v2/index.html">الرئيسية</a></li>
+                        <li>التقارير</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- PDF Report Generator Card -->
+            <div class="admin-card" style="margin-bottom:30px">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">
+                        <i class="bi bi-file-earmark-pdf"></i> استخراج وتحميل التقارير الرسمية PDF
+                    </span>
+                </div>
+                <div class="admin-card-body">
+                    <div class="filter-bar" style="box-shadow:none; padding:0; background:none; border:none; margin:0;">
+                        <div class="filter-group">
+                            <label class="admin-form-label">تاريخ التقرير اليومي</label>
+                            <input type="date" id="rep-date" class="admin-form-control">
+                        </div>
+                        <div class="filter-group">
+                            <label class="admin-form-label">اختر فرعاً محدداً (اختياري)</label>
+                            <select id="rep-branch" class="admin-form-control">
+                                <option value="">جميع الفروع</option>
+                            </select>
+                        </div>
+                        <div>
+                            <button class="admin-btn admin-btn-primary" style="padding:11px 24px" onclick="downloadReport()">
+                                <i class="bi bi-download"></i> إنشاء وتنزيل التقرير PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Row -->
+            <div class="dashboard-row" style="grid-template-columns: 1fr 1fr;">
+                <!-- Appointments Trend (Weekly) -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">
+                            <i class="bi bi-graph-up-arrow"></i> منحنى حجم المواعيد الأسبوعي
+                        </span>
+                    </div>
+                    <div class="admin-card-body">
+                        <div style="height:280px; position:relative">
+                            <canvas id="trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Governorate Utilization -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">
+                            <i class="bi bi-pie-chart"></i> التوزيع الإقليمي للحجوزات
+                        </span>
+                    </div>
+                    <div class="admin-card-body">
+                        <div style="height:280px; position:relative">
+                            <canvas id="pie-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/api.js"></script>
+<script src="/admin-v2/js/admin-api.js"></script>
+<script src="/admin-v2/js/admin-ui.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        AdminUI.init('reports');
+
+        // Set default report date to today
+        document.getElementById('rep-date').value = new Date().toISOString().split('T')[0];
+
+        await Promise.all([loadBranches(), loadReportCharts()]);
+    });
+
+    async function loadBranches() {
+        try {
+            const res = await API.admin.getBranches();
+            const select = document.getElementById('rep-branch');
+            select.innerHTML = '<option value="">جميع الفروع</option>' +
+                res.data.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadReportCharts() {
+        try {
+            const response = await API.admin.getDashboard();
+            const data = response.data;
+
+            // Trend line chart
+            if (data.weeklyAppointments && data.weeklyAppointments.length > 0) {
+                renderTrendChart(data.weeklyAppointments);
+            }
+
+            // Pie chart
+            if (data.governorateDistribution && data.governorateDistribution.length > 0) {
+                renderPieChart(data.governorateDistribution);
+            }
+
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast('حدث خطأ أثناء تحميل الإحصائيات البيانية', 'error');
+        }
+    }
+
+    function renderTrendChart(weeklyData) {
+        const ctx = document.getElementById('trend-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: weeklyData.map(w => w.date),
+                datasets: [{
+                    label: 'عدد المواعيد المحجوزة',
+                    data: weeklyData.map(w => w.count),
+                    backgroundColor: 'rgba(46, 134, 193, 0.1)',
+                    borderColor: 'rgba(46, 134, 193, 1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#1B4F72'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
+
+    function renderPieChart(govData) {
+        const ctx = document.getElementById('pie-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: govData.map(g => g.governorateName),
+                datasets: [{
+                    data: govData.map(g => g.totalAppointments),
+                    backgroundColor: [
+                        '#1B4F72', '#2E86C1', '#28B463', '#F1C40F', 
+                        '#E67E22', '#E74C3C', '#9B59B6', '#1ABC9C'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+    }
+
+    async function downloadReport() {
+        const date = document.getElementById('rep-date').value;
+        const branchId = document.getElementById('rep-branch').value;
+
+        if (!date) {
+            AdminUI.showToast('يرجى تحديد تاريخ التقرير أولاً', 'error');
+            return;
+        }
+
+        let url = `${API_BASE}/admin/reports/daily?date=${date}`;
+        if (branchId) url += `&branchId=${branchId}`;
+
+        try {
+            AdminUI.showToast('جاري استخراج ملف التقرير وتنزيله...', 'info');
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+            });
+            if (!response.ok) throw new Error('فشل تحميل التقرير');
+            
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = `تقرير_الحجوزات_${date}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        } catch (error) {
+            console.error(error);
+            AdminUI.showToast('حدث خطأ أثناء تنزيل التقرير', 'error');
+        }
+    }
+</script>
+</body>
+</html>

@@ -481,7 +481,7 @@
 </section>
 
 <script>
-  const API = 'http://localhost:5263/api';
+  const API = 'http://localhost:5154/api';
 
   // ─── Navigation ───────────────────────────────────────────
   function goTo(target) {
@@ -543,9 +543,19 @@
       const data = await res.json();
 
       if (data.isSuccess) {
-        localStorage.setItem('token',        data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        localStorage.setItem('user',         JSON.stringify(data.user));
+        const userDto = data.data;
+        localStorage.setItem('token',        userDto.token);
+        localStorage.setItem('user',         JSON.stringify({
+            fullName: `${userDto.firstName} ${userDto.lastName}`,
+            email: userDto.email,
+            phoneNumber: userDto.phoneNumber || '',
+            roles: [userDto.role],
+            role: userDto.role,
+            governorateId: userDto.governorateId,
+            governorateName: userDto.governorateName,
+            area: userDto.area,
+            branchId: userDto.branchId
+        }));
         loadUserProfile();
         goTo('view-home');
       } else {
@@ -602,17 +612,16 @@
           password, confirmPassword,
           nationalId,
           phoneNumber: phone,
-          dateOfBirth: dob ? new Date(dob).toISOString() : null
+          dateOfBirth: dob ? new Date(dob).toISOString() : new Date().toISOString(),
+          governorateId: 1,
+          area: "القاهرة"
         })
       });
       const data = await res.json();
 
       if (data.isSuccess) {
-        localStorage.setItem('token',        data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        localStorage.setItem('user',         JSON.stringify(data.user));
-        loadUserProfile();
-        goTo('view-home');
+        alert('Account created successfully! Please check your email to verify (or log in directly if already verified).');
+        goTo('view-login');
       } else {
         const msg = data.errors?.length ? data.errors.join(' | ') : data.message;
         showError('register-error', msg || 'Failed to create account.');

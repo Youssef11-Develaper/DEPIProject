@@ -53,7 +53,7 @@ namespace Mawidy.API.Controllers
         {
             var branch = await _branchRepository.GetWithDetailsAsync(id);
             if (branch == null)
-                return NotFound(ApiResponse<BranchDto>.Fail("????? ??? ?????"));
+                return NotFound(ApiResponse<BranchDto>.Fail("الفرع غير موجود"));
 
             var averageRating = await _ratingRepository.GetBranchAverageAsync(id);
 
@@ -68,6 +68,8 @@ namespace Mawidy.API.Controllers
                 GovernorateName = branch.Governorate.Name,
                 WorkingDaysCount = branch.Schedules.Count,
                 AverageRating = averageRating,
+                OperatorId = branch.OperatorId,
+                DistrictId = branch.DistrictId,
                 Schedules = branch.Schedules.Select(s => new ScheduleDto
                 {
                     Id = s.Id,
@@ -77,13 +79,18 @@ namespace Mawidy.API.Controllers
                     PeakStartTime = s.PeakStartTime,
                     PeakEndTime = s.PeakEndTime,
                     MaxAppointmentsPerSlot = s.MaxAppointmentsPerSlot
+                }).ToList(),
+                Holidays = branch.Holidays.Select(h => new HolidayDto
+                {
+                    Id = h.Id,
+                    Date = h.Date,
+                    Reason = h.Reason
                 }).ToList()
             };
 
             return Ok(ApiResponse<BranchDto>.Ok(result));
         }
 
-        // GET api/branches/governorates
         [HttpGet("governorates")]
         public async Task<ActionResult<ApiResponse<IEnumerable<object>>>> GetGovernorates()
         {
@@ -143,6 +150,72 @@ namespace Mawidy.API.Controllers
             return Ok(ApiResponse<IEnumerable<object>>.Ok(services));
         }
 
+        // GET api/branches/operators
+        [HttpGet("operators")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<object>>>> GetOperators()
+        {
+            var operators = await _context.Operators
+                .Select(o => new
+                {
+                    o.Id,
+                    o.Key,
+                    o.NameAr,
+                    o.Color,
+                    o.BgColor,
+                    o.Emoji,
+                    o.Hotline
+                })
+                .ToListAsync();
+
+            return Ok(ApiResponse<IEnumerable<object>>.Ok(operators));
+        }
+
+        // GET api/branches/operator-services
+        [HttpGet("operator-services")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<object>>>> GetOperatorServices(int? operatorId)
+        {
+            var query = _context.OperatorServices.AsQueryable();
+            if (operatorId.HasValue)
+            {
+                query = query.Where(s => s.OperatorId == operatorId.Value);
+            }
+
+            var services = await query
+                .Select(s => new
+                {
+                    s.Id,
+                    s.OperatorId,
+                    s.ServiceKey,
+                    s.Icon,
+                    s.NameAr,
+                    s.EstimatedTime
+                })
+                .ToListAsync();
+
+            return Ok(ApiResponse<IEnumerable<object>>.Ok(services));
+        }
+
+        // GET api/branches/service-documents/{serviceKey}
+        [HttpGet("service-documents/{serviceKey}")]
+        public async Task<ActionResult<ApiResponse<IEnumerable<object>>>> GetServiceDocuments(string serviceKey)
+        {
+            var docs = await _context.ServiceDocuments
+                .Where(d => d.ServiceKey == serviceKey)
+                .OrderBy(d => d.SortOrder)
+                .Select(d => new
+                {
+                    d.Id,
+                    d.ServiceKey,
+                    d.DocType,
+                    d.TextAr,
+                    d.NoteAr,
+                    d.SortOrder
+                })
+                .ToListAsync();
+
+            return Ok(ApiResponse<IEnumerable<object>>.Ok(docs));
+        }
+
         // Helper Methods
         private async Task<IEnumerable<BranchDto>> MapBranchesAsync(IEnumerable<Branch> branches)
         {
@@ -162,6 +235,8 @@ namespace Mawidy.API.Controllers
                     GovernorateName = branch.Governorate.Name,
                     WorkingDaysCount = branch.Schedules.Count,
                     AverageRating = averageRating,
+                    OperatorId = branch.OperatorId,
+                    DistrictId = branch.DistrictId,
                     Schedules = branch.Schedules.Select(s => new ScheduleDto
                     {
                         Id = s.Id,

@@ -1,0 +1,24 @@
+@model Mawidy.API.ViewModels.Courts.CaseViewModel
+
+<div class="case-result show" id="caseResult">
+  <div class="case-header">
+    <div class="case-num" id="caseNum">@Model.Title</div>
+    <div class="case-type" id="caseType">@Model.Type</div>
+  </div>
+  <div class="case-timeline" id="caseTimeline">
+    @foreach (var step in Model.Steps)
+    {
+        <div class="case-step">
+          <div class="case-dot @step.Status">@step.Icon</div>
+          <div class="case-content">
+            <div class="case-step-title">@step.Title</div>
+            <div class="case-step-date">@step.Date</div>
+            @if (!string.IsNullOrEmpty(step.Note))
+            {
+                <div class="case-step-note">@step.Note</div>
+            }
+          </div>
+        </div>
+    }
+  </div>
+</div>

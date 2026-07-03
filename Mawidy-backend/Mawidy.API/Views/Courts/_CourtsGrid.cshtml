@@ -1,0 +1,16 @@
+@model List<Mawidy.API.ViewModels.Courts.CourtViewModel>
+
+@if (!Model.Any())
+{
+    <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted)">
+        <div style="font-size:48px;margin-bottom:16px">🔍</div>
+        <div style="font-size:16px;font-weight:700">لا توجد نتائج مطابقة</div>
+    </div>
+}
+else
+{
+    @foreach (var court in Model)
+    {
+        <partial name="_CourtCard" model="court" />
+    }
+}

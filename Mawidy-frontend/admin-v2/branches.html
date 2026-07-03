@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الفروع - لوحة التحكم v2</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/admin-v2/css/admin.css">
+    <style>
+        #map {
+            height: 250px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+        .branch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .branch-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .branch-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header id="header-container" class="admin-header"></header>
+        
+        <main class="page-content">
+            <div class="page-title-area">
+                <div>
+                    <h1 class="page-title">إدارة فروع الخدمات المشتركة</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="/admin-v2/index.html">الرئيسية</a></li>
+                        <li>إدارة الفروع</li>
+                    </ul>
+                </div>
+                <div>
+                    <button class="admin-btn admin-btn-primary" onclick="openBranchModal()">
+                        <i class="bi bi-plus-circle"></i> إضافة فرع جديد
+                    </button>
+                </div>
+            </div>
+
+            <!-- Category Subheader Filters -->
+            <div class="category-tabs" style="display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch;">
+                <button class="admin-btn" id="cat-all" onclick="filterCategory('all')" style="background: var(--primary); color: white; border-radius: var(--radius-sm); font-weight: 600;">الكل</button>
+                <button class="admin-btn" id="cat-civil" onclick="filterCategory('civil')" style="background: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text);">🏛 السجل المدني</button>
+                <button class="admin-btn" id="cat-telecom" onclick="filterCategory('telecom')" style="background: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text);">📱 شركات الاتصالات</button>
+                <button class="admin-btn" id="cat-banks" onclick="filterCategory('banks')" style="background: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text);">🏦 البنوك</button>
+                <button class="admin-btn" id="cat-hospitals" onclick="filterCategory('hospitals')" style="background: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text);">🏥 المستشفيات</button>
+                <a href="/admin-v2/courts.html" class="admin-btn" style="background: none; border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text); text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">⚖ المحاكم والقضايا</a>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="admin-form-label">المحافظة</label>
+                    <select id="filter-gov" class="admin-form-control" onchange="renderBranches()">
+                        <option value="">جميع المحافظات</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="flex: 2;">
+                    <label class="admin-form-label">بحث باسم الفرع أو العنوان</label>
+                    <input type="text" id="search-branch" class="admin-form-control" placeholder="ابحث هنا..." oninput="renderBranches()">
+                </div>
+            </div>
+
+            <!-- Branches List -->
+            <div class="branch-grid" id="branches-container">
+                <!-- Loaded dynamically -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Add/Edit Branch Modal -->
+<div class="modal-backdrop" id="branch-modal">
+    <div class="admin-modal" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+        <div class="admin-modal-header">
+            <span class="admin-modal-title" id="modal-title">إضافة فرع جديد</span>
+            <button class="admin-modal-close" onclick="closeBranchModal()">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <input type="hidden" id="branch-id">
+            
+            <div class="admin-form-group">
+                <label class="admin-form-label">اسم الفرع</label>
+                <input type="text" id="branch-name" class="admin-form-control" placeholder="اسم الفرع (مثال: فرع مصر الجديدة)">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">الجهة / مقدم الخدمة (القسم)</label>
+                    <select id="branch-operator" class="admin-form-control"></select>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">المحافظة</label>
+                    <select id="branch-gov" class="admin-form-control"></select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">المركز / الحي (المنطقة)</label>
+                    <select id="branch-district" class="admin-form-control"></select>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">العنوان بالتفصيل</label>
+                    <input type="text" id="branch-address" class="admin-form-control" placeholder="العنوان بالتفصيل">
+                </div>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">الموقع الجغرافي (اختر من الخريطة بالضغط عليها)</label>
+                <div id="map"></div>
+                <div style="display:flex; gap:10px">
+                    <div style="flex:1">
+                        <label class="admin-form-label" style="font-size:0.75rem">خط العرض (Latitude)</label>
+                        <input type="text" id="branch-lat" class="admin-form-control" readonly>
+                    </div>
+                    <div style="flex:1">
+                        <label class="admin-form-label" style="font-size:0.75rem">خط الطول (Longitude)</label>
+                        <input type="text" id="branch-lng" class="admin-form-control" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="admin-modal-footer">
+            <button class="admin-btn admin-btn-outline" onclick="closeBranchModal()">إلغاء</button>
+            <button class="admin-btn admin-btn-primary" id="saveBranchBtn" onclick="saveBranch()">حفظ الفرع</button>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Schedules & Holidays Drawer -->
+<div class="admin-drawer" id="branch-settings-drawer" style="width: 550px;">
+    <div class="admin-drawer-header">
+        <span class="admin-drawer-title" id="drawer-branch-title">إعدادات الفرع</span>
+        <button class="admin-modal-close" onclick="closeSettingsDrawer()">&times;</button>
+    </div>
+    <div class="admin-drawer-body">
+        <input type="hidden" id="settings-branch-id">
+        
+        <!-- Tab buttons -->
+        <div style="display:flex; border-bottom:1px solid var(--border-color); margin-bottom:20px">
+            <button class="admin-btn" style="flex:1; border-radius:0; border-bottom:2px solid var(--primary); background:none" id="tab-schedules-btn" onclick="switchTab('schedules')">مواعيد العمل</button>
+            <button class="admin-btn" style="flex:1; border-radius:0; background:none" id="tab-holidays-btn" onclick="switchTab('holidays')">الإجازات الرسمية</button>
+            <button class="admin-btn" style="flex:1; border-radius:0; background:none" id="tab-services-btn" onclick="switchTab('services')">الخدمات</button>
+        </div>
+
+        <!-- Schedules Tab -->
+        <div id="tab-schedules">
+            <h4 style="font-weight:700; margin-bottom:15px">إضافة يوم عمل</h4>
+            <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">اليوم</label>
+                    <select id="sch-day" class="admin-form-control">
+                        <option value="0">الأحد</option>
+                        <option value="1">الإثنين</option>
+                        <option value="2">الثلاثاء</option>
+                        <option value="3">الأربعاء</option>
+                        <option value="4">الخميس</option>
+                        <option value="5">الجمعة</option>
+                        <option value="6">السبت</option>
+                    </select>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">أقصى عدد مواعيد / فترة</label>
+                    <input type="number" id="sch-max" class="admin-form-control" value="10">
+                </div>
+            </div>
+            <div class="form-grid" style="grid-template-columns:1fr 1fr;">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">موعد الفتح</label>
+                    <input type="time" id="sch-open" class="admin-form-control" value="08:00">
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">موعد الإغلاق</label>
+                    <input type="time" id="sch-close" class="admin-form-control" value="16:00">
+                </div>
+            </div>
+            <button class="admin-btn admin-btn-primary" style="margin-bottom:20px" onclick="addSchedule()">إضافة يوم العمل</button>
+
+            <h4 style="font-weight:700; margin-bottom:10px">جداول العمل الحالية</h4>
+            <div id="schedules-list"></div>
+        </div>
+
+        <!-- Holidays Tab -->
+        <div id="tab-holidays" style="display:none">
+            <h4 style="font-weight:700; margin-bottom:15px">إضافة إجازة رسمية</h4>
+            <div class="admin-form-group">
+                <label class="admin-form-label">التاريخ</label>
+                <input type="date" id="holiday-date" class="admin-form-control">
+            </div>
+            <div class="admin-form-group">
+                <label class="admin-form-label">السبب</label>
+                <input type="text" id="holiday-reason" class="admin-form-control" placeholder="السبب (مثال: عيد الأضحى)">
+            </div>
+            <button class="admin-btn admin-btn-primary" style="margin-bottom:20px" onclick="addHoliday()">إضافة إجازة</button>
+
+            <h4 style="font-weight:700; margin-bottom:10px">قائمة الإجازات المسجلة</h4>
+            <div id="holidays-list"></div>
+        </div>
+
+        <!-- Tab services -->
+        <div id="tab-services" style="display:none">
+            <h4 style="font-weight:700;margin-bottom:15px" id="service-form-title">إضافة خدمة جديدة</h4>
+            <input type="hidden" id="service-id">
+            <div class="admin-form-group">
+                <label class="admin-form-label">اسم الخدمة (بالعربية)</label>
+                <input type="text" id="service-name-ar" class="admin-form-control" placeholder="اسم الخدمة بالكامل">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">مفتاح الخدمة (Service Key)</label>
+                    <input type="text" id="service-key" class="admin-form-control" placeholder="service_key">
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">الوقت المتوقع (Estimated Time)</label>
+                    <input type="text" id="service-time" class="admin-form-control" placeholder="15 دقيقة">
+                </div>
+            </div>
+            <div class="admin-form-group">
+                <label class="admin-form-label">أيقونة الخدمة (Bootstrap Icon class)</label>
+                <input type="text" id="service-icon" class="admin-form-control" placeholder="bi-bookmark">
+            </div>
+            <div style="display:flex;gap:10px;margin-bottom:20px">
+                <button class="admin-btn admin-btn-primary" id="save-service-btn" onclick="saveOperatorService()">إضافة الخدمة</button>
+                <button class="admin-btn admin-btn-outline" id="cancel-service-btn" style="display:none" onclick="clearServiceForm()">إلغاء</button>
+            </div>
+            <h4 style="font-weight:700;margin-bottom:10px">قائمة الخدمات الحالية</h4>
+            <div id="services-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/js/api.js"></script>
+<script src="/admin-v2/js/admin-api.js"></script>
+<script src="/admin-v2/js/admin-ui.js"></script>
+
+<script>
+    let allBranches = [];
+    let governorates = [];
+    let allOperators = [];
+    let activeCategory = 'all';
+    let map, marker;
+    const defaultCoords = [30.0444, 31.2357]; // Cairo
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        AdminUI.init('branches');
+        await loadGovernorates();
+        await loadOperators();
+        await loadBranches();
+        initMap();
+
+        document.getElementById('branch-gov').addEventListener('change', async (e) => {
+            await loadDistrictsForGov(parseInt(e.target.value));
+        });
+    });
+
+    async function loadGovernorates() {
+        try {
+            const res = await API.branches.getGovernorates();
+            governorates = res.data || [];
+            
+            const filterGov = document.getElementById('filter-gov');
+            const branchGov = document.getElementById('branch-gov');
+            
+            const optionsHtml = governorates.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            filterGov.innerHTML = '<option value="">جميع المحافظات</option>' + optionsHtml;
+            branchGov.innerHTML = optionsHtml;
+
+            if (governorates.length > 0) {
+                await loadDistrictsForGov(governorates[0].id);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function loadOperators() {
+        try {
+            const res = await request('/adminv2/operators');
+            allOperators = res.data || [];
+            const branchOperator = document.getElementById('branch-operator');
+            if (branchOperator) {
+                branchOperator.innerHTML = allOperators.map(o => `<option value="${o.id}">${o.emoji} ${o.nameAr}</option>`).join('');
+            }
+        } catch (err) {
+            console.error('Failed to load operators:', err);
+        }
+    }
+
+    async function loadDistrictsForGov(govId) {
+        try {
+            const res = await request(`/adminv2/districts?governorateId=${govId}`);
+            const districts = res.data || [];
+            const branchDistrict = document.getElementById('branch-district');
+            if (branchDistrict) {
+                branchDistrict.innerHTML = districts.map(d => `<option value="${d.id}">${d.nameAr} (${d.type})</option>`).join('');
+            }
+        } catch (err) {
+            console.error('Failed to load districts:', err);
+        }
+    }
+
+    async function loadBranches() {
+        try {
+            const response = await API.admin.getBranches();
+            allBranches = response.data || [];
+            renderBranches();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast('فشل تحميل الفروع', 'error');
+        }
+    }
+
+    function filterCategory(cat) {
+        activeCategory = cat;
+        const categories = ['all', 'civil', 'telecom', 'banks', 'hospitals'];
+        categories.forEach(c => {
+            const btn = document.getElementById(`cat-${c}`);
+            if (btn) {
+                if (c === cat) {
+                    btn.style.background = 'var(--primary)';
+                    btn.style.color = 'white';
+                    btn.style.fontWeight = '600';
+                } else {
+                    btn.style.background = 'none';
+                    btn.style.border = '1px solid var(--border-color)';
+                    btn.style.color = 'var(--text)';
+                    btn.style.fontWeight = 'normal';
+                }
+            }
+        });
+        renderBranches();
+    }
+
+    function renderBranches() {
+        const govId = document.getElementById('filter-gov').value;
+        const search = document.getElementById('search-branch').value.trim().toLowerCase();
+        const container = document.getElementById('branches-container');
+
+        let filtered = allBranches;
+
+        if (govId) {
+            filtered = filtered.filter(b => b.governorateId === parseInt(govId));
+        }
+
+        if (search) {
+            filtered = filtered.filter(b => 
+                b.name.toLowerCase().includes(search) || 
+                b.address.toLowerCase().includes(search)
+            );
+        }
+
+        if (activeCategory !== 'all') {
+            filtered = filtered.filter(b => {
+                const op = allOperators.find(o => o.id === b.operatorId);
+                if (!op) return false;
+                
+                if (activeCategory === 'civil') {
+                    return op.key === 'civil_registry';
+                } else if (activeCategory === 'telecom') {
+                    return ['vodafone', 'orange', 'etisalat', 'we'].includes(op.key);
+                } else if (activeCategory === 'banks') {
+                    return ['nbe', 'banquemisr', 'cib', 'qnb', 'alexbank'].includes(op.key);
+                } else if (activeCategory === 'hospitals') {
+                    return op.key === 'hospital_generic';
+                }
+                return true;
+            });
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">
+                    <i class="bi bi-building-exclamation" style="font-size:3rem; display:block; margin-bottom:10px"></i>
+                    لا توجد فروع مطابقة للبحث
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filtered.map(b => {
+            const op = allOperators.find(o => o.id === b.operatorId);
+            const opName = op ? op.nameAr : 'السجل المدني';
+            const opEmoji = op ? op.emoji : '🏛';
+            return `
+            <div class="branch-card">
+                <div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+                        <h3 style="font-weight:700; color:var(--primary); margin:0">${b.name}</h3>
+                        <span style="font-size:1.25rem;" title="${opName}">${opEmoji}</span>
+                    </div>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:5px">
+                        <i class="bi bi-geo-alt"></i> ${b.governorateName} - ${b.address}
+                    </p>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px">
+                        <i class="bi bi-calendar3"></i> أيام العمل الأسبوعية: ${b.workingDaysCount} أيام
+                    </p>
+                </div>
+                <div style="display:flex; gap:8px; border-top:1px solid var(--border-color); padding-top:15px; margin-top:10px">
+                    <button class="admin-btn admin-btn-outline admin-btn-sm" style="flex:1" onclick="openBranchModal(${b.id})">
+                        <i class="bi bi-pencil"></i> تعديل
+                    </button>
+                    <button class="admin-btn admin-btn-outline admin-btn-sm" style="flex:1" onclick="openSettingsDrawer(${b.id}, '${b.name}')">
+                        <i class="bi bi-gear"></i> الإعدادات
+                    </button>
+                    <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteBranch(${b.id})">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function initMap() {
+        map = L.map('map').setView(defaultCoords, 10);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+
+        marker = L.marker(defaultCoords, { draggable: false }).addTo(map);
+
+        map.on('click', (e) => {
+            const { lat, lng } = e.latlng;
+            marker.setLatLng([lat, lng]);
+            document.getElementById('branch-lat').value = lat.toFixed(6);
+            document.getElementById('branch-lng').value = lng.toFixed(6);
+        });
+    }
+
+    async function openBranchModal(id = null) {
+        const modal = document.getElementById('branch-modal');
+        document.getElementById('branch-id').value = id || '';
+        document.getElementById('modal-title').textContent = id ? 'تعديل بيانات الفرع' : 'إضافة فرع جديد';
+
+        if (id) {
+            const b = allBranches.find(x => x.id === id);
+            document.getElementById('branch-name').value = b.name;
+            document.getElementById('branch-gov').value = b.governorateId;
+            
+            await loadDistrictsForGov(b.governorateId);
+            document.getElementById('branch-district').value = b.districtId;
+            document.getElementById('branch-operator').value = b.operatorId;
+            
+            document.getElementById('branch-address').value = b.address;
+            document.getElementById('branch-lat').value = b.latitude;
+            document.getElementById('branch-lng').value = b.longitude;
+            
+            const coords = [b.latitude, b.longitude];
+            marker.setLatLng(coords);
+            map.setView(coords, 14);
+        } else {
+            document.getElementById('branch-name').value = '';
+            document.getElementById('branch-address').value = '';
+            document.getElementById('branch-lat').value = defaultCoords[0];
+            document.getElementById('branch-lng').value = defaultCoords[1];
+            
+            if (governorates.length > 0) {
+                document.getElementById('branch-gov').value = governorates[0].id;
+                await loadDistrictsForGov(governorates[0].id);
+            }
+            if (allOperators.length > 0) {
+                document.getElementById('branch-operator').value = allOperators[0].id;
+            }
+            
+            marker.setLatLng(defaultCoords);
+            map.setView(defaultCoords, 10);
+        }
+
+        modal.classList.add('show');
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 300);
+    }
+
+    function closeBranchModal() {
+        document.getElementById('branch-modal').classList.remove('show');
+    }
+
+    async function saveBranch() {
+        const id = document.getElementById('branch-id').value;
+        const name = document.getElementById('branch-name').value.trim();
+        const governorateId = parseInt(document.getElementById('branch-gov').value);
+        const operatorId = parseInt(document.getElementById('branch-operator').value);
+        const districtId = parseInt(document.getElementById('branch-district').value);
+        const address = document.getElementById('branch-address').value.trim();
+        const latitude = parseFloat(document.getElementById('branch-lat').value);
+        const longitude = parseFloat(document.getElementById('branch-lng').value);
+        const btn = document.getElementById('saveBranchBtn');
+
+        if (!name || !address || !governorateId || !operatorId || !districtId) {
+            AdminUI.showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
+            return;
+        }
+
+        const dto = { name, address, latitude, longitude, governorateId, operatorId, districtId };
+        UI.showLoading(btn);
+
+        try {
+            if (id) {
+                await API.admin.updateBranch(parseInt(id), dto);
+                AdminUI.showToast('تم تحديث الفرع بنجاح');
+            } else {
+                await API.admin.createBranch(dto);
+                AdminUI.showToast('تم إضافة الفرع الجديد بنجاح');
+            }
+            closeBranchModal();
+            await loadBranches();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast(err.message || 'فشل حفظ الفرع', 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    async function deleteBranch(id) {
+        AdminUI.confirm('هل أنت متأكد من حذف هذا الفرع نهائياً؟ سيتم حذف جميع المواعيد والجداول المرتبطة به.', async () => {
+            try {
+                await API.admin.deleteBranch(id);
+                AdminUI.showToast('تم حذف الفرع بنجاح');
+                await loadBranches();
+            } catch (err) {
+                console.error(err);
+                AdminUI.showToast(err.message || 'فشل حذف الفرع', 'error');
+            }
+        });
+    }
+
+    // Settings Drawer Logic
+    let currentBranch = null;
+
+    async function openSettingsDrawer(id, name) {
+        document.getElementById('settings-branch-id').value = id;
+        document.getElementById('drawer-branch-title').textContent = `إعدادات الفرع - ${name}`;
+        document.getElementById('branch-settings-drawer').classList.add('show');
+        
+        switchTab('schedules');
+        await loadBranchSettingsData(id);
+    }
+
+    function closeSettingsDrawer() {
+        document.getElementById('branch-settings-drawer').classList.remove('show');
+    }
+
+    function switchTab(tab) {
+        document.getElementById('tab-schedules').style.display = tab === 'schedules' ? 'block' : 'none';
+        document.getElementById('tab-holidays').style.display = tab === 'holidays' ? 'block' : 'none';
+        document.getElementById('tab-services').style.display = tab === 'services' ? 'block' : 'none';
+        document.getElementById('tab-schedules-btn').style.borderBottom = tab === 'schedules' ? '2px solid var(--primary)' : 'none';
+        document.getElementById('tab-holidays-btn').style.borderBottom = tab === 'holidays' ? '2px solid var(--primary)' : 'none';
+        document.getElementById('tab-services-btn').style.borderBottom = tab === 'services' ? '2px solid var(--primary)' : 'none';
+    }
+
+    async function loadBranchSettingsData(branchId) {
+        const schedulesList = document.getElementById('schedules-list');
+        const holidaysList = document.getElementById('holidays-list');
+        
+        schedulesList.innerHTML = '<span class="spinner"></span> جاري التحميل...';
+        holidaysList.innerHTML = '<span class="spinner"></span> جاري التحميل...';
+        clearServiceForm();
+
+        try {
+            const response = await fetch(`${API_BASE}/branches/${branchId}`);
+            const detailRes = await response.json();
+            const branch = detailRes.data;
+            currentBranch = branch;
+
+            // Render Schedules
+            const daysMap = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            if (branch.schedules && branch.schedules.length > 0) {
+                schedulesList.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>اليوم</th>
+                                    <th>المواعيد</th>
+                                    <th>عدد الحجوزات/فترة</th>
+                                    <th>حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${branch.schedules.map(s => `
+                                    <tr>
+                                        <td>${AdminUI.getDayName(s.dayOfWeek)}</td>
+                                        <td style="font-size:0.85rem">${s.openTime.substring(0,5)} - ${s.closeTime.substring(0,5)}</td>
+                                        <td>${s.maxAppointmentsPerSlot}</td>
+                                        <td>
+                                            <button class="admin-btn admin-btn-outline admin-btn-sm" style="color:var(--danger)" onclick="deleteSchedule(${s.id})">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                schedulesList.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">لا توجد أيام عمل مسجلة بعد</p>';
+            }
+
+            // Render Holidays
+            if (branch.holidays && branch.holidays.length > 0) {
+                holidaysList.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>التاريخ</th>
+                                    <th>السبب</th>
+                                    <th>حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${branch.holidays.map(h => `
+                                    <tr>
+                                        <td style="font-weight:600">${new Date(h.date).toLocaleDateString('ar-EG')}</td>
+                                        <td>${h.reason}</td>
+                                        <td>
+                                            <button class="admin-btn admin-btn-outline admin-btn-sm" style="color:var(--danger)" onclick="deleteHoliday(${h.id})">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                holidaysList.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">لا توجد إجازات مسجلة بعد</p>';
+            }
+
+            if (branch.operatorId) {
+                await loadOperatorServices(branch.operatorId);
+            }
+
+        } catch (err) {
+            console.error(err);
+            schedulesList.innerHTML = '<p style="color:var(--danger)">فشل تحميل الإعدادات</p>';
+            holidaysList.innerHTML = '<p style="color:var(--danger)">فشل تحميل الإعدادات</p>';
+        }
+    }
+
+    async function loadOperatorServices(operatorId) {
+        document.getElementById('services-list').innerHTML = '<span class="spinner"></span> جاري التحميل...';
+        try {
+            const res = await API.adminv2.getOperatorServices(operatorId);
+            const services = res.data || [];
+            const container = document.getElementById('services-list');
+            if (services.length > 0) {
+                container.innerHTML = `
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>الأيقونة</th>
+                                    <th>اسم الخدمة</th>
+                                    <th>الوقت</th>
+                                    <th>تعديل</th>
+                                    <th>حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${services.map(s => `
+                                    <tr>
+                                        <td><i class="bi ${s.icon || 'bi-bookmark'}"></i></td>
+                                        <td>${s.nameAr}</td>
+                                        <td>${s.estimatedTime}</td>
+                                        <td>
+                                            <button class="admin-btn admin-btn-outline admin-btn-sm" style="color:var(--primary)" onclick="editService(${s.id}, '${s.nameAr.replace(/'/g, "\\'")}', '${s.serviceKey}', '${s.estimatedTime}', '${s.icon}')">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button class="admin-btn admin-btn-outline admin-btn-sm" style="color:var(--danger)" onclick="deleteService(${s.id})">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>`;
+            } else {
+                container.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem">لا توجد خدمات مضافة لهذه الجهة</p>';
+            }
+        } catch(e) {
+            document.getElementById('services-list').innerHTML = '<p style="color:var(--danger)">فشل تحميل الخدمات</p>';
+        }
+    }
+
+    function editService(id, nameAr, serviceKey, estimatedTime, icon) {
+        document.getElementById('service-id').value = id;
+        document.getElementById('service-name-ar').value = nameAr;
+        document.getElementById('service-key').value = serviceKey;
+        document.getElementById('service-time').value = estimatedTime;
+        document.getElementById('service-icon').value = icon;
+        document.getElementById('service-form-title').textContent = 'تعديل الخدمة';
+        document.getElementById('save-service-btn').textContent = 'حفظ التعديلات';
+        document.getElementById('cancel-service-btn').style.display = 'inline-block';
+    }
+
+    function clearServiceForm() {
+        document.getElementById('service-id').value = '';
+        document.getElementById('service-name-ar').value = '';
+        document.getElementById('service-key').value = '';
+        document.getElementById('service-time').value = '';
+        document.getElementById('service-icon').value = '';
+        document.getElementById('service-form-title').textContent = 'إضافة خدمة جديدة';
+        document.getElementById('save-service-btn').textContent = 'إضافة الخدمة';
+        document.getElementById('cancel-service-btn').style.display = 'none';
+    }
+
+    async function saveOperatorService() {
+        const branchId = document.getElementById('settings-branch-id').value;
+        const b = allBranches.find(x => x.id === parseInt(branchId));
+        if (!b) return;
+        
+        const serviceId = document.getElementById('service-id').value;
+        const nameAr = document.getElementById('service-name-ar').value.trim();
+        const serviceKey = document.getElementById('service-key').value.trim();
+        const estimatedTime = document.getElementById('service-time').value.trim();
+        const icon = document.getElementById('service-icon').value.trim();
+        
+        if (!nameAr || !serviceKey) {
+            AdminUI.showToast('يرجى ملء اسم الخدمة ومفتاح الخدمة', 'error');
+            return;
+        }
+
+        const dto = {
+            operatorId: b.operatorId,
+            serviceKey,
+            nameAr,
+            estimatedTime: estimatedTime || '15 دقيقة',
+            icon: icon || 'bi-bookmark'
+        };
+
+        try {
+            if (serviceId) {
+                await API.adminv2.updateOperatorService(parseInt(serviceId), dto);
+                AdminUI.showToast('تم تعديل الخدمة بنجاح');
+            } else {
+                await API.adminv2.createOperatorService(dto);
+                AdminUI.showToast('تم إضافة الخدمة بنجاح');
+            }
+            clearServiceForm();
+            await loadOperatorServices(b.operatorId);
+        } catch(e) {
+            AdminUI.showToast(e.message || 'فشل الحفظ', 'error');
+        }
+    }
+
+    async function deleteService(id) {
+        const branchId = document.getElementById('settings-branch-id').value;
+        const b = allBranches.find(x => x.id === parseInt(branchId));
+        if (!b) return;
+
+        AdminUI.confirm('هل أنت متأكد من حذف هذه الخدمة؟', async () => {
+            try {
+                await API.adminv2.deleteOperatorService(id);
+                AdminUI.showToast('تم حذف الخدمة بنجاح');
+                await loadOperatorServices(b.operatorId);
+            } catch(e) {
+                AdminUI.showToast(e.message || 'فشل حذف الخدمة', 'error');
+            }
+        });
+    }
+
+    async function addSchedule() {
+        const branchId = document.getElementById('settings-branch-id').value;
+        const dayOfWeek = parseInt(document.getElementById('sch-day').value);
+        const openTime = document.getElementById('sch-open').value + ":00";
+        const closeTime = document.getElementById('sch-close').value + ":00";
+        const maxAppointmentsPerSlot = parseInt(document.getElementById('sch-max').value);
+
+        const dto = {
+            dayOfWeek,
+            openTime,
+            closeTime,
+            peakStartTime: "12:00:00",
+            peakEndTime: "14:00:00",
+            maxAppointmentsPerSlot
+        };
+
+        try {
+            const response = await API.admin.addSchedule(parseInt(branchId), dto);
+            AdminUI.showToast(response.message || 'تم إضافة يوم العمل بنجاح');
+            await loadBranchSettingsData(branchId);
+            await loadBranches();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast(err.message || 'فشل إضافة جدول العمل', 'error');
+        }
+    }
+
+    async function deleteSchedule(id) {
+        const branchId = document.getElementById('settings-branch-id').value;
+        AdminUI.confirm('هل أنت متأكد من حذف يوم العمل هذا؟', async () => {
+            try {
+                await API.admin.deleteSchedule(id);
+                AdminUI.showToast('تم حذف يوم العمل بنجاح');
+                await loadBranchSettingsData(branchId);
+                await loadBranches();
+            } catch (err) {
+                console.error(err);
+                AdminUI.showToast(err.message || 'فشل حذف يوم العمل', 'error');
+            }
+        });
+    }
+
+    async function addHoliday() {
+        const branchId = document.getElementById('settings-branch-id').value;
+        const date = document.getElementById('holiday-date').value;
+        const reason = document.getElementById('holiday-reason').value.trim();
+
+        if (!date || !reason) {
+            AdminUI.showToast('يرجى اختيار التاريخ وكتابة سبب الإجازة', 'error');
+            return;
+        }
+
+        const dto = { date, reason };
+
+        try {
+            const response = await API.admin.addHoliday(parseInt(branchId), dto);
+            AdminUI.showToast(response.message || 'تم إضافة الإجازة بنجاح');
+            document.getElementById('holiday-date').value = '';
+            document.getElementById('holiday-reason').value = '';
+            await loadBranchSettingsData(branchId);
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast(err.message || 'فشل إضافة الإجازة', 'error');
+        }
+    }
+
+    async function deleteHoliday(id) {
+        const branchId = document.getElementById('settings-branch-id').value;
+        AdminUI.confirm('هل أنت متأكد من إزالة هذه الإجازة؟', async () => {
+            try {
+                await API.admin.deleteHoliday(id);
+                AdminUI.showToast('تم إزالة الإجازة بنجاح');
+                await loadBranchSettingsData(branchId);
+            } catch (err) {
+                console.error(err);
+                AdminUI.showToast(err.message || 'فشل حذف الإجازة', 'error');
+            }
+        });
+    }
+</script>
+</body>
+</html>

@@ -15,6 +15,9 @@ namespace Mawidy.Application.DTOs.Branches
 
         [Required]
         public int GovernorateId { get; set; }
+
+        public int? OperatorId { get; set; }
+        public int? DistrictId { get; set; }
     }
 }
 

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -35,11 +35,51 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CenterLatitude = table.Column<double>(type: "float", nullable: false),
-                    CenterLongitude = table.Column<double>(type: "float", nullable: false)
+                    CenterLongitude = table.Column<double>(type: "float", nullable: false),
+                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameEn = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Region = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Emoji = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SortOrder = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Governorates", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Operators",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Key = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Color = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BgColor = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Emoji = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Hotline = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Operators", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ServiceDocuments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ServiceKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DocType = table.Column<int>(type: "int", nullable: false),
+                    TextAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NoteAr = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SortOrder = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ServiceDocuments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -80,6 +120,50 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Districts",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GovernorateId = table.Column<int>(type: "int", nullable: false),
+                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Districts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Districts_Governorates_GovernorateId",
+                        column: x => x.GovernorateId,
+                        principalTable: "Governorates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OperatorServices",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OperatorId = table.Column<int>(type: "int", nullable: false),
+                    ServiceKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EstimatedTime = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OperatorServices", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OperatorServices_Operators_OperatorId",
+                        column: x => x.OperatorId,
+                        principalTable: "Operators",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Branches",
                 columns: table => new
                 {
@@ -89,17 +173,38 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Latitude = table.Column<double>(type: "float", nullable: false),
                     Longitude = table.Column<double>(type: "float", nullable: false),
-                    GovernorateId = table.Column<int>(type: "int", nullable: false)
+                    GovernorateId = table.Column<int>(type: "int", nullable: false),
+                    OperatorId = table.Column<int>(type: "int", nullable: false),
+                    DistrictId = table.Column<int>(type: "int", nullable: false),
+                    NameAr = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Area = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DistanceKm = table.Column<double>(type: "float", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    QueueCount = table.Column<int>(type: "int", nullable: false),
+                    WaitTime = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Rating = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Branches", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Branches_Districts_DistrictId",
+                        column: x => x.DistrictId,
+                        principalTable: "Districts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_Branches_Governorates_GovernorateId",
                         column: x => x.GovernorateId,
                         principalTable: "Governorates",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Branches_Operators_OperatorId",
+                        column: x => x.OperatorId,
+                        principalTable: "Operators",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -219,6 +324,31 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VirtualQueueEntries",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BranchId = table.Column<int>(type: "int", nullable: false),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ServiceKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Position = table.Column<int>(type: "int", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VirtualQueueEntries", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VirtualQueueEntries_Branches_BranchId",
+                        column: x => x.BranchId,
+                        principalTable: "Branches",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Appointments",
                 columns: table => new
                 {
@@ -231,7 +361,12 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     TimeSlot = table.Column<TimeSpan>(type: "time", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     IsNotified = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ServiceKey = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CustomerPhone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    AppointmentTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -409,36 +544,36 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
 
             migrationBuilder.InsertData(
                 table: "Governorates",
-                columns: new[] { "Id", "CenterLatitude", "CenterLongitude", "Name" },
+                columns: new[] { "Id", "CenterLatitude", "CenterLongitude", "Emoji", "Name", "NameAr", "NameEn", "Region", "SortOrder" },
                 values: new object[,]
                 {
-                    { 1, 30.0626, 31.249700000000001, "???????" },
-                    { 2, 30.013100000000001, 31.2089, "??????" },
-                    { 3, 31.200099999999999, 29.918700000000001, "??????????" },
-                    { 4, 30.7226, 31.723099999999999, "???????" },
-                    { 5, 31.040900000000001, 31.381900000000002, "????????" },
-                    { 6, 30.847999999999999, 30.343599999999999, "???????" },
-                    { 7, 30.596499999999999, 30.9876, "????????" },
-                    { 8, 30.3292, 31.216799999999999, "?????????" },
-                    { 9, 30.875299999999999, 31.0364, "???????" },
-                    { 10, 31.110700000000001, 30.938800000000001, "??? ?????" },
-                    { 11, 29.308399999999999, 30.8428, "??????" },
-                    { 12, 29.066099999999999, 31.099399999999999, "??? ????" },
-                    { 13, 28.0871, 30.761800000000001, "??????" },
-                    { 14, 27.180900000000001, 31.183700000000002, "?????" },
-                    { 15, 26.556899999999999, 31.694800000000001, "?????" },
-                    { 16, 26.155100000000001, 32.716000000000001, "???" },
-                    { 17, 25.687200000000001, 32.639600000000002, "??????" },
-                    { 18, 24.088899999999999, 32.899799999999999, "?????" },
-                    { 19, 24.682600000000001, 34.153100000000002, "????? ??????" },
-                    { 20, 25.488900000000001, 29.0, "?????? ??????" },
-                    { 21, 31.354299999999999, 27.237300000000001, "?????" },
-                    { 22, 30.284099999999999, 33.625900000000001, "???? ?????" },
-                    { 23, 28.538799999999998, 33.998100000000001, "???? ?????" },
-                    { 24, 31.256499999999999, 32.284100000000002, "???????" },
-                    { 25, 30.596499999999999, 32.271500000000003, "???????????" },
-                    { 26, 29.966799999999999, 32.549799999999998, "??????" },
-                    { 27, 31.416499999999999, 31.813300000000002, "?????" }
+                    { 1, 30.0626, 31.249700000000001, "", "القاهرة", "", "", "", 0 },
+                    { 2, 30.013100000000001, 31.2089, "", "الجيزة", "", "", "", 0 },
+                    { 3, 31.200099999999999, 29.918700000000001, "", "الإسكندرية", "", "", "", 0 },
+                    { 4, 30.7226, 31.723099999999999, "", "الشرقية", "", "", "", 0 },
+                    { 5, 31.040900000000001, 31.381900000000002, "", "الدقهلية", "", "", "", 0 },
+                    { 6, 30.847999999999999, 30.343599999999999, "", "البحيرة", "", "", "", 0 },
+                    { 7, 30.596499999999999, 30.9876, "", "المنوفية", "", "", "", 0 },
+                    { 8, 30.3292, 31.216799999999999, "", "القليوبية", "", "", "", 0 },
+                    { 9, 30.875299999999999, 31.0364, "", "الغربية", "", "", "", 0 },
+                    { 10, 31.110700000000001, 30.938800000000001, "", "كفر الشيخ", "", "", "", 0 },
+                    { 11, 29.308399999999999, 30.8428, "", "الفيوم", "", "", "", 0 },
+                    { 12, 29.066099999999999, 31.099399999999999, "", "بني سويف", "", "", "", 0 },
+                    { 13, 28.0871, 30.761800000000001, "", "المنيا", "", "", "", 0 },
+                    { 14, 27.180900000000001, 31.183700000000002, "", "أسيوط", "", "", "", 0 },
+                    { 15, 26.556899999999999, 31.694800000000001, "", "سوهاج", "", "", "", 0 },
+                    { 16, 26.155100000000001, 32.716000000000001, "", "قنا", "", "", "", 0 },
+                    { 17, 25.687200000000001, 32.639600000000002, "", "الأقصر", "", "", "", 0 },
+                    { 18, 24.088899999999999, 32.899799999999999, "", "أسوان", "", "", "", 0 },
+                    { 19, 24.682600000000001, 34.153100000000002, "", "البحر الأحمر", "", "", "", 0 },
+                    { 20, 25.488900000000001, 29.0, "", "الوادي الجديد", "", "", "", 0 },
+                    { 21, 31.354299999999999, 27.237300000000001, "", "مطروح", "", "", "", 0 },
+                    { 22, 30.284099999999999, 33.625900000000001, "", "شمال سيناء", "", "", "", 0 },
+                    { 23, 28.538799999999998, 33.998100000000001, "", "جنوب سيناء", "", "", "", 0 },
+                    { 24, 31.256499999999999, 32.284100000000002, "", "بورسعيد", "", "", "", 0 },
+                    { 25, 30.596499999999999, 32.271500000000003, "", "الإسماعيلية", "", "", "", 0 },
+                    { 26, 29.966799999999999, 32.549799999999998, "", "السويس", "", "", "", 0 },
+                    { 27, 31.416499999999999, 31.813300000000002, "", "دمياط", "", "", "", 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -446,11 +581,11 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 columns: new[] { "Id", "Description", "DurationMinutes", "Name", "RequiredDocuments" },
                 values: new object[,]
                 {
-                    { 1, "??????? ?? ????? ????? ????? ??????", 30, "????? ????? ??????", "????? ????? ?????? ?????? ????????\n???? ????? ?????\n????? ???????" },
-                    { 2, "??????? ????? ?????", 20, "????? ???????", "????? ????? ?????? ???? ?? ????\n??? ??????\n????? ??????? ??????? ?? ????????" },
-                    { 3, "????? ??? ??????", 45, "??? ??????", "????? ????? ?????? ???????\n????? ????? ???????\n?????? ??? ????? ?? ??????? ??? ?? 21 ???" },
-                    { 4, "??????? ????? ????", 20, "????? ??????", "????? ????? ?????? ???????\n????? ?????? ?? ???????? ?? ??????\n????? ????? ?????? ????? ?????" },
-                    { 5, "??????? ??? ??????", 15, "??? ??????", "????? ????? ??????\n??? ??????" }
+                    { 1, "الحصول على بطاقة الرقم القومي لأول مرة أو تجديدها", 30, "إصدار بطاقة الرقم القومي", "استمارة الحصول على بطاقة الرقم القومي\nمستند إثبات الشخصية الحالي\nمستند إثبات محل الإقامة" },
+                    { 2, "الحصول على شهادة ميلاد مميكنة", 20, "إصدار شهادة الميلاد", "صورة بطاقة الرقم القومي للأب أو الأم\nطلب إصدار شهادة الميلاد" },
+                    { 3, "توثيق الزواج وإصدار الوثيقة", 45, "وثيقة الزواج", "صورة بطاقة الرقم القومي للزوج والزوجة\nالشهادة الصحية" },
+                    { 4, "توثيق الطلاق وإصدار الوثيقة", 20, "وثيقة الطلاق", "صورة بطاقة الرقم القومي للطرفين\nحكم المحكمة أو إقرار الطلاق" },
+                    { 5, "إصدار قيد عائلي مميكن", 15, "قيد عائلي", "صور بطاقات الرقم القومي لأفراد الأسرة\nشهادات الميلاد المميكنة للأولاد" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -518,9 +653,19 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Branches_DistrictId",
+                table: "Branches",
+                column: "DistrictId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Branches_GovernorateId",
                 table: "Branches",
                 column: "GovernorateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Branches_OperatorId",
+                table: "Branches",
+                column: "OperatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_BranchHolidays_BranchId",
@@ -541,6 +686,16 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 name: "IX_Complaints_UserId",
                 table: "Complaints",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Districts_GovernorateId",
+                table: "Districts",
+                column: "GovernorateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OperatorServices_OperatorId",
+                table: "OperatorServices",
+                column: "OperatorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_AppointmentId",
@@ -567,6 +722,11 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 name: "IX_ServiceUnavailabilities_ServiceTypeId",
                 table: "ServiceUnavailabilities",
                 column: "ServiceTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VirtualQueueEntries_BranchId",
+                table: "VirtualQueueEntries",
+                column: "BranchId");
         }
 
         /// <inheritdoc />
@@ -597,10 +757,19 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 name: "Complaints");
 
             migrationBuilder.DropTable(
+                name: "OperatorServices");
+
+            migrationBuilder.DropTable(
                 name: "Ratings");
 
             migrationBuilder.DropTable(
+                name: "ServiceDocuments");
+
+            migrationBuilder.DropTable(
                 name: "ServiceUnavailabilities");
+
+            migrationBuilder.DropTable(
+                name: "VirtualQueueEntries");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -618,8 +787,13 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 name: "Branches");
 
             migrationBuilder.DropTable(
+                name: "Districts");
+
+            migrationBuilder.DropTable(
+                name: "Operators");
+
+            migrationBuilder.DropTable(
                 name: "Governorates");
         }
     }
 }
-
