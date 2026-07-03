@@ -1,0 +1,356 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\my project\\VS\\RegisistryV2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\account\\resetpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\account\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\account\\forgotpassword.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\account\\registerconfirmation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\account\\registerconfirmation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\admindashboard\\editbranch.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\admindashboard\\editbranch.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\controllers\\admincomplaintcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\controllers\\admincomplaintcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\admindashboard\\createbranch.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\admindashboard\\createbranch.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\appointment\\selectbranch.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\appointment\\selectbranch.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\views\\admindashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\views\\admindashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\controllers\\admindashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\controllers\\admindashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\models\\roles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\models\\roles.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\controllers\\ratingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\controllers\\ratingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\controllers\\complaintcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\controllers\\complaintcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\controllers\\appointmentcontroller .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\controllers\\appointmentcontroller .cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\repository\\appointmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\repository\\appointmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\repository\\interface\\iappointmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\repository\\interface\\iappointmentrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\repository\\ratingrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\repository\\ratingrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\repository\\complaintrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\repository\\complaintrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|e:\\my project\\vs\\regisistryv2\\regisistryv2\\repository\\branchrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F0439E35-E82D-420F-9CB8-5DCD30308C4A}|RegisistryV2\\RegisistryV2.csproj|solutionrelative:regisistryv2\\repository\\branchrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ResetPassword.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Account\\ResetPassword.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\Account\\ResetPassword.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Account\\ResetPassword.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\Account\\ResetPassword.cshtml",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAwwCwAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-27T10:04:38.154Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "RegisterConfirmation.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Account\\RegisterConfirmation.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\Account\\RegisterConfirmation.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Account\\RegisterConfirmation.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\Account\\RegisterConfirmation.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-27T10:04:32.707Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ForgotPassword.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Account\\ForgotPassword.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\Account\\ForgotPassword.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Account\\ForgotPassword.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\Account\\ForgotPassword.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACkAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-27T10:04:20.023Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "EditBranch.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\AdminDashboard\\EditBranch.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\AdminDashboard\\EditBranch.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\AdminDashboard\\EditBranch.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\AdminDashboard\\EditBranch.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-14T09:49:23.062Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CreateBranch.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\AdminDashboard\\CreateBranch.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\AdminDashboard\\CreateBranch.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\AdminDashboard\\CreateBranch.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\AdminDashboard\\CreateBranch.cshtml",
+              "ViewState": "AgIAADoAAAAAAAAAAAAAAGcAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-14T09:45:26.821Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "SelectBranch.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Appointment\\SelectBranch.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\Appointment\\SelectBranch.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\Appointment\\SelectBranch.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\Appointment\\SelectBranch.cshtml",
+              "ViewState": "AgIAAKQAAAAAAAAAAADwv9kAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-14T09:44:12.353Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\AdminDashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "RegisistryV2\\Views\\AdminDashboard\\Index.cshtml",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Views\\AdminDashboard\\Index.cshtml",
+              "RelativeToolTip": "RegisistryV2\\Views\\AdminDashboard\\Index.cshtml",
+              "ViewState": "AgIAABAAAAAAAAAAAADwvxQAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-06-14T09:40:12.048Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Roles.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Models\\Roles.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Models\\Roles.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Models\\Roles.cs",
+              "RelativeToolTip": "RegisistryV2\\Models\\Roles.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:26:11.251Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "AdminDashboardController.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\AdminDashboardController.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Controllers\\AdminDashboardController.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\AdminDashboardController.cs",
+              "RelativeToolTip": "RegisistryV2\\Controllers\\AdminDashboardController.cs",
+              "ViewState": "AgIAANUBAAAAAAAAAAAIwGECAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:25:10.978Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Controllers\\HomeController.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "RegisistryV2\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAABwAAAAAAAAAAAAkwDwAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:24:48.549Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "RatingController.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\RatingController.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Controllers\\RatingController.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\RatingController.cs",
+              "RelativeToolTip": "RegisistryV2\\Controllers\\RatingController.cs",
+              "ViewState": "AgIAADcAAAAAAAAAAAAkwFcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:24:28.833Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "AdminComplaintController.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\AdminComplaintController.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Controllers\\AdminComplaintController.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\AdminComplaintController.cs",
+              "RelativeToolTip": "RegisistryV2\\Controllers\\AdminComplaintController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAgAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:23:42.899Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ComplaintController.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\ComplaintController.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Controllers\\ComplaintController.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\ComplaintController.cs",
+              "RelativeToolTip": "RegisistryV2\\Controllers\\ComplaintController.cs",
+              "ViewState": "AgIAADcAAAAAAAAAAAAkwFcAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:23:21.94Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "IAppointmentRepository.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\Interface\\IAppointmentRepository.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Repository\\Interface\\IAppointmentRepository.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\Interface\\IAppointmentRepository.cs",
+              "RelativeToolTip": "RegisistryV2\\Repository\\Interface\\IAppointmentRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:21:09.805Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "AppointmentController .cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\AppointmentController .cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Controllers\\AppointmentController .cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Controllers\\AppointmentController .cs",
+              "RelativeToolTip": "RegisistryV2\\Controllers\\AppointmentController .cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAOEAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:20:19.437Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Program.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Program.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Program.cs",
+              "RelativeToolTip": "RegisistryV2\\Program.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAACMAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:16:17.642Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "RatingRepository.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\RatingRepository.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Repository\\RatingRepository.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\RatingRepository.cs",
+              "RelativeToolTip": "RegisistryV2\\Repository\\RatingRepository.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAA1wCoAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:15:01.448Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "ComplaintRepository.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\ComplaintRepository.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Repository\\ComplaintRepository.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\ComplaintRepository.cs",
+              "RelativeToolTip": "RegisistryV2\\Repository\\ComplaintRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAQwCUAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:15:00.757Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "BranchRepository.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\BranchRepository.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Repository\\BranchRepository.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\BranchRepository.cs",
+              "RelativeToolTip": "RegisistryV2\\Repository\\BranchRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:14:59.913Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "AppointmentRepository.cs",
+              "DocumentMoniker": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\AppointmentRepository.cs",
+              "RelativeDocumentMoniker": "RegisistryV2\\Repository\\AppointmentRepository.cs",
+              "ToolTip": "E:\\my project\\VS\\RegisistryV2\\RegisistryV2\\Repository\\AppointmentRepository.cs",
+              "RelativeToolTip": "RegisistryV2\\Repository\\AppointmentRepository.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAgwCwAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-14T09:14:58.423Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

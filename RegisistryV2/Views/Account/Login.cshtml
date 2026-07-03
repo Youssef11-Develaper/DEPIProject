@@ -1,0 +1,82 @@
+﻿@using RegisistryV2.ViewModel
+@model LoginViewModel
+@{
+    ViewData["Title"] = "تسجيل الدخول";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    تسجيل الدخول
+                </div>
+                <div class="card-body p-4">
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="All" class="alert alert-danger d-none" id="vs"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label">البريد الإلكتروني</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input asp-for="Email" class="form-control" placeholder="example@email.com" />
+                            </div>
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">كلمة المرور</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input asp-for="Password" class="form-control" placeholder="••••••••" />
+                                <button class="btn btn-outline-secondary" type="button" id="togglePwd">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="RememberMe" class="form-check-input" />
+                            <label class="form-check-label">تذكرني</label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>دخول
+                        </button>
+
+                        <div class="text-center mt-3">
+                            <a href="/Account/ForgotPassword" style="color:#2E86C1;font-size:0.85rem">
+                                نسيت كلمة المرور؟
+                            </a>
+                        </div>
+
+                        <hr />
+
+                        <div class="text-center">
+                            <span class="text-muted">مش عندك حساب؟</span>
+                            <a href="/Account/Register" class="fw-bold" style="color:#1B4F72">
+                                إنشاء حساب
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const vs = document.getElementById('vs');
+        if (vs && vs.querySelectorAll('li').length > 0) vs.classList.remove('d-none');
+
+        document.getElementById('togglePwd').addEventListener('click', function() {
+            const input = document.querySelector('input[name="Password"]');
+            const icon = this.querySelector('i');
+            input.type = input.type === 'password' ? 'text' : 'password';
+            icon.className = input.type === 'password' ? 'bi bi-eye' : 'bi bi-eye-slash';
+        });
+    </script>
+}
