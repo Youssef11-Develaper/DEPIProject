@@ -13,6 +13,7 @@ namespace Mawidy.Application.DTOs.Auth
         public string? GovernorateName { get; set; }
         public string? Area { get; set; }
         public int? BranchId { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 }
 

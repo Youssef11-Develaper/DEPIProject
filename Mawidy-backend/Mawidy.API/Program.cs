@@ -3,6 +3,7 @@ using Mawidy.Domain.Entities;
 using Mawidy.Domain.Enums;
 using Mawidy.Infrastructure.Persistence.Repositories;
 using Mawidy.Application.Interfaces;
+using Microsoft.Extensions.FileProviders;
 using Mawidy.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +29,12 @@ builder.Services.AddDbContext<TelecomDbContext>(options =>
 
 builder.Services.AddScoped<IAppDbContext>(provider =>
     provider.GetRequiredService<TelecomDbContext>());
+
+builder.Services.AddScoped<IApplicationDbContext>(provider =>
+    provider.GetRequiredService<AppDbContext>());
+
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(Mawidy.Application.Features.Courts.Queries.GetCourtsQuery).Assembly));
 
 builder.Services.AddHostedService<ReminderService>();
 
@@ -137,6 +144,9 @@ var app = builder.Build();
 // Seed Roles and Admin
 using (var scope = app.Services.CreateScope())
 {
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await DbInitializer.SeedAsync(context);
+
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -177,6 +187,17 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+var fileServerOptions = new FileServerOptions
+{
+    FileProvider = new PhysicalFileProvider(@"f:\DEPIProject\Mawidy-frontend"),
+    RequestPath = "",
+    EnableDefaultFiles = true
+};
+fileServerOptions.DefaultFilesOptions.DefaultFileNames.Clear();
+fileServerOptions.DefaultFilesOptions.DefaultFileNames.Add("index.html");
+app.UseFileServer(fileServerOptions);
+
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();

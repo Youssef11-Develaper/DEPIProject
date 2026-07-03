@@ -30,5 +30,10 @@ namespace Mawidy.Domain.Entities
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
         public ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
         public ICollection<Rating> Ratings { get; set; } = new List<Rating>();
+
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsActive { get; set; } = true;
     }
 }

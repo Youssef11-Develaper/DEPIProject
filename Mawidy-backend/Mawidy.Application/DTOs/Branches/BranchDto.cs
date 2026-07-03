@@ -1,4 +1,4 @@
-
+using System.Collections.Generic;
 
 namespace Mawidy.Application.DTOs.Branches
 {
@@ -13,7 +13,9 @@ namespace Mawidy.Application.DTOs.Branches
         public string GovernorateName { get; set; } = string.Empty;
         public int WorkingDaysCount { get; set; }
         public double AverageRating { get; set; }
+        public int OperatorId { get; set; }
+        public int DistrictId { get; set; }
         public List<ScheduleDto> Schedules { get; set; } = new();
+        public List<HolidayDto> Holidays { get; set; } = new();
     }
 }
-

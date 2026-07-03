@@ -541,25 +541,30 @@ footer {
 <body>
 
 <!-- NAV -->
-<nav>
-  <a href="User_front.html" class="nav-logo">
-    <div class="nav-logo-icon">⚖️</div>
-    <div class="nav-logo-text">مـوعـدي <span>Mawidy</span></div>
-  </a>
-  <div class="breadcrumb">
-    <a href="User_front.html">الرئيسية</a>
-    <span>/</span>
-    <a href="User_front.html">الخدمات</a>
-    <span>/</span>
-    <span style="color:var(--court);font-weight:700">⚖️ المحاكم</span>
-  </div>
-  <div class="nav-links">
-    <button class="nav-link" onclick="scrollSec('#services')">الخدمات</button>
-    <button class="nav-link" onclick="scrollSec('#courts-list')">الفروع</button>
-    <button class="nav-link" onclick="scrollSec('#tracking')">متابعة قضية</button>
-    <button class="nav-link" onclick="scrollSec('#booking')">احجز موعد</button>
-    <button class="nav-btn" onclick="openBookModal()">📅 احجز الآن</button>
-  </div>
+<nav class="navbar" style="background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.08); height: 64px; position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; list-style: none;">
+    <a href="index.html" class="navbar-brand" style="color: white; font-weight: 900; font-size: 1.4rem; text-decoration: none; display: flex; align-items: center; gap: 10px;">
+        <i class="bi bi-calendar2-check-fill" style="color: #6366F1;"></i>
+        مـوعـدي
+    </a>
+    <ul class="navbar-nav" id="navLinks" style="display: flex; align-items: center; gap: 8px; list-style: none;">
+        <li><a href="index.html" class="nav-link" style="color: white;">الرئيسية</a></li>
+        <li class="nav-item-dropdown">
+            <a class="nav-link dropdown-toggle" style="color: white;">القطاعات المتاحة</a>
+            <ul class="dropdown-menu">
+                <li><a href="civil-registry.html" class="dropdown-item"><i class="bi bi-building"></i> السجل المدني</a></li>
+                <li><a href="mawidy-courts.html" class="dropdown-item"><i class="bi bi-bank"></i> المحاكم والنيابات</a></li>
+                <li><a href="telecom.html" class="dropdown-item"><i class="bi bi-phone"></i> شركات الاتصالات</a></li>
+                <li><a href="hospitals.html" class="dropdown-item"><i class="bi bi-heart-pulse"></i> المستشفيات والعيادات</a></li>
+                <li><a href="banks.html" class="dropdown-item"><i class="bi bi-cash-coin"></i> البنوك والخدمات المالية</a></li>
+            </ul>
+        </li>
+        <li><a href="my-appointments.html" class="nav-link" id="myAppointmentsLink" style="display:none">مواعيدي</a></li>
+        <li><a href="complaints.html" class="nav-link" id="complaintsLink" style="display:none">الشكاوى</a></li>
+        <li><a href="profile.html" class="nav-link" id="profileLink" style="display:none">حسابي</a></li>
+        <li id="adminLink" style="display:none"><a href="admin-v2/index.html" class="nav-link" style="color: #6366F1; font-weight: 700;">لوحة التحكم</a></li>
+        <li id="loginBtn"><button class="btn btn-outline" onclick="showAuthModal()" style="color:white;border-color:rgba(255,255,255,0.25)">تسجيل الدخول</button></li>
+        <li id="logoutBtn" style="display:none"><button class="btn btn-outline" onclick="logout()" style="color:white;border-color:rgba(255,255,255,0.25)">خروج</button></li>
+    </ul>
 </nav>
 
 <!-- HERO -->
@@ -1112,7 +1117,7 @@ footer {
             <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--gray);border-radius:10px">
               <span style="font-size:16px">📅</span>
               <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--navy)">الثلاثاء 22 يناير</div><div style="font-size:11px;color:var(--muted)">142 جلسة مقررة</div></div>
-              <div style="font-size:12px;font-weight:700;color:#E65100)">مزدحم</div>
+              <div style="font-size:12px;font-weight:700;color:#E65100">مزدحم</div>
             </div>
           </div>
         </div>

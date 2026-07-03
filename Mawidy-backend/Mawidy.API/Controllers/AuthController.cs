@@ -115,7 +115,8 @@ namespace Mawidy.API.Controllers
                 GovernorateId = user.GovernorateId,
                 GovernorateName = user.Governorate?.Name,
                 Area = user.Area,
-                BranchId = user.BranchId
+                BranchId = user.BranchId,
+                PhoneNumber = user.PhoneNumber
             }));
         }
 

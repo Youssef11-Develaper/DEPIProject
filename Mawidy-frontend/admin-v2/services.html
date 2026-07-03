@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الخدمات - لوحة التحكم v2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/admin-v2/css/admin.css">
+    <style>
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .service-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .service-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header id="header-container" class="admin-header"></header>
+        
+        <main class="page-content">
+            <div class="page-title-area">
+                <div>
+                    <h1 class="page-title">إدارة الخدمات الحكومية</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="/admin-v2/index.html">الرئيسية</a></li>
+                        <li>إدارة الخدمات</li>
+                    </ul>
+                </div>
+                <div>
+                    <button class="admin-btn admin-btn-primary" onclick="openServiceModal()">
+                        <i class="bi bi-plus-circle"></i> إضافة خدمة جديدة
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="filter-group" style="flex: 1;">
+                    <label class="admin-form-label">بحث باسم الخدمة أو الوصف</label>
+                    <input type="text" id="search-service" class="admin-form-control" placeholder="بحث..." oninput="renderServices()">
+                </div>
+            </div>
+
+            <!-- Services Container -->
+            <div class="services-grid" id="services-container">
+                <!-- Loaded dynamically -->
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Add/Edit Service Modal -->
+<div class="modal-backdrop" id="service-modal">
+    <div class="admin-modal" style="max-width: 550px;">
+        <div class="admin-modal-header">
+            <span class="admin-modal-title" id="modal-title">إضافة خدمة جديدة</span>
+            <button class="admin-modal-close" onclick="closeServiceModal()">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <input type="hidden" id="service-id">
+            
+            <div class="admin-form-group">
+                <label class="admin-form-label">اسم الخدمة</label>
+                <input type="text" id="service-name" class="admin-form-control" placeholder="اسم الخدمة (مثال: استخراج بطاقة رقم قومي)">
+            </div>
+            
+            <div class="admin-form-group">
+                <label class="admin-form-label">وصف الخدمة</label>
+                <textarea id="service-desc" class="admin-form-control" rows="3" placeholder="اكتب وصفاً موجزاً عن الخدمة والجمهور المستهدف..."></textarea>
+            </div>
+            
+            <div class="admin-form-group">
+                <label class="admin-form-label">مدة تقديم الخدمة (بالدقائق)</label>
+                <input type="number" id="service-duration" class="admin-form-control" min="5" max="120" value="15">
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">المستندات المطلوبة (اختياري - يفصل بين المستندات بسطر جديد)</label>
+                <textarea id="service-docs" class="admin-form-control" rows="4" placeholder="مثال:\n- أصل بطاقة الرقم القومي\n- أصل المؤهل الدراسي"></textarea>
+            </div>
+        </div>
+        <div class="admin-modal-footer">
+            <button class="admin-btn admin-btn-outline" onclick="closeServiceModal()">إلغاء</button>
+            <button class="admin-btn admin-btn-primary" id="saveServiceBtn" onclick="saveService()">حفظ الخدمة</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/api.js"></script>
+<script src="/admin-v2/js/admin-api.js"></script>
+<script src="/admin-v2/js/admin-ui.js"></script>
+
+<script>
+    let allServices = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        AdminUI.init('services');
+        await loadServices();
+    });
+
+    async function loadServices() {
+        try {
+            const response = await API.admin.getServices();
+            allServices = response.data || [];
+            renderServices();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast('حدث خطأ أثناء تحميل الخدمات', 'error');
+        }
+    }
+
+    function renderServices() {
+        const search = document.getElementById('search-service').value.trim().toLowerCase();
+        const container = document.getElementById('services-container');
+
+        let filtered = allServices;
+
+        if (search) {
+            filtered = filtered.filter(s => 
+                s.name.toLowerCase().includes(search) || 
+                s.description.toLowerCase().includes(search)
+            );
+        }
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div style="grid-column: 1/-1; text-align:center; padding: 40px; color:var(--text-muted)">
+                    <i class="bi bi-bookmark-x" style="font-size:3rem; display:block; margin-bottom:10px"></i>
+                    لا توجد خدمات مطابقة للبحث
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filtered.map(s => {
+            const docsList = s.requiredDocuments 
+                ? s.requiredDocuments.split('\n').filter(d => d.trim()).map(d => `<li>${d}</li>`).join('')
+                : '<li>لا توجد مستندات خاصة مطلوبة</li>';
+
+            return `
+                <div class="service-card">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px">
+                            <h3 style="font-weight:700; color:var(--primary); font-size:1.1rem; flex:1">${s.name}</h3>
+                            <span class="admin-badge badge-info" style="white-space:nowrap"><i class="bi bi-clock"></i> ${s.durationMinutes} دقيقة</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:var(--text-color); margin-bottom:15px; line-height:1.6">${s.description}</p>
+                        
+                        <div style="margin-bottom:15px">
+                            <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted); display:block; margin-bottom:5px">المستندات المطلوبة:</span>
+                            <ul style="font-size:0.8rem; padding-right:15px; color:var(--text-muted); display:flex; flex-direction:column; gap:4px">
+                                ${docsList}
+                            </ul>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:8px; border-top:1px solid var(--border-color); padding-top:15px; margin-top:10px">
+                        <button class="admin-btn admin-btn-outline admin-btn-sm" style="flex:1" onclick="openServiceModal(${s.id})">
+                            <i class="bi bi-pencil"></i> تعديل الخدمة
+                        </button>
+                        <button class="admin-btn admin-btn-danger admin-btn-sm" onclick="deleteService(${s.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function openServiceModal(id = null) {
+        const modal = document.getElementById('service-modal');
+        document.getElementById('service-id').value = id || '';
+        document.getElementById('modal-title').textContent = id ? 'تعديل بيانات الخدمة' : 'إضافة خدمة جديدة';
+
+        if (id) {
+            const s = allServices.find(x => x.id === id);
+            document.getElementById('service-name').value = s.name;
+            document.getElementById('service-desc').value = s.description;
+            document.getElementById('service-duration').value = s.durationMinutes;
+            document.getElementById('service-docs').value = s.requiredDocuments || '';
+        } else {
+            document.getElementById('service-name').value = '';
+            document.getElementById('service-desc').value = '';
+            document.getElementById('service-duration').value = 15;
+            document.getElementById('service-docs').value = '';
+        }
+
+        modal.classList.add('show');
+    }
+
+    function closeServiceModal() {
+        document.getElementById('service-modal').classList.remove('show');
+    }
+
+    async function saveService() {
+        const id = document.getElementById('service-id').value;
+        const name = document.getElementById('service-name').value.trim();
+        const description = document.getElementById('service-desc').value.trim();
+        const durationMinutes = parseInt(document.getElementById('service-duration').value);
+        const requiredDocuments = document.getElementById('service-docs').value.trim();
+        const btn = document.getElementById('saveServiceBtn');
+
+        if (!name || !description || isNaN(durationMinutes) || durationMinutes < 5) {
+            AdminUI.showToast('يرجى كتابة الاسم والوصف وتحديد مدة لا تقل عن 5 دقائق', 'error');
+            return;
+        }
+
+        const dto = { name, description, durationMinutes, requiredDocuments };
+        UI.showLoading(btn);
+
+        try {
+            if (id) {
+                await API.admin.updateService(parseInt(id), dto);
+                AdminUI.showToast('تم تحديث الخدمة بنجاح');
+            } else {
+                await API.admin.createService(dto);
+                AdminUI.showToast('تم إضافة الخدمة الجديدة بنجاح');
+            }
+            closeServiceModal();
+            await loadServices();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast(err.message || 'فشل حفظ الخدمة', 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+
+    async function deleteService(id) {
+        AdminUI.confirm('هل أنت متأكد من حذف هذه الخدمة نهائياً؟ قد يؤدي هذا إلى تعطل المواعيد الحالية المرتبطة بها.', async () => {
+            try {
+                await API.admin.deleteService(id);
+                AdminUI.showToast('تم حذف الخدمة بنجاح');
+                await loadServices();
+            } catch (err) {
+                console.error(err);
+                AdminUI.showToast(err.message || 'فشل حذف الخدمة', 'error');
+            }
+        });
+    }
+</script>
+</body>
+</html>
