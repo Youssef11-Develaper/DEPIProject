@@ -15,6 +15,56 @@ namespace Mawidy.Infrastructure.Persistence
             // Apply any pending migrations automatically on startup
             await context.Database.MigrateAsync();
 
+            // Populate missing Governorate fields (NameAr, NameEn, Region, Emoji, SortOrder) if empty
+            var firstGov = await context.Governorates.FirstOrDefaultAsync();
+            if (firstGov != null && string.IsNullOrEmpty(firstGov.NameAr))
+            {
+                var govUpdates = new List<Governorate>
+                {
+                    new Governorate { Id =  1, Name = "القاهرة", NameAr = "القاهرة",       NameEn = "Cairo",          Region = "القاهرة الكبرى",  Emoji = "🏛", SortOrder =  1, CenterLatitude = 30.0626, CenterLongitude = 31.2497 },
+                    new Governorate { Id =  2, Name = "الجيزة", NameAr = "الجيزة",        NameEn = "Giza",           Region = "القاهرة الكبرى",  Emoji = "🗿", SortOrder =  2, CenterLatitude = 30.0131, CenterLongitude = 31.2089 },
+                    new Governorate { Id =  3, Name = "القليوبية", NameAr = "القليوبية",     NameEn = "Qalyubia",       Region = "القاهرة الكبرى",  Emoji = "🌆", SortOrder =  3, CenterLatitude = 30.3292, CenterLongitude = 31.2168 },
+                    new Governorate { Id =  4, Name = "الإسكندرية", NameAr = "الإسكندرية",    NameEn = "Alexandria",     Region = "الساحل الشمالي",  Emoji = "🏖", SortOrder =  4, CenterLatitude = 31.2001, CenterLongitude = 29.9187 },
+                    new Governorate { Id =  5, Name = "البحيرة", NameAr = "البحيرة",       NameEn = "Beheira",        Region = "الدلتا",           Emoji = "🌾", SortOrder =  5, CenterLatitude = 30.8480, CenterLongitude = 30.3436 },
+                    new Governorate { Id =  6, Name = "الغربية", NameAr = "الغربية",       NameEn = "Gharbia",        Region = "الدلتا",           Emoji = "🏙", SortOrder =  6, CenterLatitude = 30.8753, CenterLongitude = 31.0364 },
+                    new Governorate { Id =  7, Name = "المنوفية", NameAr = "المنوفية",      NameEn = "Monufia",        Region = "الدلتا",           Emoji = "🌿", SortOrder =  7, CenterLatitude = 30.5965, CenterLongitude = 30.9876 },
+                    new Governorate { Id =  8, Name = "الدقهلية", NameAr = "الدقهلية",      NameEn = "Dakahlia",       Region = "الدلتا",           Emoji = "🌊", SortOrder =  8, CenterLatitude = 31.0409, CenterLongitude = 31.3819 },
+                    new Governorate { Id =  9, Name = "الشرقية", NameAr = "الشرقية",       NameEn = "Sharqia",        Region = "الدلتا",           Emoji = "🌻", SortOrder =  9, CenterLatitude = 30.7226, CenterLongitude = 31.7231 },
+                    new Governorate { Id = 10, Name = "كفر الشيخ", NameAr = "كفر الشيخ",     NameEn = "Kafr el-Sheikh", Region = "الدلتا",           Emoji = "🐟", SortOrder = 10, CenterLatitude = 31.1107, CenterLongitude = 30.9388 },
+                    new Governorate { Id = 11, Name = "دمياط", NameAr = "دمياط",         NameEn = "Damietta",       Region = "الدلتا",           Emoji = "⚓", SortOrder = 11, CenterLatitude = 31.4165, CenterLongitude = 31.8133 },
+                    new Governorate { Id = 12, Name = "الإسماعيلية", NameAr = "الإسماعيلية",   NameEn = "Ismailia",       Region = "قناة السويس",      Emoji = "🚢", SortOrder = 12, CenterLatitude = 30.5965, CenterLongitude = 32.2715 },
+                    new Governorate { Id = 13, Name = "بورسعيد", NameAr = "بورسعيد",       NameEn = "Port Said",      Region = "قناة السويس",      Emoji = "🔵", SortOrder = 13, CenterLatitude = 31.2565, CenterLongitude = 32.2841 },
+                    new Governorate { Id = 14, Name = "السويس", NameAr = "السويس",        NameEn = "Suez",           Region = "قناة السويس",      Emoji = "⛽", SortOrder = 14, CenterLatitude = 29.9668, CenterLongitude = 32.5498 },
+                    new Governorate { Id = 15, Name = "شمال سيناء", NameAr = "شمال سيناء",    NameEn = "North Sinai",    Region = "سيناء",            Emoji = "🏜", SortOrder = 15, CenterLatitude = 30.2841, CenterLongitude = 33.6259 },
+                    new Governorate { Id = 16, Name = "جنوب سيناء", NameAr = "جنوب سيناء",    NameEn = "South Sinai",    Region = "سيناء",            Emoji = "🌴", SortOrder = 16, CenterLatitude = 28.5388, CenterLongitude = 33.9981 },
+                    new Governorate { Id = 17, Name = "الفيوم", NameAr = "الفيوم",        NameEn = "Faiyum",         Region = "الصعيد",           Emoji = "🌺", SortOrder = 17, CenterLatitude = 29.3084, CenterLongitude = 30.8428 },
+                    new Governorate { Id = 18, Name = "بني سويف", NameAr = "بني سويف",      NameEn = "Beni Suef",      Region = "الصعيد",           Emoji = "🏺", SortOrder = 18, CenterLatitude = 29.0661, CenterLongitude = 31.0994 },
+                    new Governorate { Id = 19, Name = "المنيا", NameAr = "المنيا",          NameEn = "Minya",          Region = "الصعيد",           Emoji = "🏛", SortOrder = 19, CenterLatitude = 28.0871, CenterLongitude = 30.7618 },
+                    new Governorate { Id = 20, Name = "أسيوط", NameAr = "أسيوط",         NameEn = "Asyut",          Region = "الصعيد",           Emoji = "🦅", SortOrder = 20, CenterLatitude = 27.1809, CenterLongitude = 31.1837 },
+                    new Governorate { Id = 21, Name = "سوهاج", NameAr = "سوهاج",         NameEn = "Sohag",          Region = "الصعيد",           Emoji = "🌾", SortOrder = 21, CenterLatitude = 26.5569, CenterLongitude = 31.6948 },
+                    new Governorate { Id = 22, Name = "قنا", NameAr = "قنا",           NameEn = "Qena",           Region = "الصعيد",           Emoji = "🏺", SortOrder = 22, CenterLatitude = 26.1551, CenterLongitude = 32.7160 },
+                    new Governorate { Id = 23, Name = "الأقصر", NameAr = "الأقصر",        NameEn = "Luxor",          Region = "الصعيد",           Emoji = "🛕", SortOrder = 23, CenterLatitude = 25.6872, CenterLongitude = 32.6396 },
+                    new Governorate { Id = 24, Name = "أسوان", NameAr = "أسوان",         NameEn = "Aswan",          Region = "الصعيد",           Emoji = "🌊", SortOrder = 24, CenterLatitude = 24.0889, CenterLongitude = 32.8998 },
+                    new Governorate { Id = 25, Name = "مطروح", NameAr = "مطروح",         NameEn = "Matrouh",        Region = "الساحل الشمالي",  Emoji = "🏝", SortOrder = 25, CenterLatitude = 31.3543, CenterLongitude = 27.2373 },
+                    new Governorate { Id = 26, Name = "البحر الأحمر", NameAr = "البحر الأحمر",  NameEn = "Red Sea",        Region = "الساحل الشرقي",   Emoji = "🐠", SortOrder = 26, CenterLatitude = 24.6826, CenterLongitude = 34.1531 },
+                    new Governorate { Id = 27, Name = "الوادي الجديد", NameAr = "الوادي الجديد", NameEn = "New Valley",     Region = "الصحراء الغربية", Emoji = "🏜", SortOrder = 27, CenterLatitude = 25.4889, CenterLongitude = 29.0000 }
+                };
+
+                foreach (var gov in govUpdates)
+                {
+                    var existing = await context.Governorates.FindAsync(gov.Id);
+                    if (existing != null)
+                    {
+                        existing.NameAr = gov.NameAr;
+                        existing.NameEn = gov.NameEn;
+                        existing.Region = gov.Region;
+                        existing.Emoji = gov.Emoji;
+                        existing.SortOrder = gov.SortOrder;
+                    }
+                }
+                await context.SaveChangesAsync();
+            }
+
             if (!await context.Operators.AnyAsync())
             {
                 // Get Governorates to resolve IDs dynamically

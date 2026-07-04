@@ -3,6 +3,7 @@ using Mawidy.Domain.Entities;
 using Mawidy.Domain.Enums;
 using Mawidy.Infrastructure.Persistence.Repositories;
 using Mawidy.Application.Interfaces;
+using Mawidy.Application.Services;
 using Microsoft.Extensions.FileProviders;
 using Mawidy.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -77,7 +78,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://127.0.0.1:5500", "http://localhost:5500")
+        policy.WithOrigins(
+                "http://127.0.0.1:5500", "http://localhost:5500",  // main frontend dev server
+                "http://localhost:5154",                             // main backend (self)
+                "http://localhost:5281",                             // Banks
+                "http://localhost:5216"                              // Healthcare
+              )
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -93,6 +99,9 @@ builder.Services.AddScoped<IPdfReportService, PdfReportService>();
 builder.Services.AddScoped<IPeakTimeService, PeakTimeService>();
 builder.Services.AddScoped<IAppointmentAvailabilityService, AppointmentAvailabilityService>();
 builder.Services.AddHostedService<AppointmentCompletionService>();
+builder.Services.AddScoped<IBranchService, BranchService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 // Repositories
 builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
@@ -186,8 +195,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Serve static files from Mawidy-frontend first to ensure frontend changes are reflected instantly
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(@"f:\DEPIProject\Mawidy-frontend"),
+    RequestPath = ""
+});
+
+// Backend wwwroot → serves CSS/JS for Razor views (~/css/site.css, ~/js/branches.js …)
 app.UseStaticFiles();
 
+// Frontend folder → serves index.html and other HTML pages
 var fileServerOptions = new FileServerOptions
 {
     FileProvider = new PhysicalFileProvider(@"f:\DEPIProject\Mawidy-frontend"),

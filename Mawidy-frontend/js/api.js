@@ -64,6 +64,10 @@ const API = {
             `/auth/reset-password?userId=${userId}&token=${token}&newPassword=${newPassword}`, {
             method: 'POST'
         }),
+        changePassword: (dto) => request('/auth/change-password', {
+            method: 'POST',
+            body: JSON.stringify(dto)
+        }),
     },
 
     // Appointments

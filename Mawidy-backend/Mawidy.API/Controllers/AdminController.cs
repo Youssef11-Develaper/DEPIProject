@@ -224,12 +224,12 @@ namespace Mawidy.API.Controllers
         {
             var appointment = await _context.Appointments.FindAsync(id);
             if (appointment == null)
-                return NotFound(ApiResponse<string>.Fail("?????? ??? ?????"));
+                return NotFound(ApiResponse<string>.Fail("الموعد غير موجود"));
 
             appointment.Status = dto.Status;
             await _context.SaveChangesAsync();
 
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ???? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم تحديث حالة الموعد"));
         }
 
         // GET api/admin/complaints
@@ -262,7 +262,7 @@ namespace Mawidy.API.Controllers
         {
             var complaint = await _complaintRepository.GetByIdAsync(id);
             if (complaint == null)
-                return NotFound(ApiResponse<string>.Fail("?????? ??? ??????"));
+                return NotFound(ApiResponse<string>.Fail("الشكوى غير موجودة"));
 
             complaint.AdminResponse = dto.AdminResponse;
             complaint.Status = dto.Status;
@@ -270,15 +270,15 @@ namespace Mawidy.API.Controllers
             _complaintRepository.Update(complaint);
             await _complaintRepository.SaveChangesAsync();
 
-            // ???? ????? ???????
+            // إرسال بريد للمشتكي
             var fullComplaint = await _complaintRepository.GetWithDetailsAsync(id);
             try
             {
-                // ??? ????? ??????? ?? ?? ?? ??? ?????
+                // يمكن إرسال البريد الإلكتروني هنا
             }
             catch { }
 
-            return Ok(ApiResponse<string>.Ok("", "?? ???? ??? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم الرد على الشكوى بنجاح"));
         }
 
         // GET api/admin/branches
@@ -390,12 +390,12 @@ namespace Mawidy.API.Controllers
         {
             var branch = await _branchRepository.GetByIdAsync(id);
             if (branch == null)
-                return NotFound(ApiResponse<string>.Fail("????? ??? ?????"));
+                return NotFound(ApiResponse<string>.Fail("الفرع غير موجود"));
 
             _branchRepository.Delete(branch);
             await _branchRepository.SaveChangesAsync();
 
-            return Ok(ApiResponse<string>.Ok("", "?? ??? ????? ?????"));
+            return Ok(ApiResponse<string>.Ok("", "تم حذف الفرع بنجاح"));
         }
 
         // POST api/admin/branches/{id}/schedules
@@ -407,7 +407,7 @@ namespace Mawidy.API.Controllers
                 .AnyAsync(s => s.BranchId == id && s.DayOfWeek == dto.DayOfWeek);
 
             if (exists)
-                return BadRequest(ApiResponse<string>.Fail("????? ?? ????? ??????"));
+                return BadRequest(ApiResponse<string>.Fail("الجدول مضاف بالفعل لهذا اليوم"));
 
             _context.BranchSchedules.Add(new BranchSchedule
             {
@@ -421,7 +421,7 @@ namespace Mawidy.API.Controllers
             });
 
             await _context.SaveChangesAsync();
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ??? ?????"));
+            return Ok(ApiResponse<string>.Ok("", "تم إضافة الجدول بنجاح"));
         }
 
         // DELETE api/admin/branches/schedules/{id}
@@ -430,12 +430,12 @@ namespace Mawidy.API.Controllers
         {
             var schedule = await _context.BranchSchedules.FindAsync(id);
             if (schedule == null)
-                return NotFound(ApiResponse<string>.Fail("?????? ??? ?????"));
+                return NotFound(ApiResponse<string>.Fail("الجدول غير موجود"));
 
             _context.BranchSchedules.Remove(schedule);
             await _context.SaveChangesAsync();
 
-            return Ok(ApiResponse<string>.Ok("", "?? ??? ??? ?????"));
+            return Ok(ApiResponse<string>.Ok("", "تم حذف الجدول بنجاح"));
         }
 
         // POST api/admin/branches/{id}/holidays
@@ -447,7 +447,7 @@ namespace Mawidy.API.Controllers
                 .AnyAsync(h => h.BranchId == id && h.Date.Date == dto.Date.Date);
 
             if (exists)
-                return BadRequest(ApiResponse<string>.Fail("??????? ?? ?????? ??????"));
+                return BadRequest(ApiResponse<string>.Fail("الإجازة مضافة بالفعل"));
 
             _context.BranchHolidays.Add(new BranchHoliday
             {
@@ -457,7 +457,7 @@ namespace Mawidy.API.Controllers
             });
 
             await _context.SaveChangesAsync();
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ???????"));
+            return Ok(ApiResponse<string>.Ok("", "تم إضافة الإجازة بنجاح"));
         }
 
         // DELETE api/admin/branches/holidays/{id}
@@ -466,12 +466,12 @@ namespace Mawidy.API.Controllers
         {
             var holiday = await _context.BranchHolidays.FindAsync(id);
             if (holiday == null)
-                return NotFound(ApiResponse<string>.Fail("??????? ??? ??????"));
+                return NotFound(ApiResponse<string>.Fail("الإجازة غير موجودة"));
 
             _context.BranchHolidays.Remove(holiday);
             await _context.SaveChangesAsync();
 
-            return Ok(ApiResponse<string>.Ok("", "?? ??? ???????"));
+            return Ok(ApiResponse<string>.Ok("", "تم حذف الإجازة بنجاح"));
         }
 
         // POST api/admin/branches/{id}/service-unavailability
@@ -485,7 +485,7 @@ namespace Mawidy.API.Controllers
                     && s.Date.Date == dto.Date.Date);
 
             if (exists)
-                return BadRequest(ApiResponse<string>.Fail("?????? ?? ????? ?????? ?? ????? ??"));
+                return BadRequest(ApiResponse<string>.Fail("التعطيل مضاف بالفعل لهذه الخدمة في هذا اليوم"));
 
             _context.ServiceUnavailabilities.Add(new ServiceUnavailability
             {
@@ -496,7 +496,7 @@ namespace Mawidy.API.Controllers
             });
 
             await _context.SaveChangesAsync();
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم تعطيل الخدمة بنجاح"));
         }
 
         // GET api/admin/services
@@ -532,7 +532,7 @@ namespace Mawidy.API.Controllers
             });
 
             await _context.SaveChangesAsync();
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم إضافة الخدمة بنجاح"));
         }
 
         // PUT api/admin/services/{id}
@@ -542,7 +542,7 @@ namespace Mawidy.API.Controllers
         {
             var service = await _context.ServiceTypes.FindAsync(id);
             if (service == null)
-                return NotFound(ApiResponse<string>.Fail("?????? ??? ??????"));
+                return NotFound(ApiResponse<string>.Fail("الخدمة غير موجودة"));
 
             service.Name = dto.Name;
             service.Description = dto.Description;
@@ -550,7 +550,7 @@ namespace Mawidy.API.Controllers
             service.RequiredDocuments = dto.RequiredDocuments;
 
             await _context.SaveChangesAsync();
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم تحديث الخدمة بنجاح"));
         }
 
         // DELETE api/admin/services/{id}
@@ -559,19 +559,19 @@ namespace Mawidy.API.Controllers
         {
             var service = await _context.ServiceTypes.FindAsync(id);
             if (service == null)
-                return NotFound(ApiResponse<string>.Fail("?????? ??? ??????"));
+                return NotFound(ApiResponse<string>.Fail("الخدمة غير موجودة"));
 
             var hasAppointments = await _context.Appointments
                 .AnyAsync(a => a.ServiceTypeId == id);
 
             if (hasAppointments)
                 return BadRequest(ApiResponse<string>
-                    .Fail("?? ???? ???? ?????? ?? ???? ???? ??????"));
+                    .Fail("لا يمكن حذف الخدمة لأنها مرتبطة بمواعيد قائمة"));
 
             _context.ServiceTypes.Remove(service);
             await _context.SaveChangesAsync();
 
-            return Ok(ApiResponse<string>.Ok("", "?? ??? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم حذف الخدمة بنجاح"));
         }
 
         // GET api/admin/reports/daily

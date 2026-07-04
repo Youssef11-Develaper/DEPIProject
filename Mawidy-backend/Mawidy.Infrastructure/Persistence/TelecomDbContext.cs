@@ -66,7 +66,7 @@ public class TelecomDbContext : DbContext, IAppDbContext
              .OnDelete(DeleteBehavior.Cascade);
 
             e.HasOne(b => b.Governorate)
-             .WithMany()
+             .WithMany(g => g.Branches)
              .HasForeignKey(b => b.GovernorateId)
              .OnDelete(DeleteBehavior.Restrict);
 

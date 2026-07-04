@@ -29,33 +29,66 @@
             </div>
 
             <div class="dashboard-row" style="grid-template-columns: 1fr 1fr;">
-                <!-- Profile details -->
-                <div class="admin-card">
-                    <div class="admin-card-header">
-                        <span class="admin-card-title">
-                            <i class="bi bi-person-circle"></i> الملف الشخصي للمدير
-                        </span>
-                    </div>
-                    <div class="admin-card-body">
-                        <div style="text-align:center; margin-bottom:20px;">
-                            <div class="user-avatar" id="settings-avatar" style="width:64px; height:64px; font-size:1.5rem; margin:0 auto 10px;">مد</div>
-                            <h3 id="settings-username" style="font-weight:700;">جاري التحميل...</h3>
-                            <span class="admin-badge badge-danger" style="margin-top:5px;">مدير عام النظام</span>
+                <!-- Left column containing profile & change password -->
+                <div style="display:flex; flex-direction:column; gap:20px;">
+                    <!-- Profile details -->
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <span class="admin-card-title">
+                                <i class="bi bi-person-circle"></i> الملف الشخصي للمدير
+                            </span>
                         </div>
+                        <div class="admin-card-body">
+                            <div style="text-align:center; margin-bottom:20px;">
+                                <div class="user-avatar" id="settings-avatar" style="width:64px; height:64px; font-size:1.5rem; margin:0 auto 10px;">مد</div>
+                                <h3 id="settings-username" style="font-weight:700;">جاري التحميل...</h3>
+                                <span class="admin-badge badge-danger" style="margin-top:5px;">مدير عام النظام</span>
+                            </div>
 
-                        <div style="display:flex; flex-direction:column; gap:12px; font-size:0.9rem;">
-                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-                                <span style="color:var(--text-muted);">البريد الإلكتروني:</span>
-                                <span id="settings-email" style="font-weight:600;">-</span>
+                            <div style="display:flex; flex-direction:column; gap:12px; font-size:0.9rem;">
+                                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+                                    <span style="color:var(--text-muted);">البريد الإلكتروني:</span>
+                                    <span id="settings-email" style="font-weight:600;">-</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
+                                    <span style="color:var(--text-muted);">الدور في النظام:</span>
+                                    <span style="font-weight:600; color:var(--danger)">Admin</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; padding-bottom:8px;">
+                                    <span style="color:var(--text-muted);">صلاحية الرمز المميز:</span>
+                                    <span style="font-weight:600; color:var(--success)">نشط (Active)</span>
+                                </div>
                             </div>
-                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-color); padding-bottom:8px;">
-                                <span style="color:var(--text-muted);">الدور في النظام:</span>
-                                <span style="font-weight:600; color:var(--danger)">Admin</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; padding-bottom:8px;">
-                                <span style="color:var(--text-muted);">صلاحية الرمز المميز:</span>
-                                <span style="font-weight:600; color:var(--success)">نشط (Active)</span>
-                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Change Password -->
+                    <div class="admin-card">
+                        <div class="admin-card-header">
+                            <span class="admin-card-title">
+                                <i class="bi bi-key-fill"></i> تغيير كلمة المرور
+                            </span>
+                        </div>
+                        <div class="admin-card-body">
+                            <form id="change-password-form" onsubmit="event.preventDefault(); changeAdminPassword();">
+                                <div class="admin-form-group">
+                                    <label class="admin-form-label">كلمة المرور الحالية</label>
+                                    <input type="password" id="current-password" class="admin-form-control" required placeholder="ادخل كلمة المرور الحالية">
+                                </div>
+                                <div class="admin-form-group">
+                                    <label class="admin-form-label">كلمة المرور الجديدة</label>
+                                    <input type="password" id="new-password" class="admin-form-control" required placeholder="ادخل كلمة المرور الجديدة (6 أحرف على الأقل)">
+                                </div>
+                                <div class="admin-form-group">
+                                    <label class="admin-form-label">تأكيد كلمة المرور الجديدة</label>
+                                    <input type="password" id="confirm-new-password" class="admin-form-control" required placeholder="أعد إدخال كلمة المرور الجديدة">
+                                </div>
+                                <div style="text-align: left; margin-top: 15px;">
+                                    <button type="submit" id="change-password-btn" class="admin-btn admin-btn-primary">
+                                        <i class="bi bi-save"></i> حفظ كلمة المرور الجديدة
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -159,6 +192,43 @@
             }
         } catch (err) {
             AdminUI.showToast("فشل الاتصال بالخادم الرئيسي! يرجى التحقق من تشغيل Backend", "error");
+        }
+    }
+
+    async function changeAdminPassword() {
+        const currentPassword = document.getElementById('current-password').value;
+        const newPassword = document.getElementById('new-password').value;
+        const confirmNewPassword = document.getElementById('confirm-new-password').value;
+        const btn = document.getElementById('change-password-btn');
+
+        if (!currentPassword || !newPassword || !confirmNewPassword) {
+            AdminUI.showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
+            return;
+        }
+
+        if (newPassword.length < 6) {
+            AdminUI.showToast('يجب أن تكون كلمة المرور الجديدة 6 أحرف على الأقل', 'error');
+            return;
+        }
+
+        if (newPassword !== confirmNewPassword) {
+            AdminUI.showToast('كلمة المرور الجديدة وتأكيدها غير متطابقين', 'error');
+            return;
+        }
+
+        UI.showLoading(btn);
+        try {
+            await API.auth.changePassword({
+                currentPassword: currentPassword,
+                newPassword: newPassword
+            });
+            AdminUI.showToast('تم تغيير كلمة المرور بنجاح');
+            document.getElementById('change-password-form').reset();
+        } catch (error) {
+            console.error(error);
+            AdminUI.showToast(error.message || 'فشل في تغيير كلمة المرور', 'error');
+        } finally {
+            UI.hideLoading(btn);
         }
     }
 </script>

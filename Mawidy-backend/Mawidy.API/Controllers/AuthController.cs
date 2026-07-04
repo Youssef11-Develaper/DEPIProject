@@ -41,17 +41,17 @@ namespace Mawidy.API.Controllers
         public async Task<ActionResult<ApiResponse<string>>> Register(RegisterDto dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ApiResponse<string>.Fail("?????? ??? ?????",
+                return BadRequest(ApiResponse<string>.Fail("البيانات المدخلة غير صالحة",
                     ModelState.Values.SelectMany(v => v.Errors)
                         .Select(e => e.ErrorMessage).ToList()));
 
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
-                return BadRequest(ApiResponse<string>.Fail("??????? ?? ???? ??? ???"));
+                return BadRequest(ApiResponse<string>.Fail("البريد الإلكتروني مسجل بالفعل"));
 
             var governorate = await _context.Governorates.FindAsync(dto.GovernorateId);
             if (governorate == null)
-                return BadRequest(ApiResponse<string>.Fail("???????? ??? ??????"));
+                return BadRequest(ApiResponse<string>.Fail("المحافظة المحددة غير موجودة"));
 
             var user = new ApplicationUser
             {
@@ -68,12 +68,12 @@ namespace Mawidy.API.Controllers
 
             var result = await _userManager.CreateAsync(user, dto.Password);
             if (!result.Succeeded)
-                return BadRequest(ApiResponse<string>.Fail("??? ????? ??????",
+                return BadRequest(ApiResponse<string>.Fail("فشل إنشاء الحساب",
                     result.Errors.Select(e => e.Description).ToList()));
 
             await _userManager.AddToRoleAsync(user, Roles.Citizen);
 
-            // ???? ????? ?????
+            // إرسال بريد التأكيد
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             try
             {
@@ -81,7 +81,7 @@ namespace Mawidy.API.Controllers
             }
             catch { }
 
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ?????? ?????? ???? ?? ??????"));
+            return Ok(ApiResponse<string>.Ok("", "تم إنشاء الحساب بنجاح، يرجى تفعيل البريد الإلكتروني"));
         }
 
         // POST api/auth/login
@@ -93,14 +93,14 @@ namespace Mawidy.API.Controllers
                 .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null)
-                return Unauthorized(ApiResponse<AuthResponseDto>.Fail("????? ?? ???? ???? ???"));
+                return Unauthorized(ApiResponse<AuthResponseDto>.Fail("البريد الإلكتروني أو كلمة المرور غير صحيحة"));
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
-                return Unauthorized(ApiResponse<AuthResponseDto>.Fail("???? ???? ?????? ?????"));
+                return Unauthorized(ApiResponse<AuthResponseDto>.Fail("يرجى تأكيد البريد الإلكتروني أولاً"));
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
             if (!result.Succeeded)
-                return Unauthorized(ApiResponse<AuthResponseDto>.Fail("????? ?? ???? ???? ???"));
+                return Unauthorized(ApiResponse<AuthResponseDto>.Fail("البريد الإلكتروني أو كلمة المرور غير صحيحة"));
 
             var roles = await _userManager.GetRolesAsync(user);
             var token = _jwtService.GenerateToken(user, roles);
@@ -127,13 +127,13 @@ namespace Mawidy.API.Controllers
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return NotFound(ApiResponse<string>.Fail("???????? ??? ?????"));
+                return NotFound(ApiResponse<string>.Fail("المستخدم غير موجود"));
 
             var result = await _userManager.ConfirmEmailAsync(user, token);
             if (!result.Succeeded)
-                return BadRequest(ApiResponse<string>.Fail("???? ??????? ??? ?? ?????"));
+                return BadRequest(ApiResponse<string>.Fail("فشل تأكيد البريد الإلكتروني"));
 
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ??????? ?????"));
+            return Ok(ApiResponse<string>.Ok("", "تم تأكيد البريد الإلكتروني بنجاح"));
         }
 
         // POST api/auth/forgot-password
@@ -153,7 +153,7 @@ namespace Mawidy.API.Controllers
             }
 
             return Ok(ApiResponse<string>.Ok("",
-                "?? ??????? ????? ?????? ???? ?????? ????? ???? ??????"));
+                "إذا كان البريد الإلكتروني مسجلاً، فقد تم إرسال رابط إعادة تعيين كلمة المرور"));
         }
 
         // POST api/auth/reset-password
@@ -163,14 +163,14 @@ namespace Mawidy.API.Controllers
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
-                return NotFound(ApiResponse<string>.Fail("???????? ??? ?????"));
+                return NotFound(ApiResponse<string>.Fail("المستخدم غير موجود"));
 
             var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
             if (!result.Succeeded)
-                return BadRequest(ApiResponse<string>.Fail("??? ????? ???? ??????",
+                return BadRequest(ApiResponse<string>.Fail("فشل إعادة تعيين كلمة المرور",
                     result.Errors.Select(e => e.Description).ToList()));
 
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ???? ?????? ?????"));
+            return Ok(ApiResponse<string>.Ok("", "تم إعادة تعيين كلمة المرور بنجاح"));
         }
 
         // GET api/auth/profile
@@ -184,7 +184,7 @@ namespace Mawidy.API.Controllers
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
-                return NotFound(ApiResponse<AuthResponseDto>.Fail("???????? ??? ?????"));
+                return NotFound(ApiResponse<AuthResponseDto>.Fail("المستخدم غير موجود"));
 
             var roles = await _userManager.GetRolesAsync(user);
 
@@ -211,7 +211,7 @@ namespace Mawidy.API.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
-                return NotFound(ApiResponse<string>.Fail("???????? ??? ?????"));
+                return NotFound(ApiResponse<string>.Fail("المستخدم غير موجود"));
 
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
@@ -222,10 +222,35 @@ namespace Mawidy.API.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(ApiResponse<string>.Ok("", "?? ????? ???????? ?????"));
+            return Ok(ApiResponse<string>.Ok("", "تم تحديث الملف الشخصي بنجاح"));
         }
 
+        // POST api/auth/change-password
+        [Authorize]
+        [HttpPost("change-password")]
+        public async Task<ActionResult<ApiResponse<string>>> ChangePassword(
+            [FromBody] ChangePasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ApiResponse<string>.Fail("البيانات المدخلة غير صالحة"));
 
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized(ApiResponse<string>.Fail("المستخدم غير مصرح له"));
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound(ApiResponse<string>.Fail("المستخدم غير موجود"));
+
+            var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest(ApiResponse<string>.Fail("فشل تغيير كلمة المرور",
+                    result.Errors.Select(e => e.Description).ToList()));
+            }
+
+            return Ok(ApiResponse<string>.Ok("", "تم تغيير كلمة المرور بنجاح"));
+        }
     }
 }
 

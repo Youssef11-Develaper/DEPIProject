@@ -1,0 +1,299 @@
+@model BranchIndexViewModel
+@{
+    ViewData["Title"] = "أفرع الاتصالات";
+    var regions = Model.Governorates.GroupBy(g => g.Region).OrderBy(g => g.Key).ToList();
+}
+
+<div class="ph">
+    <div class="hc"></div><div class="hc"></div><div class="hc"></div>
+    <div class="hi">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+            <a href="/" class="back">← العودة لاختيار الشركة</a>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span class="user-greeting-badge" id="hdrGreeting" style="display:none"></span>
+                <button class="signin-header-btn"  id="hdrSignInBtn"  onclick="showAuthModal()">🔐 تسجيل الدخول</button>
+                <button class="signout-header-btn" id="hdrSignOutBtn" onclick="doLogout()" style="display:none">🚪 خروج</button>
+                <a href="/admin" class="admin-link-btn">📊 لوحة الإدارة</a>
+            </div>
+        </div>
+
+        <div class="hbadge"><div class="hdot"></div>
+            @if (!string.IsNullOrEmpty(Model.Filter.OperatorKey) && Model.Filter.OperatorKey != "all")
+            {
+                var op = Model.Operators.FirstOrDefault(o => o.Key == Model.Filter.OperatorKey);
+                @(op?.NameAr ?? "الكل")
+            }
+            else
+            {
+                <text>كل الشركات</text>
+            }
+        </div>
+        <div class="htitle">
+            @if (!string.IsNullOrEmpty(Model.Filter.OperatorKey) && Model.Filter.OperatorKey != "all")
+            {
+                var op = Model.Operators.FirstOrDefault(o => o.Key == Model.Filter.OperatorKey);
+                <span>فروع @(op?.NameAr ?? "")</span>
+            }
+            else
+            {
+                <text>أفرع الاتصالات</text>
+            }
+        </div>
+        <div class="hsub">ابحث عن أقرب فرع في محافظتك، تحقق من الطابور، واحجز موعدك</div>
+        <div class="hstats">
+            <div><div class="hsn">@Model.TotalCount</div><div class="hsl">فرع في مصر</div></div>
+            <div><div class="hsn">27</div><div class="hsl">محافظة</div></div>
+            <div><div class="hsn">105</div><div class="hsl">مركز وحي</div></div>
+            <div><div class="hsn">4</div><div class="hsl">شركات</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- OPERATOR TABS -->
+<div class="opsbar">
+    <div class="opsi">
+        <button class="optab @(string.IsNullOrEmpty(Model.Filter.OperatorKey) || Model.Filter.OperatorKey == "all" ? "on" : "")"
+                onclick="filterOp('all',this)">🏢 الكل</button>
+        @foreach (var op in Model.Operators)
+        {
+            <button class="optab @(Model.Filter.OperatorKey == op.Key ? "on" : "")"
+                    onclick="filterOp('@op.Key',this)">
+                <div class="oplogo op-logo-@op.Key" style="background:@op.BgColor"></div>
+                @op.NameAr
+            </button>
+        }
+    </div>
+</div>
+
+<div class="main">
+
+    <!-- GEO PANEL -->
+    <div class="geo-panel">
+        <div class="geo-header">
+            <div class="geo-title">🗺️ تنقل حسب المحافظة</div>
+            <div class="geo-sub">27 محافظة — 105 مركز وحي</div>
+            <button class="geo-toggle" id="geoToggle" onclick="toggleGeo()">▼ عرض المحافظات</button>
+        </div>
+        <div class="geo-body" id="geoBody">
+            <div class="region-tabs" id="regionTabs">
+                <button class="rtab on" onclick="showRegion('all',this)">الكل</button>
+                @foreach (var rg in regions)
+                {
+                    <button class="rtab" onclick="showRegion('@rg.Key',this)">@rg.Key</button>
+                }
+            </div>
+            <div class="gov-grid" id="govGrid">
+                @foreach (var gov in Model.Governorates)
+                {
+                    <div class="gov-card @(Model.Filter.GovernorateId == gov.Id ? "sel" : "")"
+                         data-region="@gov.Region"
+                         onclick="selectGov(@gov.Id,'@gov.NameAr',this)">
+                        <div class="gov-emoji">@gov.Emoji</div>
+                        <div class="gov-name">@gov.NameAr</div>
+                        <div class="gov-count">@gov.BranchCount فرع</div>
+                    </div>
+                }
+            </div>
+            <div class="dist-panel" id="distPanel" style="display:none">
+                <div class="dist-header">
+                    <span id="distGovName">—</span>
+                    <button class="dist-back" onclick="clearGov()">✕ عودة</button>
+                </div>
+                <div class="dist-grid" id="distGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BREADCRUMB -->
+    <div class="breadcrumb" id="breadcrumb" style="display:none">
+        <span class="bc-item" onclick="clearGov()">🗺️ كل المحافظات</span>
+        <span class="bc-sep">›</span>
+        <span class="bc-item bc-active" id="bcGov"></span>
+        <span class="bc-sep" id="bcDistSep" style="display:none">›</span>
+        <span class="bc-item bc-active" id="bcDist" style="display:none"></span>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="srow">
+        <div class="sbox">
+            <span style="font-size:15px;color:var(--muted)">🔍</span>
+            <input type="text" placeholder="ابحث باسم الفرع أو المنطقة أو المحافظة..."
+                   id="srch" oninput="applyFilter()">
+        </div>
+        <button class="ftbtn" id="ftbtn" onclick="toggleFtags()">⚙️ تصفية</button>
+    </div>
+
+    <div class="ftags" id="ftags">
+        <span style="font-size:11px;font-weight:700;color:var(--navy)">الحالة:</span>
+        <button class="ftag" onclick="togF(this,'open')">🟢 متاح</button>
+        <button class="ftag" onclick="togF(this,'busy')">🟡 مزدحم</button>
+        <button class="ftag" onclick="togF(this,'closed')">🔴 مغلق</button>
+        <span style="font-size:11px;font-weight:700;color:var(--navy);margin-right:6px">خدمات:</span>
+        <button class="ftag" onclick="togF(this,'new')">📲 خط جديد</button>
+        <button class="ftag" onclick="togF(this,'sim')">🔄 SIM</button>
+        <button class="ftag" onclick="togF(this,'pkg')">📶 باقة</button>
+        <button class="ftag" onclick="togF(this,'bill')">💸 فواتير</button>
+        <button class="ftag ftag-x" onclick="clearAll()">✕ مسح الكل</button>
+    </div>
+
+    <!-- SECTION HEADER -->
+    <div class="sechdr">
+        <div>
+            <div class="secl">الفروع المتاحة</div>
+            <div class="resc" id="resc">يُعرض @Model.Branches.Count من @Model.TotalCount فرع</div>
+        </div>
+        <div class="vtog">
+            <button class="vb on" onclick="setView('grid',this)" title="شبكة">⊞</button>
+            <button class="vb"    onclick="setView('list',this)" title="قائمة">☰</button>
+        </div>
+    </div>
+
+    <!-- BRANCHES GRID -->
+    <div class="bgrid" id="grid">
+        @foreach (var (b, i) in Model.Branches.Select((b, i) => (b, i)))
+        {
+            <div class="bcard" style="animation-delay:@(i * 0.03)s"
+                 onclick="openBranchDetail(@b.Id)"
+                 data-op="@b.Operator.Key"
+                 data-gov="@b.Governorate.Id"
+                 data-dist="@b.District.Id"
+                 data-status="@b.Status.ToString().ToLower()"
+                 data-services="@string.Join(",", b.Services.Select(s => s.Key))">
+                <div class="bc-top">
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:8px">
+                        <div class="opbadge" style="background:@b.Operator.BgColor;color:@b.Operator.Color">
+                            <div class="op-logo-@b.Operator.Key" style="width:16px;height:16px;border-radius:3px;display:inline-block;vertical-align:middle;margin-left:4px;background-size:contain;background-repeat:no-repeat;background-position:center"></div>
+                            @b.Operator.NameAr
+                        </div>
+                        <div class="gov-badge">@b.Governorate.Emoji @b.Governorate.NameAr</div>
+                    </div>
+                    <div class="bcnrow">
+                        <div class="bcname">@b.ShortName</div>
+                        <div class="sp @b.Status.ToString().ToLower()">@b.StatusLabel</div>
+                    </div>
+                    <div class="bcaddr">
+                        <span style="color:var(--purple);font-weight:700">@b.District.NameAr</span>
+                        — @b.Address
+                    </div>
+                </div>
+                <div class="bcmid">
+                    <div class="ch">📍 <strong>@b.DistanceKm كم</strong></div>
+                    <div class="ch">🔢 <strong>@b.QueueCount</strong></div>
+                    <div class="ch">⏱ <strong>@b.WaitTime</strong></div>
+                    <div class="ch">⭐ <strong>@b.Rating</strong></div>
+                </div>
+                <div class="bcbot">
+                    <div class="stags">
+                        @foreach (var s in b.Services)
+                        {
+                            <span class="stag">@s.Icon @s.NameAr</span>
+                        }
+                    </div>
+                    <button class="bkbtn"
+                            onclick="event.stopPropagation();window.location.href='@Url.Action("Book","Branch",new{id=b.Id})'">
+                        📅 احجز
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="empty" id="empty">
+        <div style="font-size:48px;margin-bottom:12px">🔍</div>
+        <div style="font-family:'Cairo',sans-serif;font-size:18px;font-weight:700;color:var(--navy)">لا توجد نتائج</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:5px">جرب كلمة أخرى أو غير الفلتر</div>
+        <button onclick="clearAll()" style="margin-top:14px;padding:9px 20px;border-radius:9px;border:none;background:var(--purple);color:white;font-family:'Tajawal',sans-serif;font-weight:700;cursor:pointer">مسح كل الفلاتر</button>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div class="ov" id="modal">
+    <div class="mc">
+        <button class="mclsbtn" onclick="closeMod()">✕</button>
+        <div id="mhdr" class="mhdr"></div>
+        <div class="mtabs" id="mtabs"></div>
+        <div class="mbody" id="mbody"></div>
+        <div class="mfoot" id="mfoot"></div>
+    </div>
+</div>
+
+<!-- VIRTUAL QUEUE OVERLAY -->
+<div class="vq-overlay" id="vqOverlay">
+    <div class="vq-card">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px" id="vqBranchName"></div>
+        <div class="vq-ticket-wrap">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="46" fill="none" stroke="#E2E8F0" stroke-width="10"/>
+                <circle cx="80" cy="80" r="46" fill="none" stroke="#7B1FA2" stroke-width="10"
+                        stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"
+                        id="vqArc" style="transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 1s ease"/>
+            </svg>
+            <div class="vq-center">
+                <div class="vq-num" id="vqNum">—</div>
+                <div class="vq-numlbl">رقمك</div>
+            </div>
+        </div>
+        <div class="vq-status" id="vqStatusTxt">أنت في الطابور</div>
+        <div class="vq-ahead"  id="vqAheadTxt">جاري الحساب…</div>
+        <div class="vq-eta">
+            <div class="vq-eta-num" id="vqEtaNum">—</div>
+            <div class="vq-eta-lbl">دقيقة وقت الانتظار المتوقع</div>
+        </div>
+        <div class="vq-actions">
+            <button class="vq-leave" onclick="leaveQueue()">🚪 مغادرة الطابور</button>
+            <button class="vq-book"  onclick="document.getElementById('vqOverlay').classList.remove('show')">إخفاء</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const ALL_BRANCHES = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+    Model.Branches.Select(b => new {
+        id        = b.Id,
+        op        = b.Operator.Key,
+        opName    = b.Operator.NameAr,
+        opEmoji   = b.Operator.Emoji,
+        opColor   = b.Operator.Color,
+        opBg      = b.Operator.BgColor,
+        shortName = b.ShortName,
+        area      = b.Area,
+        addr      = b.Address,
+        dist      = b.DistanceKm,
+        status    = b.Status.ToString().ToLower(),
+        statusLabel = b.StatusLabel,
+        queue     = b.QueueCount,
+        wait      = b.WaitTime,
+        rating    = b.Rating,
+        govId     = b.Governorate.Id,
+        govName   = b.Governorate.NameAr,
+        govEmoji  = b.Governorate.Emoji,
+        distId    = b.District.Id,
+        distName  = b.District.NameAr,
+        distType  = b.District.Type,
+        services  = b.Services.Select(s => new { key = s.Key, icon = s.Icon, name = s.NameAr })
+    })
+));
+
+const ALL_GOVS = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+    Model.Governorates.Select(g => new {
+        id       = g.Id,
+        name     = g.NameAr,
+        region   = g.Region,
+        emoji    = g.Emoji,
+        count    = g.BranchCount,
+        districts= g.Districts.Select(d => new { id = d.Id, name = d.NameAr, type = d.Type, count = d.BranchCount })
+    })
+));
+
+const TOTAL      = @Model.TotalCount;
+const DETAIL_URL = "@Url.Action("Detail","Branch")";
+const BOOK_URL   = "@Url.Action("Book","Branch")";
+const SLOTS_URL  = "@Url.Action("Slots","Branch")";
+const DOCS_URL   = "@Url.Action("Docs","Branch")";
+const JOIN_URL   = "@Url.Action("JoinQueue","Branch")";
+const LEAVE_URL  = "@Url.Action("LeaveQueue","Branch")";
+</script>
+<script src="~/js/branches.js" asp-append-version="true"></script>
+<script src="~/js/geo.js"      asp-append-version="true"></script>
+}

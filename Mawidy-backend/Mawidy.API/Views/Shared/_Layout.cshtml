@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — مـوعـدي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    @RenderBody()
+
+    <div class="toast" id="toast">
+        <div id="ticon" style="font-size:24px">✅</div>
+        <div>
+            <div id="ttitle" style="font-size:13px;font-weight:700;color:var(--navy)"></div>
+            <div id="tsub"   style="font-size:11px;color:var(--muted);margin-top:2px"></div>
+        </div>
+        <button onclick="closeToast()" style="margin-right:auto;border:none;background:none;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+
+    <!-- ══ AUTH MODAL ══════════════════════════════════════════════════════ -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-modal-box">
+            <div class="auth-modal-head">
+                <div class="auth-modal-head-title"> منصة موعدي — تسجيل الدخول</div>
+                <button class="auth-modal-close" onclick="closeAuthModal()">✕</button>
+            </div>
+            <div class="auth-modal-body">
+                <div class="auth-tabs-row">
+                    <button class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">تسجيل الدخول</button>
+                    <button class="auth-tab-btn" id="tabRegBtn" onclick="switchAuthTab('register')">إنشاء حساب</button>
+                </div>
+
+                <!-- Login Form -->
+                <div id="authLoginForm">
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">البريد الإلكتروني</label>
+                        <input type="email" class="auth-form-input" id="alEmail" placeholder="example@email.com" />
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">كلمة المرور</label>
+                        <input type="password" class="auth-form-input" id="alPassword" placeholder="كلمة المرور" />
+                    </div>
+                    <button class="auth-submit-btn" id="loginSubmitBtn" onclick="doLogin(this)">
+                         تسجيل الدخول
+                    </button>
+                    <a class="auth-forgot-link" onclick="doForgotPassword()">نسيت كلمة المرور؟</a>
+                </div>
+
+                <!-- Register Form -->
+                <div id="authRegForm" style="display:none">
+                    <div class="auth-form-row-2">
+                        <div class="auth-form-group">
+                            <label class="auth-form-label">الاسم الأول</label>
+                            <input type="text" class="auth-form-input" id="arFirst" placeholder="الاسم الأول" />
+                        </div>
+                        <div class="auth-form-group">
+                            <label class="auth-form-label">اسم العائلة</label>
+                            <input type="text" class="auth-form-input" id="arLast" placeholder="اسم العائلة" />
+                        </div>
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">البريد الإلكتروني</label>
+                        <input type="email" class="auth-form-input" id="arEmail" placeholder="example@email.com" />
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">رقم الهاتف</label>
+                        <input type="tel" class="auth-form-input" id="arPhone" placeholder="01xxxxxxxxx" />
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">الرقم القومي</label>
+                        <input type="text" class="auth-form-input" id="arNid" placeholder="14 رقم" maxlength="14" />
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">تاريخ الميلاد</label>
+                        <input type="date" class="auth-form-input" id="arDob" />
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">المحافظة</label>
+                        <select class="auth-form-input" id="arGov">
+                            <option value="">اختر المحافظة</option>
+                        </select>
+                    </div>
+                    <div class="auth-form-group">
+                        <label class="auth-form-label">المنطقة</label>
+                        <input type="text" class="auth-form-input" id="arArea" placeholder="مثال: مصر الجديدة" />
+                    </div>
+                    <div class="auth-form-row-2">
+                        <div class="auth-form-group">
+                            <label class="auth-form-label">كلمة المرور</label>
+                            <input type="password" class="auth-form-input" id="arPass" placeholder="8 أحرف على الأقل" />
+                        </div>
+                        <div class="auth-form-group">
+                            <label class="auth-form-label">تأكيد كلمة المرور</label>
+                            <input type="password" class="auth-form-input" id="arPassC" placeholder="أعد كتابة" />
+                        </div>
+                    </div>
+                    <button class="auth-submit-btn" id="regSubmitBtn" onclick="doRegister(this)">
+                         إنشاء الحساب
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ══ END AUTH MODAL ══════════════════════════════════════════════════ -->
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+
+    <script>
+    /* ── Shared Auth Helpers ─────────────────────────────────────────────── */
+    const _API = 'http://localhost:5154/api';
+
+    const _Auth = {
+        getToken: () => localStorage.getItem('token'),
+        getUser:  () => JSON.parse(localStorage.getItem('user') || '{}'),
+        setSession: (token, user) => {
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(user));
+        },
+        clearSession: () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+        },
+        isLoggedIn:    () => !!localStorage.getItem('token'),
+        isAdmin:       () => JSON.parse(localStorage.getItem('user') || '{}').role === 'Admin',
+        isBranchAdmin: () => JSON.parse(localStorage.getItem('user') || '{}').role === 'BranchAdmin',
+    };
+
+    async function _req(endpoint, options = {}) {
+        const token = _Auth.getToken();
+        const headers = {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` }),
+            ...options.headers
+        };
+        const res = await fetch(`${_API}${endpoint}`, { ...options, headers });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || 'حدث خطأ، حاول مرة أخرى');
+        return data;
+    }
+
+    /* ── Auth Modal Controls ─────────────────────────────────────────────── */
+    function showAuthModal() {
+        document.getElementById('authOverlay').classList.add('show');
+        _loadGovs();
+    }
+    function closeAuthModal() {
+        document.getElementById('authOverlay').classList.remove('show');
+    }
+    function switchAuthTab(tab) {
+        document.getElementById('tabLoginBtn').classList.toggle('active', tab === 'login');
+        document.getElementById('tabRegBtn').classList.toggle('active', tab === 'register');
+        document.getElementById('authLoginForm').style.display = tab === 'login' ? 'block' : 'none';
+        document.getElementById('authRegForm').style.display   = tab === 'register' ? 'block' : 'none';
+    }
+
+    async function _loadGovs() {
+        try {
+            const res = await _req('/branches/governorates');
+            const sel = document.getElementById('arGov');
+            if (sel && res.data) {
+                sel.innerHTML = '<option value="">اختر المحافظة</option>' +
+                    res.data.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+            }
+        } catch (_) {}
+    }
+
+    async function doLogin(btn) {
+        const email    = document.getElementById('alEmail').value.trim();
+        const password = document.getElementById('alPassword').value;
+        if (!email || !password) { _toast('ادخل البيانات المطلوبة', false); return; }
+
+        btn.disabled = true;
+        const orig = btn.innerHTML;
+        btn.innerHTML = ' جاري الدخول...';
+        try {
+            const res = await _req('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) });
+            _Auth.setSession(res.data.token, res.data);
+            _toast('تم تسجيل الدخول بنجاح ');
+            closeAuthModal();
+            _refreshHeaderAuth();
+        } catch (err) {
+            _toast(err.message, false);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+        }
+    }
+
+    async function doRegister(btn) {
+        const pass  = document.getElementById('arPass').value;
+        const passC = document.getElementById('arPassC').value;
+        if (pass !== passC) { _toast('كلمة المرور غير متطابقة', false); return; }
+
+        btn.disabled = true;
+        const orig = btn.innerHTML;
+        btn.innerHTML = 'جاري الإنشاء...';
+        try {
+            await _req('/auth/register', {
+                method: 'POST',
+                body: JSON.stringify({
+                    firstName:  document.getElementById('arFirst').value,
+                    lastName:   document.getElementById('arLast').value,
+                    email:      document.getElementById('arEmail').value,
+                    phoneNumber: document.getElementById('arPhone').value,
+                    nationalId: document.getElementById('arNid').value,
+                    dateOfBirth: document.getElementById('arDob').value,
+                    governorateId: parseInt(document.getElementById('arGov').value) || 0,
+                    area:        document.getElementById('arArea').value,
+                    password:    pass,
+                    confirmPassword: passC
+                })
+            });
+            _toast('تم إنشاء الحساب — تحقق من إيميلك ');
+            switchAuthTab('login');
+        } catch (err) {
+            _toast(err.message, false);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = orig;
+        }
+    }
+
+    async function doForgotPassword() {
+        const email = prompt('ادخل بريدك الإلكتروني:');
+        if (!email) return;
+        try {
+            await _req(`/auth/forgot-password?email=${email}`, { method: 'POST' });
+            _toast('تم إرسال رابط إعادة التعيين على إيميلك ');
+        } catch (err) {
+            _toast(err.message, false);
+        }
+    }
+
+    function doLogout() {
+        _Auth.clearSession();
+        _toast('تم تسجيل الخروج');
+        _refreshHeaderAuth();
+    }
+
+    /* ── Header auth-state badge (called from page scripts) ─────────────── */
+    function _refreshHeaderAuth() {
+        const loginBtn  = document.getElementById('hdrSignInBtn');
+        const logoutBtn = document.getElementById('hdrSignOutBtn');
+        const greeting  = document.getElementById('hdrGreeting');
+        if (!loginBtn) return;
+
+        if (_Auth.isLoggedIn()) {
+            const user = _Auth.getUser();
+            const name = (user.firstName || user.name || 'مرحباً');
+            loginBtn.style.display  = 'none';
+            logoutBtn.style.display = 'inline-flex';
+            if (greeting) { greeting.style.display = 'inline-flex'; greeting.textContent = '👋 ' + name; }
+        } else {
+            loginBtn.style.display  = 'inline-flex';
+            logoutBtn.style.display = 'none';
+            if (greeting) greeting.style.display = 'none';
+        }
+    }
+
+    /* ── Toast helper ────────────────────────────────────────────────────── */
+    function _toast(msg, ok = true) {
+        const t = document.getElementById('toast');
+        if (!t) return;
+        document.getElementById('ticon').textContent  = ok ? '✅' : '❌';
+        document.getElementById('ttitle').textContent = msg;
+        document.getElementById('tsub').textContent   = '';
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    /* ── Close overlay on backdrop click ─────────────────────────────────── */
+    document.getElementById('authOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeAuthModal();
+    });
+
+    /* ── Init header on load ──────────────────────────────────────────────── */
+    document.addEventListener('DOMContentLoaded', _refreshHeaderAuth);
+    </script>
+</body>
+</html>
+

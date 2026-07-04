@@ -1,4 +1,4 @@
-const API_BASE = '/api';   
+const API_BASE = 'http://localhost:5154/api';   
 // Token Management
 const Auth = {
     getToken: () => localStorage.getItem('token'),
@@ -64,6 +64,10 @@ const API = {
             `/auth/reset-password?userId=${userId}&token=${token}&newPassword=${newPassword}`, {
             method: 'POST'
         }),
+        changePassword: (dto) => request('/auth/change-password', {
+            method: 'POST',
+            body: JSON.stringify(dto)
+        }),
     },
 
     // Appointments
@@ -91,6 +95,9 @@ const API = {
         getByGovernorate: (id) => request(`/branches/by-governorate/${id}`),
         getGovernorates: () => request('/branches/governorates'),
         getServices: () => request('/branches/services'),
+        getOperators: () => request('/branches/operators'),
+        getOperatorServices: (operatorId) => request('/branches/operator-services' + (operatorId ? `?operatorId=${operatorId}` : '')),
+        getServiceDocuments: (serviceKey) => request(`/branches/service-documents/${serviceKey}`),
         getRatings: (id) => request(`/branches/${id}/ratings`),
     },
 
