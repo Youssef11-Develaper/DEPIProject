@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرئيسية - لوحة التحكم v2</title>
+    <!-- CSS Links -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/admin-v2/css/admin.css">
+    <!-- ChartJS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar Injected Here -->
+    <div id="sidebar-container"></div>
+    
+    <div class="main-wrapper">
+        <!-- Header Injected Here -->
+        <header id="header-container" class="admin-header"></header>
+        
+        <main class="page-content">
+            <div class="page-title-area">
+                <div>
+                    <h1 class="page-title">لوحة التحكم والمتابعة</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="/admin-v2/index.html">الرئيسية</a></li>
+                        <li>الإحصائيات العامة</li>
+                    </ul>
+                </div>
+                <div>
+                    <button class="admin-btn admin-btn-primary" onclick="window.location.reload()">
+                        <i class="bi bi-arrow-clockwise"></i> تحديث البيانات
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid - System-Wide -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#EBF5FB; color:#2980B9;"><i class="bi bi-people"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-total-users">-</span><span class="stat-label">إجمالي المستخدمين</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#E8F8F5; color:#27AE60;"><i class="bi bi-calendar-check"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-today-appointments">-</span><span class="stat-label">مواعيد اليوم</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#E3F2FD; color:#0D47A1;"><i class="bi bi-building"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-civil-branches">-</span><span class="stat-label">فروع السجل المدني</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#FFEBEE; color:#D32F2F;"><i class="bi bi-hospital"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-hospital-branches">-</span><span class="stat-label">فروع المستشفيات</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#E8F5E9; color:#2E7D32;"><i class="bi bi-bank"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-bank-branches">-</span><span class="stat-label">فروع البنوك</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#F4ECF7; color:#8E44AD;"><i class="bi bi-journal-text"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-total-courts">-</span><span class="stat-label">إجمالي المحاكم</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#FEF9E7; color:#F39C12;"><i class="bi bi-exclamation-circle"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-pending-complaints">-</span><span class="stat-label">شكاوى معلقة</span></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background:#FDEDEC; color:#C0392B;"><i class="bi bi-percent"></i></div>
+                    <div class="stat-info"><span class="stat-num" id="stat-cancel-rate">-</span><span class="stat-label">نسبة الإلغاء</span></div>
+                </div>
+            </div>
+
+            <!-- Dashboard Row 1 -->
+            <div class="dashboard-row">
+                <!-- Weekly appointments chart -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">
+                            <i class="bi bi-bar-chart-line"></i> مواعيد آخر 7 أيام
+                        </span>
+                    </div>
+                    <div class="admin-card-body">
+                        <div style="height: 300px; position: relative;">
+                            <canvas id="weekly-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Governorate Distribution -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">
+                            <i class="bi bi-geo-alt"></i> توزيع المواعيد بالمحافظات
+                        </span>
+                    </div>
+                    <div class="admin-card-body">
+                        <div style="height: 300px; position: relative; display: flex; align-items: center; justify-content: center;">
+                            <canvas id="gov-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Row 2 -->
+            <div class="dashboard-row" style="grid-template-columns: 1fr 1fr;">
+                <!-- Top Services Progress -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">
+                            <i class="bi bi-fire"></i> الخدمات الأكثر طلباً
+                        </span>
+                    </div>
+                    <div class="admin-card-body" id="services-container">
+                        <div style="text-align: center; padding: 30px; color: var(--text-muted);">
+                            جاري تحميل الخدمات...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">
+                            <i class="bi bi-lightning-charge"></i> إجراءات سريعة
+                        </span>
+                    </div>
+                    <div class="admin-card-body">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <a href="/admin-v2/appointments.html" class="admin-btn admin-btn-outline" style="justify-content:center; padding:12px; font-size:0.82rem;">
+                                <i class="bi bi-calendar-check"></i> المواعيد اليومية
+                            </a>
+                            <a href="/admin-v2/users.html" class="admin-btn admin-btn-outline" style="justify-content:center; padding:12px; font-size:0.82rem;">
+                                <i class="bi bi-person-gear"></i> إدارة المستخدمين
+                            </a>
+                            <a href="/admin-v2/civil-branches.html" class="admin-btn admin-btn-outline" style="justify-content:center; padding:12px; font-size:0.82rem;">
+                                🏛 السجل المدني
+                            </a>
+                            <a href="/admin-v2/hospital-branches.html" class="admin-btn admin-btn-outline" style="justify-content:center; padding:12px; font-size:0.82rem;">
+                                🏥 المستشفيات
+                            </a>
+                            <a href="/admin-v2/bank-branches.html" class="admin-btn admin-btn-outline" style="justify-content:center; padding:12px; font-size:0.82rem;">
+                                🏦 البنوك
+                            </a>
+                            <a href="/admin-v2/courts.html" class="admin-btn admin-btn-outline" style="justify-content:center; padding:12px; font-size:0.82rem;">
+                                ⚖ المحاكم
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- API and UI Scripts -->
+<script src="/js/api.js"></script>
+<script src="/admin-v2/js/admin-api.js"></script>
+<script src="/admin-v2/js/admin-ui.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        AdminUI.init('dashboard');
+        await loadDashboardData();
+    });
+    async function loadDashboardData() {
+        try {
+            const [dashRes, branchRes, opRes] = await Promise.allSettled([
+                API.admin.getDashboard(),
+                API.admin.getBranches(),
+                API.adminv2.getOperators()
+            ]);
+
+            // Fill main dashboard stats
+            if (dashRes.status === 'fulfilled') {
+                const data = dashRes.value.data;
+                document.getElementById('stat-total-users').textContent = data.totalUsers || 0;
+                document.getElementById('stat-today-appointments').textContent = data.todayAppointments || 0;
+                document.getElementById('stat-pending-complaints').textContent = data.pendingComplaints || 0;
+                document.getElementById('stat-cancel-rate').textContent = `${data.cancellationRate || 0}%`;
+                document.getElementById('stat-total-courts').textContent = data.totalCourts || 0;
+            }
+
+            // Fill branch statistics by category
+            if (branchRes.status === 'fulfilled' && opRes.status === 'fulfilled') {
+                const branches = branchRes.value.data || [];
+                const operators = opRes.value.data || [];
+                
+                const civilOp = operators.find(o => o.key === 'civil_registry');
+                const hospOp = operators.find(o => o.key === 'hospital_generic');
+                const bankKeys = ['nbe', 'banquemisr', 'cib', 'qnb', 'alexbank'];
+                const bankOps = operators.filter(o => bankKeys.includes(o.key));
+                const bankOpIds = bankOps.map(o => o.id);
+
+                const civilCount = branches.filter(b => civilOp && b.operatorId === civilOp.id).length;
+                const hospCount = branches.filter(b => hospOp && b.operatorId === hospOp.id).length;
+                const bankCount = branches.filter(b => bankOpIds.includes(b.operatorId)).length;
+
+                document.getElementById('stat-civil-branches').textContent = civilCount;
+                document.getElementById('stat-hospital-branches').textContent = hospCount;
+                document.getElementById('stat-bank-branches').textContent = bankCount;
+            }
+
+            // Render charts and services
+            if (dashRes.status === 'fulfilled') {
+                const data = dashRes.value.data;
+                renderWeeklyChart(data.weeklyAppointments || []);
+                renderGovChart(data.governorateDistribution || []);
+                
+                // Render top services
+                const servicesContainer = document.getElementById('services-container');
+                if (data.topServices && data.topServices.length > 0) {
+                    servicesContainer.innerHTML = data.topServices.map(s => `
+                        <div style="margin-bottom:15px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:5px;">
+                                <span>${s.serviceName}</span>
+                                <strong>${s.totalBookings} حجز</strong>
+                            </div>
+                            <div class="progress-bar-container" style="background:var(--border-color); height:8px; border-radius:4px; overflow:hidden;">
+                                <div class="progress-bar" style="background:var(--primary); height:100%; width:${s.percentage}%;"></div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    servicesContainer.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem; text-align:center;">لا توجد بيانات خدمات متاحة</p>';
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            AdminUI.showToast('حدث خطأ أثناء تحميل بيانات لوحة التحكم', 'error');
+        }
+    }
+    function renderWeeklyChart(weeklyData) {
+        const ctx = document.getElementById('weekly-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: weeklyData.map(w => w.date),
+                datasets: [{
+                    label: 'عدد المواعيد',
+                    data: weeklyData.map(w => w.count),
+                    backgroundColor: 'rgba(46, 134, 193, 0.75)',
+                    borderColor: 'rgba(46, 134, 193, 1)',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
+            }
+        });
+    }
+
+    function renderGovChart(govData) {
+        const ctx = document.getElementById('gov-chart').getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: govData.map(g => g.governorateName),
+                datasets: [{
+                    data: govData.map(g => g.totalAppointments),
+                    backgroundColor: [
+                        '#1B4F72', '#2E86C1', '#28B463', '#F1C40F', 
+                        '#E67E22', '#E74C3C', '#9B59B6', '#1ABC9C'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: { family: 'Cairo' }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
+

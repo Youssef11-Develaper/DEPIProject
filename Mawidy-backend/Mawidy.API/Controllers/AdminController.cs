@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using Mawidy.Infrastructure.Persistence;
 using Mawidy.Application.DTOs;
 using Mawidy.Application.DTOs.Appointments;
@@ -48,7 +51,7 @@ namespace Mawidy.API.Controllers
         {
             var today = DateTime.Today;
 
-            var allAppointments = await _context.Appointments
+            var allAppointments = await _context.Appointments.Where(a => a.SystemType == Mawidy.Domain.Enums.SystemType.CivilRegistry)
                 .Include(a => a.ServiceType)
                 .Include(a => a.Branch)
                     .ThenInclude(b => b.Governorate)
@@ -108,7 +111,7 @@ namespace Mawidy.API.Controllers
             var result = new
             {
                 TotalUsers = await _userManager.Users.CountAsync(),
-                TotalBranches = await _context.Branches.CountAsync(),
+                TotalBranches = await _context.Branches.Where(b => b.SystemType == Mawidy.Domain.Enums.SystemType.CivilRegistry).CountAsync(),
                 TotalAppointments = totalCombined,
                 TotalComplaints = await _context.Complaints.CountAsync(),
                 TotalCourts = await _context.Courts.CountAsync(c => !c.IsDeleted),
@@ -184,7 +187,7 @@ namespace Mawidy.API.Controllers
 
             var selectedDate = parsedDate ?? DateTime.Today;
 
-            var query = _context.Appointments
+            var query = _context.Appointments.Where(a => a.SystemType == Mawidy.Domain.Enums.SystemType.CivilRegistry)
                 .Include(a => a.User)
                 .Include(a => a.Branch)
                 .Include(a => a.ServiceType)
@@ -561,7 +564,7 @@ namespace Mawidy.API.Controllers
             if (service == null)
                 return NotFound(ApiResponse<string>.Fail("الخدمة غير موجودة"));
 
-            var hasAppointments = await _context.Appointments
+            var hasAppointments = await _context.Appointments.Where(a => a.SystemType == Mawidy.Domain.Enums.SystemType.CivilRegistry)
                 .AnyAsync(a => a.ServiceTypeId == id);
 
             if (hasAppointments)

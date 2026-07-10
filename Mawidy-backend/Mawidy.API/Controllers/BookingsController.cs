@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Mawidy.Application.DTOs.Courts;

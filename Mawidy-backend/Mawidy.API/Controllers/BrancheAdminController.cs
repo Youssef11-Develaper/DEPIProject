@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using Mawidy.Infrastructure.Persistence;
 using Mawidy.Application.DTOs;
 using Mawidy.Application.DTOs.Appointments;
@@ -106,7 +109,7 @@ namespace Mawidy.API.Controllers
             if (branchId == null)
                 return BadRequest(ApiResponse<string>.Fail("?? ????? ????"));
 
-            var appointment = await _context.Appointments
+            var appointment = await _context.Appointments.Where(a => a.SystemType == Mawidy.Domain.Enums.SystemType.CivilRegistry)
                 .FirstOrDefaultAsync(a => a.Id == id && a.BranchId == branchId);
 
             if (appointment == null)

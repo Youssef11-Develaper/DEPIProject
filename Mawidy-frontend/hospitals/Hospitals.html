@@ -1,0 +1,325 @@
+@* ???? ????? ?????????? - ???? ???? ???????? + Dark Mode + ??????? ??????? *@
+@model List<Maw3dyCare.Models.Maw3dyCareDB.Hospitals>
+@{
+    ViewData["Title"] = "Find a Hospital";
+}
+
+<style>
+    /* ===== City Filter Select ===== */
+    .city-select {
+        background: var(--input-bg);
+        color: var(--text-main);
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 14px;
+        cursor: pointer;
+        outline: none;
+        transition: border-color .2s;
+        min-width: 160px;
+    }
+
+        .city-select:focus {
+            border-color: #3b82f6;
+        }
+
+    /* ===== Bed Type Badges - ????? ===== */
+    .bed-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        border: 1.5px solid var(--border);
+        background: transparent;
+        color: var(--text-muted);
+    }
+
+        .bed-badge i {
+            font-size: 11px;
+            opacity: .7;
+        }
+
+    /* ===== ???? ??????? ?????? ===== */
+    .float-report-btn {
+        position: fixed;
+        bottom: 32px;
+        right: 28px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #ef4444;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        z-index: 999;
+        transition: transform .2s;
+        animation: pulse-red 2s infinite;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+        .float-report-btn:hover {
+            transform: scale(1.1);
+            color: white;
+        }
+
+        .float-report-btn .report-label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: .5px;
+        }
+
+    @@keyframes pulse-red {
+        0% {
+            box-shadow: 0 0 0 0 rgba(239,68,68,.5);
+        }
+
+        70% {
+            box-shadow: 0 0 0 12px rgba(239,68,68,0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(239,68,68,0);
+        }
+    }
+
+    .float-report-btn::after {
+        content: 'Report a Hospital';
+        position: absolute;
+        right: 64px;
+        background: #1e293b;
+        color: white;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity .2s;
+        pointer-events: none;
+    }
+
+    .float-report-btn:hover::after {
+        opacity: 1;
+    }
+
+    /* ===== Filter Buttons ===== */
+    .filter-btn {
+        border-color: var(--border) !important;
+        color: var(--text-muted) !important;
+        background: transparent !important;
+    }
+
+        .filter-btn.active {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+        }
+
+    /* ===== Available Badge ===== */
+    .available-badge {
+        background: #3b82f6;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    /* ===== ?? ??????? ??? ???????? ===== */
+    .hospital-card .card {
+        height: 100%;
+    }
+
+    .hospital-card .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    /* ===== Search Input ===== */
+    .form-control {
+        background: var(--input-bg) !important;
+        color: var(--text-main) !important;
+        border-color: var(--border) !important;
+    }
+
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+        }
+
+    /* ===== Cards ===== */
+    .card {
+        background: var(--bg-card) !important;
+        border-color: var(--border) !important;
+        color: var(--text-main) !important;
+    }
+
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+</style>
+
+<div class="container mt-4">
+
+    @* ===== Header ===== *@
+    <h2 style="font-weight:700; color:var(--text-main);">Find a Hospital</h2>
+    <p style="color:var(--text-muted);">Search, filter, and reserve beds across hospitals</p>
+
+    @* ===== Search + City Filter ===== *@
+    <div class="d-flex gap-3 mb-4 flex-wrap align-items-center">
+
+        @* ???? ????? *@
+        <input type="text" id="searchInput" class="form-control"
+               style="max-width:400px;"
+               placeholder="Search hospitals..."
+               onkeyup="filterAll()">
+
+        @* ???? ???????? *@
+        <select id="citySelect" class="city-select" onchange="filterAll()">
+            <option value="all">??? All Cities</option>
+            <option value="fayoum">?? Fayoum</option>
+            <option value="alexandria">?? Alexandria</option>
+            <option value="banha">?? Banha</option>
+        </select>
+
+    </div>
+
+    @* ===== ???? ??? ?????? ===== *@
+    <div class="mb-4 d-flex gap-2 flex-wrap">
+        <button class="btn btn-sm filter-btn active" onclick="filterByType('all', this)">All</button>
+        <button class="btn btn-sm filter-btn" onclick="filterByType('ICU', this)">ICU</button>
+        <button class="btn btn-sm filter-btn" onclick="filterByType('NICU', this)">Incubators</button>
+        <button class="btn btn-sm filter-btn" onclick="filterByType('CICU', this)">Cardiac</button>
+    </div>
+
+    @* ===== ????? ?????????? ===== *@
+    <div class="row g-3" id="hospitalsContainer">
+        @foreach (var hospital in Model)
+        {
+            @* ???? ??? ??????? ??? ??? *@
+            var totalAvailable = hospital.Beds.Count(b => b.Status == "Available");
+            var icuCount = hospital.Beds.Count(b => b.BedTypes.Name == "ICU");
+            var nicuCount = hospital.Beds.Count(b => b.BedTypes.Name == "NICU");
+            var cicuCount = hospital.Beds.Count(b => b.BedTypes.Name == "CICU");
+            var ventCount = hospital.Beds.Count(b => b.BedTypes.Name == "VENT");
+
+            <div class="col-md-4 hospital-card"
+                 data-name="@hospital.Name.ToLower()"
+                 data-city="@hospital.City.ToLower()"
+                 data-types="@string.Join(",", hospital.Beds.Select(b => b.BedTypes.Name).Distinct())">
+
+                <div class="card shadow-sm border rounded-3">
+                    <div class="card-body">
+
+                        <div>
+                            @* ===== ??? ???????? ===== *@
+                            <div class="d-flex align-items-center mb-2">
+                                <div style="width:36px; height:36px; border-radius:8px;
+                                                background:transparent; border:1.5px solid #3b82f6;
+                                                display:flex; align-items:center; justify-content:center;
+                                                margin-right:10px; flex-shrink:0;">
+                                    <i class="bi bi-building" style="color:#3b82f6;"></i>
+                                </div>
+                                <h6 class="card-title fw-bold mb-0">@hospital.Name</h6>
+                            </div>
+
+                            @* ===== ??????? ===== *@
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-geo-alt"></i> @hospital.City
+                            </p>
+
+                            @* ===== Bed Badges - ????? ???????? ===== *@
+                            <div class="d-flex flex-wrap gap-2 mb-3">
+                                @if (icuCount > 0)
+                                {
+                                    <span class="bed-badge">
+                                        <i class="fas fa-procedures"></i> @icuCount ICU
+                                    </span>
+                                }
+                                @if (nicuCount > 0)
+                                {
+                                    <span class="bed-badge">
+                                        <i class="fas fa-baby"></i> @nicuCount Incubators
+                                    </span>
+                                }
+                                @if (cicuCount > 0)
+                                {
+                                    <span class="bed-badge">
+                                        <i class="fas fa-heartbeat"></i> @cicuCount Cardiac
+                                    </span>
+                                }
+                                @if (ventCount > 0)
+                                {
+                                    <span class="bed-badge">
+                                        <i class="fas fa-wind"></i> @ventCount Ventilator
+                                    </span>
+                                }
+                            </div>
+                        </div>
+
+                        <div>
+                            @* ===== ??? ??????? ??????? ===== *@
+                            <div class="mb-3">
+                                <span class="available-badge">
+                                    @totalAvailable beds available
+                                </span>
+                            </div>
+
+                            @* ===== ???? View Details ===== *@
+                            <a href="/Maw3dyCare/HospitalDetails/@hospital.HospitalId"
+                               class="btn btn-outline-secondary w-100">
+                                View Details
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@* ===== ???? ??????? ?????? ===== *@
+<a href="/Maw3dyCare/Report" class="float-report-btn" title="Report a Hospital">
+    <i class="fas fa-flag"></i>
+    <span class="report-label">REPORT</span>
+</a>
+
+@section Scripts {
+    <script>
+        // ===== ?????? ?????? - ??? + ????? + ??? ?????? =====
+        var currentType = 'all';
+
+        function filterAll() {
+            var search   = document.getElementById("searchInput").value.toLowerCase();
+            var city     = document.getElementById("citySelect").value.toLowerCase();
+
+            document.querySelectorAll(".hospital-card").forEach(function(card) {
+                var name     = card.getAttribute("data-name");
+                var cardCity = card.getAttribute("data-city").toLowerCase();
+                var types    = card.getAttribute("data-types");
+
+                var matchSearch = name.includes(search);
+                var matchCity   = city === "all" || cardCity.includes(city);
+                var matchType   = currentType === "all" || types.includes(currentType);
+
+                card.style.display = (matchSearch && matchCity && matchType) ? "" : "none";
+            });
+        }
+
+        function filterByType(type, btn) {
+            currentType = type;
+            document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            filterAll();
+        }
+    </script>
+}
+

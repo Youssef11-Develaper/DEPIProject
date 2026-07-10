@@ -12,6 +12,7 @@ namespace Mawidy.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<Complaint>> GetUserComplaintsAsync(string userId)
             => await _context.Complaints
+                .Include(c => c.User)
                 .Include(c => c.Appointment)
                     .ThenInclude(a => a!.ServiceType)
                 .Where(c => c.UserId == userId)

@@ -1,0 +1,325 @@
+@model Mawidy.Application.Hospitals.ViewModels.HospitalDashboardVM
+@{
+    // Dashboard ??????? ????????
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActivePage"] = "Home";
+    Layout = "~/Areas/Hospitals/Views/Shared/_HospitalLayout.cshtml";
+}
+
+<style>
+    /* ===== Page Header ===== */
+    .dash-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 24px;
+    }
+
+    .welcome-card {
+        background: linear-gradient(135deg, #eff6ff, #dbeafe);
+        border: 1px solid #bfdbfe;
+        border-radius: 16px;
+        padding: 22px 26px;
+        margin-bottom: 24px;
+    }
+
+    .welcome-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #3b82f6;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        margin-bottom: 4px;
+    }
+
+    .welcome-name {
+        font-size: 24px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 4px;
+    }
+
+    .welcome-sub {
+        font-size: 14px;
+        color: #64748b;
+    }
+
+    /* ===== Big Cards ===== */
+    .beds-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .big-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+
+    .big-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+    }
+
+    .big-card-label {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .big-card-count {
+        font-size: 40px;
+        font-weight: 800;
+        color: #1e293b;
+        line-height: 1;
+    }
+
+    .big-card-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+    }
+
+    .icon-green {
+        background: #f0fdf4;
+        color: #22c55e;
+    }
+
+    .icon-red {
+        background: #fff1f2;
+        color: #ef4444;
+    }
+
+    /* ===== Small Type Cards inside Big Card ===== */
+    .type-cards-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .type-card {
+        flex: 1;
+        min-width: 70px;
+        border-radius: 10px;
+        padding: 10px 12px;
+        text-align: center;
+    }
+
+    .type-card-avail {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+    }
+
+    .type-card-occ {
+        background: #fff1f2;
+        border: 1px solid #fecaca;
+    }
+
+    .type-name {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .06em;
+        margin-bottom: 4px;
+    }
+
+    .type-count {
+        font-size: 22px;
+        font-weight: 800;
+    }
+
+    .type-card-avail .type-name {
+        color: #16a34a;
+    }
+
+    .type-card-avail .type-count {
+        color: #16a34a;
+    }
+
+    .type-card-occ .type-name {
+        color: #ef4444;
+    }
+
+    .type-card-occ .type-count {
+        color: #ef4444;
+    }
+
+    /* Top Bar */
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .live-time {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .bell-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #f1f5f9;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .system-badge {
+        background: #f0fdf4;
+        color: #16a34a;
+        border: 1px solid #bbf7d0;
+        font-size: 12px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+</style>
+
+
+@* Welcome Card - ??? pending count *@
+@* <div class="welcome-card">
+    <div class="welcome-label">Welcome Back</div>
+    <div class="welcome-name">@Model.HospitalName</div>
+    <div class="welcome-sub">
+        <i class="fas fa-map-marker-alt" style="color:#3b82f6;margin-right:4px;"></i>
+        @Model.City &nbsp;|&nbsp;
+        @if (Model.IsActive)
+        {
+            <span style="color:#16a34a;font-weight:600;">? Active</span>
+        }
+        @if (Model.PendingCount > 0)
+        {
+            <span style="color:#ef4444;font-weight:600;margin-right:8px;">
+                &nbsp;|&nbsp; You have @Model.PendingCount pending reservations awaiting action.
+            </span>
+        }
+    </div>
+</div> *@
+
+<!-- Top Bar -->
+<div class="dash-header">
+    <div>
+        <h1 style="font-size:22px; font-weight:700; color:#1e293b; margin:0">Dashboard</h1>
+        <p style="color:#94a3b8; font-size:13px; margin:3px 0 0">
+            <span id="liveTime"></span>
+        </p>
+    </div>
+    <div class="topbar-right">
+        <span class="system-badge">? System Active</span>
+        <button class="bell-btn"><i class="fas fa-bell"></i></button>
+    </div>
+</div>
+
+@* ===== Welcome Card ===== *@
+<div class="welcome-card">
+    <div class="welcome-label">Welcome Back</div>
+    <div class="welcome-name">@Model.HospitalName</div>
+    <div class="welcome-sub">
+        <i class="fas fa-map-marker-alt" style="color:#3b82f6; margin-right:4px;"></i>
+        @Model.City
+        &nbsp;|&nbsp;
+        @if (Model.IsActive)
+        {
+            <span style="color:#16a34a; font-weight:600;">? Active</span>
+        }
+        else
+        {
+            <span style="color:#94a3b8;">? Offline</span>
+        }
+    </div>
+</div>
+
+@* ===== Available + Occupied Big Cards ===== *@
+<div class="beds-row">
+
+    @* ===== Available Beds ===== *@
+    <div class="big-card">
+        <div class="big-card-header">
+            <div>
+                <div class="big-card-label">Available Beds</div>
+                <div class="big-card-count">@Model.AvailableBeds</div>
+            </div>
+            <div class="big-card-icon icon-green">
+                <i class="fas fa-bed"></i>
+            </div>
+        </div>
+
+        @* Small cards per type *@
+        <div class="type-cards-row">
+            @if (!Model.AvailableByType.Any())
+            {
+                <div style="font-size:13px; color:#94a3b8;">No available beds</div>
+            }
+            @foreach (var t in Model.AvailableByType)
+            {
+                <div class="type-card type-card-avail">
+                    <div class="type-name">@t.TypeName</div>
+                    <div class="type-count">@t.Count</div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @* ===== Occupied Beds ===== *@
+    <div class="big-card">
+        <div class="big-card-header">
+            <div>
+                <div class="big-card-label">Occupied Beds</div>
+                <div class="big-card-count">@Model.OccupiedBeds</div>
+            </div>
+            <div class="big-card-icon icon-red">
+                <i class="fas fa-heart-pulse"></i>
+            </div>
+        </div>
+
+        @* Small cards per type *@
+        <div class="type-cards-row">
+            @if (!Model.OccupiedByType.Any())
+            {
+                <div style="font-size:13px; color:#94a3b8;">No occupied beds</div>
+            }
+            @foreach (var t in Model.OccupiedByType)
+            {
+                <div class="type-card type-card-occ">
+                    <div class="type-name">@t.TypeName</div>
+                    <div class="type-count">@t.Count</div>
+                </div>
+            }
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Live Time
+    function updateTime() {
+        const now = new Date();
+        const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        let h = now.getHours(), m = now.getMinutes().toString().padStart(2,'0');
+        const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+        document.getElementById('liveTime').textContent =
+            `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()} · ${h}:${m} ${ap}`;
+    }
+    updateTime(); setInterval(updateTime, 1000);
+</script>
+
+
+

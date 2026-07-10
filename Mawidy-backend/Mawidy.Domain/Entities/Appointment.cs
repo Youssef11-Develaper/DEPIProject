@@ -6,6 +6,8 @@ namespace Mawidy.Domain.Entities
     {
         public int Id { get; set; }
 
+        public SystemType SystemType { get; set; } = SystemType.CivilRegistry;
+
         public string UserId { get; set; } = string.Empty;
         public ApplicationUser User { get; set; } = null!;
 
@@ -29,6 +31,12 @@ namespace Mawidy.Domain.Entities
         public string CustomerPhone { get; set; } = string.Empty;
         public TimeSpan AppointmentTime { get; set; }
         public string? Notes { get; set; }
+
+        // Bank properties
+        public string Service { get; set; } = string.Empty; 
+        public string Date { get; set; } = string.Empty; 
+        public string Time { get; set; } = string.Empty; 
+        public string? EmployeeRemarks { get; set; }
     }
 
     public class VirtualQueueEntry

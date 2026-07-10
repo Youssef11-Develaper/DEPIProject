@@ -1,0 +1,540 @@
+@model Mawidy.Application.Hospitals.ViewModels.AddHospitalVM
+@{
+    // ???? ????? ?????? ?????
+    Layout = "~/Areas/Hospitals/Views/Shared/_AdminLayout.cshtml";
+}
+
+<style>
+    .form-card {
+        background: white;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        padding: 28px;
+        margin-bottom: 20px;
+    }
+
+    .card-header-section {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .card-header-icon {
+        width: 44px;
+        height: 44px;
+        background: #eff6ff;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3b82f6;
+        font-size: 20px;
+    }
+
+    .card-header-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .card-header-sub {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-top: 2px;
+    }
+
+    /* ??? Form Grid */
+    .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+        .form-field.full {
+            grid-column: 1 / -1;
+        }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .form-input {
+        padding: 10px 14px;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 14px;
+        color: #1e293b;
+        outline: none;
+        transition: border-color .2s;
+    }
+
+        .form-input:focus {
+            border-color: #3b82f6;
+        }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 70px;
+    }
+
+    .validation-error {
+        font-size: 12px;
+        color: #ef4444;
+        margin-top: 2px;
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 0;
+    }
+
+    .toggle-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .toggle-sub {
+        font-size: 12px;
+        color: #94a3b8;
+    }
+
+    .toggle-switch {
+        position: relative;
+        width: 48px;
+        height: 26px;
+    }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        inset: 0;
+        background: #cbd5e1;
+        border-radius: 26px;
+        transition: .3s;
+    }
+
+        .toggle-slider:before {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: .3s;
+        }
+
+    input:checked + .toggle-slider {
+        background: #3b82f6;
+    }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+    /* Bed Type Cards */
+    .bed-types-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+    }
+
+    .bed-type-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+    }
+
+    .bed-type-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+    }
+
+    .bed-type-name-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .bed-type-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: #eff6ff;
+        color: #3b82f6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+    }
+
+    .bed-type-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .bed-range-label {
+        font-size: 11px;
+        color: #94a3b8;
+    }
+
+    .bed-inputs-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .bed-input-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .bed-input-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+    }
+
+    .bed-input {
+        padding: 8px 10px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1e293b;
+        outline: none;
+        text-align: center;
+    }
+
+        .bed-input:focus {
+            border-color: #3b82f6;
+        }
+
+    /* Action Buttons */
+    .action-bar {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding-top: 8px;
+    }
+
+    .btn-cancel {
+        padding: 11px 24px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            background: #f8fafc;
+        }
+
+    .btn-create {
+        padding: 11px 28px;
+        border-radius: 10px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .2s;
+    }
+
+        .btn-create:hover {
+            background: #2563eb;
+        }
+</style>
+
+<!-- Page Header -->
+<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px;">
+    <div>
+        <h1 style="font-size:24px; font-weight:700; color:#1e293b; margin:0">Add Hospital</h1>
+        <p style="color:#64748b; font-size:14px; margin:4px 0 0">
+            Register a new facility and initialize beds
+        </p>
+    </div>
+    <div style="display:flex; align-items:center; gap:16px;">
+        <span id="liveTime" style="font-size:14px; font-weight:600; color:#1e293b;"></span>
+        <button style="width:38px;height:38px;border-radius:50%;background:#f1f5f9;border:none;cursor:pointer;color:#64748b;">
+            <i class="fas fa-bell"></i>
+        </button>
+    </div>
+</div>
+
+<form asp-action="AddHospital" method="post">
+
+    @* ===== ???? ?????? ???????? ===== *@
+    <div class="form-card">
+        <div class="card-header-section">
+            <div class="card-header-icon"><i class="fas fa-hospital-alt"></i></div>
+            <div>
+                <div class="card-header-title">Hospital Information</div>
+                <div class="card-header-sub">Basic details and location</div>
+            </div>
+        </div>
+
+        <div class="form-grid-2">
+
+            <!-- Hospital Name -->
+            <div class="form-field">
+                <label class="form-label">Hospital Name <span style="color:#ef4444">*</span></label>
+                <input asp-for="Name" class="form-input" placeholder="e.g. Cairo General" />
+                <span asp-validation-for="Name" class="validation-error"></span>
+            </div>
+
+            <!-- City -->
+            <div class="form-field">
+                <label class="form-label">City <span style="color:#ef4444">*</span></label>
+                <input asp-for="City" class="form-input" placeholder="e.g. Fayoum" />
+                <span asp-validation-for="City" class="validation-error"></span>
+            </div>
+
+            <!-- Address -->
+            <div class="form-field full">
+                <label class="form-label">Address <span style="color:#ef4444">*</span></label>
+                <input asp-for="Address" class="form-input" placeholder="Street, district" />
+                <span asp-validation-for="Address" class="validation-error"></span>
+            </div>
+
+            <!-- Phone -->
+            <div class="form-field">
+                <label class="form-label">Phone Number <span style="color:#ef4444">*</span></label>
+                <input asp-for="Phone" class="form-input" placeholder="01xxxxxxxxx" maxlength="11" />
+                <span asp-validation-for="Phone" class="validation-error"></span>
+            </div>
+
+            <!-- Email -->
+            <div class="form-field">
+                <label class="form-label">Hospital Email</label>
+                <input asp-for="Email" class="form-input" placeholder="contact@hospital.eg" />
+                <span asp-validation-for="Email" class="validation-error"></span>
+            </div>
+
+            <!-- Latitude -->
+            <div class="form-field">
+                <label class="form-label">Latitude</label>
+                <input asp-for="Latitude" class="form-input" placeholder="29.3214" step="any" type="number" />
+            </div>
+
+            <!-- Longitude -->
+            <div class="form-field">
+                <label class="form-label">Longitude</label>
+                <input asp-for="Longitude" class="form-input" placeholder="30.8339" step="any" type="number" />
+            </div>
+
+            <!-- Description -->
+            <div class="form-field full">
+                <label class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-input form-textarea"
+                          placeholder="Brief description..."></textarea>
+            </div>
+
+        </div>
+
+        <!-- Status Toggle -->
+        <hr style="border:none; border-top:1px solid #f1f5f9; margin:20px 0 16px;" />
+        <div class="toggle-row">
+            <div>
+                <div class="toggle-label">Status</div>
+                <div class="toggle-sub">Hospital will be active immediately</div>
+            </div>
+            <label class="toggle-switch">
+                <input asp-for="IsActive" type="checkbox" checked />
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+
+    @* ===== ???? ??????? ===== *@
+    <div class="form-card">
+        <div class="card-header-section">
+            <div class="card-header-icon"><i class="fas fa-bed"></i></div>
+            <div>
+                <div class="card-header-title">Bed Initialization</div>
+                <div class="card-header-sub">
+                    Bed codes are auto-generated (e.g. ICU-1, NICU-1, VENT-1)
+                </div>
+            </div>
+        </div>
+
+        <div class="bed-types-grid">
+
+            @* ICU *@
+            <div class="bed-type-card">
+                <div class="bed-type-header">
+                    <div class="bed-type-name-row">
+                        <div class="bed-type-icon"><i class="fas fa-bed"></i></div>
+                        <span class="bed-type-name">ICU Beds</span>
+                    </div>
+                    <span class="bed-range-label" id="icuRange">ICU-1 … ICU-0</span>
+                </div>
+                <div class="bed-inputs-row">
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#16a34a">Available</span>
+                        <input asp-for="IcuAvailable" type="number" min="0" class="bed-input"
+                               style="border-color:#bbf7d0; background:#f0fdf4; color:#16a34a"
+                               oninput="updateRange('icu')" />
+                    </div>
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#ef4444">Occupied</span>
+                        <input asp-for="IcuOccupied" type="number" min="0" class="bed-input"
+                               style="border-color:#fecaca; background:#fff1f2; color:#ef4444"
+                               oninput="updateRange('icu')" />
+                    </div>
+                </div>
+            </div>
+
+            @* NICU *@
+            <div class="bed-type-card">
+                <div class="bed-type-header">
+                    <div class="bed-type-name-row">
+                        <div class="bed-type-icon" style="background:#fdf4ff; color:#a855f7">
+                            <i class="fas fa-baby"></i>
+                        </div>
+                        <span class="bed-type-name">NICU Beds</span>
+                    </div>
+                    <span class="bed-range-label" id="nicuRange">NICU-1 … NICU-0</span>
+                </div>
+                <div class="bed-inputs-row">
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#16a34a">Available</span>
+                        <input asp-for="NicuAvailable" type="number" min="0" class="bed-input"
+                               style="border-color:#bbf7d0; background:#f0fdf4; color:#16a34a"
+                               oninput="updateRange('nicu')" />
+                    </div>
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#ef4444">Occupied</span>
+                        <input asp-for="NicuOccupied" type="number" min="0" class="bed-input"
+                               style="border-color:#fecaca; background:#fff1f2; color:#ef4444"
+                               oninput="updateRange('nicu')" />
+                    </div>
+                </div>
+            </div>
+
+            @* CICU *@
+            <div class="bed-type-card">
+                <div class="bed-type-header">
+                    <div class="bed-type-name-row">
+                        <div class="bed-type-icon" style="background:#fff7ed; color:#f97316">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <span class="bed-type-name">CICU Beds</span>
+                    </div>
+                    <span class="bed-range-label" id="cicuRange">CICU-1 … CICU-0</span>
+                </div>
+                <div class="bed-inputs-row">
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#16a34a">Available</span>
+                        <input asp-for="CicuAvailable" type="number" min="0" class="bed-input"
+                               style="border-color:#bbf7d0; background:#f0fdf4; color:#16a34a"
+                               oninput="updateRange('cicu')" />
+                    </div>
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#ef4444">Occupied</span>
+                        <input asp-for="CicuOccupied" type="number" min="0" class="bed-input"
+                               style="border-color:#fecaca; background:#fff1f2; color:#ef4444"
+                               oninput="updateRange('cicu')" />
+                    </div>
+                </div>
+            </div>
+
+            @* VENT *@
+            <div class="bed-type-card">
+                <div class="bed-type-header">
+                    <div class="bed-type-name-row">
+                        <div class="bed-type-icon" style="background:#f0fdfa; color:#14b8a6">
+                            <i class="fas fa-wind"></i>
+                        </div>
+                        <span class="bed-type-name">Ventilator Beds</span>
+                    </div>
+                    <span class="bed-range-label" id="ventRange">VENT-1 … VENT-0</span>
+                </div>
+                <div class="bed-inputs-row">
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#16a34a">Available</span>
+                        <input asp-for="VentAvailable" type="number" min="0" class="bed-input"
+                               style="border-color:#bbf7d0; background:#f0fdf4; color:#16a34a"
+                               oninput="updateRange('vent')" />
+                    </div>
+                    <div class="bed-input-wrap">
+                        <span class="bed-input-label" style="color:#ef4444">Occupied</span>
+                        <input asp-for="VentOccupied" type="number" min="0" class="bed-input"
+                               style="border-color:#fecaca; background:#fff1f2; color:#ef4444"
+                               oninput="updateRange('vent')" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    @* ===== Action Buttons ===== *@
+    <div class="action-bar">
+        <a href="/Hospitals/Maw3dyCare/HospitalsList" class="btn-cancel">Cancel</a>
+        <button type="submit" class="btn-create">
+            <i class="fas fa-plus"></i> Create Hospital
+        </button>
+    </div>
+
+</form>
+
+<script>
+    // ????? ??? Range Label ??? ??? ?????
+    function updateRange(type) {
+        const avail = parseInt(document.querySelector(`[name="${capitalize(type)}Available"]`).value) || 0;
+        const occ   = parseInt(document.querySelector(`[name="${capitalize(type)}Occupied"]`).value)  || 0;
+        const total = avail + occ;
+        const prefix = type.toUpperCase();
+        document.getElementById(`${type}Range`).textContent =
+            total > 0 ? `${prefix}-1 … ${prefix}-${total}` : `${prefix}-1 … ${prefix}-0`;
+    }
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    // Live Time
+    function updateTime() {
+        const now = new Date();
+        const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        let h = now.getHours(), m = now.getMinutes().toString().padStart(2,'0');
+        const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+        document.getElementById('liveTime').textContent =
+            `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}  ${h}:${m} ${ap}`;
+    }
+    updateTime(); setInterval(updateTime, 1000);
+</script>
+
+
+

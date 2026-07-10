@@ -30,11 +30,20 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Area")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("BankBranchId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("BranchId")
                         .HasColumnType("int");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -60,8 +69,17 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     b.Property<int?>("GovernorateId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("HospitalId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsBankEmployee")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -113,9 +131,13 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BankBranchId");
+
                     b.HasIndex("BranchId");
 
                     b.HasIndex("GovernorateId");
+
+                    b.HasIndex("HospitalId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -135,6 +157,9 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("AppointmentDate")
                         .HasColumnType("datetime2");
@@ -156,10 +181,21 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeRemarks")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsNotified")
                         .HasColumnType("bit");
 
                     b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Service")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ServiceKey")
@@ -172,6 +208,13 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("SystemType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Time")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<TimeSpan>("TimeSlot")
                         .HasColumnType("time");
 
@@ -181,6 +224,8 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ApplicationUserId");
+
                     b.HasIndex("BranchId");
 
                     b.HasIndex("ServiceTypeId");
@@ -188,6 +233,28 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Appointments");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Banks.Service", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Desc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankServices");
                 });
 
             modelBuilder.Entity("Mawidy.Domain.Entities.Booking", b =>
@@ -286,7 +353,23 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("AddressAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AddressEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Area")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CityAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CityEn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -298,6 +381,14 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("GovernorateId")
                         .HasColumnType("int");
+
+                    b.Property<string>("HoursAr")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HoursEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Latitude")
                         .HasColumnType("float");
@@ -313,6 +404,10 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("OperatorId")
                         .HasColumnType("int");
 
@@ -323,6 +418,9 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .HasColumnType("float");
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SystemType")
                         .HasColumnType("int");
 
                     b.Property<string>("WaitTime")
@@ -1009,6 +1107,227 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.BedTypes", b =>
+                {
+                    b.Property<int>("BedTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BedTypeId"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("BedTypeId");
+
+                    b.ToTable("HospitalBedTypes");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Beds", b =>
+                {
+                    b.Property<int>("BedId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BedId"));
+
+                    b.Property<string>("BedNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("BedTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HospitalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("BedId");
+
+                    b.HasIndex("BedTypeId");
+
+                    b.HasIndex("HospitalId");
+
+                    b.ToTable("HospitalBeds");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.BlockedPhones", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("BlockedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HospitalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("HospitalId");
+
+                    b.ToTable("HospitalBlockedPhones");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Hospitals", b =>
+                {
+                    b.Property<int>("HospitalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HospitalId"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Latitude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("HospitalId");
+
+                    b.ToTable("Hospitals");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Reports", b =>
+                {
+                    b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"));
+
+                    b.Property<string>("Complaint")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HospitalName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PatientPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReportId");
+
+                    b.ToTable("HospitalReports");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Reservations", b =>
+                {
+                    b.Property<int>("ReservationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationId"));
+
+                    b.Property<int?>("BedId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BedTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CaseDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ETA")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HospitalId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PatientName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PatientPhone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ReservationId");
+
+                    b.HasIndex("BedId");
+
+                    b.HasIndex("BedTypeId");
+
+                    b.HasIndex("HospitalId");
+
+                    b.ToTable("HospitalReservations");
+                });
+
             modelBuilder.Entity("Mawidy.Domain.Entities.LegalCase", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1532,6 +1851,10 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Mawidy.Domain.Entities.ApplicationUser", b =>
                 {
+                    b.HasOne("Mawidy.Domain.Entities.Branch", "BankBranch")
+                        .WithMany()
+                        .HasForeignKey("BankBranchId");
+
                     b.HasOne("Mawidy.Domain.Entities.Branch", "Branch")
                         .WithMany()
                         .HasForeignKey("BranchId");
@@ -1540,13 +1863,25 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .WithMany("Users")
                         .HasForeignKey("GovernorateId");
 
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.Hospitals", "Hospital")
+                        .WithMany("HospitalUsers")
+                        .HasForeignKey("HospitalId");
+
+                    b.Navigation("BankBranch");
+
                     b.Navigation("Branch");
 
                     b.Navigation("Governorate");
+
+                    b.Navigation("Hospital");
                 });
 
             modelBuilder.Entity("Mawidy.Domain.Entities.Appointment", b =>
                 {
+                    b.HasOne("Mawidy.Domain.Entities.ApplicationUser", null)
+                        .WithMany("BankAppointments")
+                        .HasForeignKey("ApplicationUserId");
+
                     b.HasOne("Mawidy.Domain.Entities.Branch", "Branch")
                         .WithMany("Appointments")
                         .HasForeignKey("BranchId")
@@ -1696,6 +2031,61 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Governorate");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Beds", b =>
+                {
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.BedTypes", "BedTypes")
+                        .WithMany("Beds")
+                        .HasForeignKey("BedTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.Hospitals", "Hospitals")
+                        .WithMany("Beds")
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BedTypes");
+
+                    b.Navigation("Hospitals");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.BlockedPhones", b =>
+                {
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.Hospitals", "Hospital")
+                        .WithMany()
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Hospital");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Reservations", b =>
+                {
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.Beds", "Bed")
+                        .WithMany()
+                        .HasForeignKey("BedId");
+
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.BedTypes", "BedTypes")
+                        .WithMany("Reservations")
+                        .HasForeignKey("BedTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Mawidy.Domain.Entities.Hospitals.Hospitals", "Hospitals")
+                        .WithMany("Reservations")
+                        .HasForeignKey("HospitalId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Bed");
+
+                    b.Navigation("BedTypes");
+
+                    b.Navigation("Hospitals");
                 });
 
             modelBuilder.Entity("Mawidy.Domain.Entities.LegalCase", b =>
@@ -1858,6 +2248,8 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                 {
                     b.Navigation("Appointments");
 
+                    b.Navigation("BankAppointments");
+
                     b.Navigation("Complaints");
 
                     b.Navigation("Ratings");
@@ -1923,6 +2315,22 @@ namespace Mawidy.Infrastructure.Persistence.Migrations
                     b.Navigation("Districts");
 
                     b.Navigation("Users");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.BedTypes", b =>
+                {
+                    b.Navigation("Beds");
+
+                    b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("Mawidy.Domain.Entities.Hospitals.Hospitals", b =>
+                {
+                    b.Navigation("Beds");
+
+                    b.Navigation("HospitalUsers");
+
+                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("Mawidy.Domain.Entities.LegalCase", b =>

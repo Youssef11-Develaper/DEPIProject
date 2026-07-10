@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using Mawidy.Application.DTOs.Common;
 using Mawidy.Application.DTOs.Complaints;
 using Mawidy.Domain.Entities;
@@ -78,15 +81,7 @@ namespace Mawidy.API.Controllers
         public async Task<ActionResult<ApiResponse<ComplaintDto>>> CreateComplaint(
             CreateComplaintDto dto)
         {
-            // ????? ?? ???? ???? ?????
-            var appointments = await _appointmentRepository.GetUserAppointmentsAsync(UserId);
-            var hasCompleted = appointments.Any(a => a.Status == AppointmentStatus.Completed);
-
-            if (!hasCompleted)
-                return BadRequest(ApiResponse<ComplaintDto>
-                    .Fail("???? ???? ???? ???? ????? ???? ???? ???? ????"));
-
-            // ?? ?????? ????? ????? ??? ?????
+            // التحقق من صحة الموعد إذا تم اختياره
             if (dto.AppointmentId.HasValue)
             {
                 var appointment = await _appointmentRepository
@@ -94,11 +89,11 @@ namespace Mawidy.API.Controllers
 
                 if (appointment == null || appointment.UserId != UserId)
                     return BadRequest(ApiResponse<ComplaintDto>
-                        .Fail("?????? ?? ?? ?????"));
+                        .Fail("الموعد المحدد غير صحيح أو لا يخصك"));
 
                 if (appointment.Status != AppointmentStatus.Completed)
                     return BadRequest(ApiResponse<ComplaintDto>
-                        .Fail("?????? ?? ?? ?????"));
+                        .Fail("الموعد المحدد يجب أن يكون مكتملاً لتقديم شكوى بشأنه"));
             }
 
             var complaint = new Complaint
