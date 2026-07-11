@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5154/api';   
+const API_BASE = '/api';   
 // Token Management
 const Auth = {
     getToken: () => localStorage.getItem('token'),
@@ -276,3 +276,23 @@ const UI = {
         }
     }
 };
+
+function bridgePortalLinks() {
+    const token = Auth.getToken();
+    if (!token) return;
+    
+    document.querySelectorAll('a').forEach(link => {
+        const href = link.getAttribute('href');
+        if (false) { // SSO bridge no longer needed since it's a monolithic single domain
+            try {
+                // If it's a relative URL or absolute, resolve it correctly
+                const url = new URL(href, window.location.origin);
+                url.searchParams.set('token', token);
+                link.setAttribute('href', url.toString());
+            } catch (e) {
+                console.error("Error bridging portal link", e);
+            }
+        }
+    });
+}
+document.addEventListener('DOMContentLoaded', bridgePortalLinks);

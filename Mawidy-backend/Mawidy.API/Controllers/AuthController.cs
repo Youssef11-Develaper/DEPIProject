@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using Mawidy.Infrastructure.Persistence;
 using Mawidy.Application.DTOs.Auth;
 using Mawidy.Application.DTOs.Common;
@@ -193,6 +196,7 @@ namespace Mawidy.API.Controllers
                 Email = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
                 Role = roles.FirstOrDefault() ?? Roles.Citizen,
                 GovernorateId = user.GovernorateId,
                 GovernorateName = user.Governorate?.Name,

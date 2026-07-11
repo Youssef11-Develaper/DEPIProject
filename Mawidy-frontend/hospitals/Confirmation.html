@@ -1,0 +1,127 @@
+@* ???? ????? ????? - ????? ??? ?? ?????? ???? ????? *@
+@model Maw3dyCare.Models.Maw3dyCareDB.Reservations
+@{
+    ViewData["Title"] = "Reservation Confirmed";
+}
+
+<style>
+    /* body {
+        background-color: #f0f4ff;
+    } */
+
+    body {
+        background: var(--bg-main);
+    }
+
+    @* ?????? ??????? *@
+    .confirm-wrapper {
+        max-width: 420px;
+        margin: 60px auto;
+        background: var(--bg-card);
+        border-radius: 20px;
+        padding: 36px 32px;
+        box-shadow: 0 4px 24px rgba(13, 110, 253, 0.10);
+        text-align: center;
+        border: 1.5px solid var(--border);
+    }
+
+    @* ??? ????? *@
+    .reservation-badge {
+        background: linear-gradient(135deg, #4facfe, #00c6ff);
+        color: white;
+        font-size: 1.6rem;
+        font-weight: 700;
+        border-radius: 14px;
+        padding: 14px 32px;
+        display: inline-block;
+        margin: 12px 0 20px;
+        letter-spacing: 1px;
+    }
+
+    @* ????? ??????? *@
+    .confirm-msg {
+        background-color: var(--badge-bg);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+
+    @* ???? ?????? *@
+    .nav-arrows {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .arrow-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--bg-card);
+        transition: all .15s;
+    }
+
+        .arrow-btn:hover {
+            background: var(--badge-bg);
+            color: var(--text-main);
+        }
+</style>
+
+<div class="container">
+    <div class="confirm-wrapper">
+
+        @* ===== ???? ?????? ===== *@
+        @* ????? ?????? = ???? ????? ????? | ?????? = ?????? ??????? ?????? *@
+        <div class="nav-arrows">
+            <a href="/Maw3dyCare/Reserve/@Model.HospitalId" class="arrow-btn">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <a href="/Maw3dyCare/Status/@Model.ReservationId" class="arrow-btn">
+                Track Status <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        @* ===== ????? ===== *@
+        <p class="text-muted small mb-1">Reservation Number</p>
+
+        @* ===== ??? ????? = ??? ?????? + ??? ??? Reservation ===== *@
+        <div class="reservation-badge">
+            @Model.BedTypes.Name-@Model.ReservationId.ToString("D2")
+        </div>
+
+        @* ===== ??? ???????? ===== *@
+        <p class="text-muted small mb-3">
+            <i class="bi bi-hospital text-primary"></i> @Model.Hospitals.Name
+        </p>
+
+        @* ===== ????? ??? 30 ????? ===== *@
+        <div class="confirm-msg">
+            <p class="fw-semibold mb-1" style="color:#b07d2e;">
+                Your bed is reserved for 30 minutes.
+            </p>
+            <p class="text-muted small mb-0">
+                Please arrive at the hospital within this time.
+            </p>
+        </div>
+
+        @* ===== ???? ?????? ?????? ===== *@
+        <div class="d-grid gap-2">
+            <a href="/Maw3dyCare/Status/@Model.ReservationId"
+               class="btn btn-primary rounded-3">
+                <i class="bi bi-satellite-dish"></i> Track My Reservation
+            </a>
+            <a href="/Maw3dyCare/Hospitals"
+               class="btn btn-outline-secondary rounded-3">
+                <i class="bi bi-house"></i> Back to Hospitals
+            </a>
+        </div>
+
+    </div>
+</div>
+

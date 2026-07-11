@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using Mawidy.Infrastructure.Persistence;
 using Mawidy.Application.DTOs.Branches;
 using Mawidy.Application.DTOs.Common;

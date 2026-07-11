@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Mawidy.Infrastructure.Persistence
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext, IAppDbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -32,6 +32,17 @@ namespace Mawidy.Infrastructure.Persistence
         public DbSet<LegalCase> LegalCases { get; set; } = null!;
         public DbSet<CaseTimelineEvent> CaseTimelineEvents { get; set; } = null!;
         public DbSet<QueueTicket> QueueTickets { get; set; } = null!;
+
+        // Banks
+        public DbSet<Mawidy.Domain.Entities.Banks.Service> BankServices { get; set; }
+
+        // Hospitals
+        public DbSet<Mawidy.Domain.Entities.Hospitals.Hospitals> Hospitals { get; set; } = null!;
+        public DbSet<Mawidy.Domain.Entities.Hospitals.Beds> HospitalBeds { get; set; } = null!;
+        public DbSet<Mawidy.Domain.Entities.Hospitals.BedTypes> HospitalBedTypes { get; set; } = null!;
+        public DbSet<Mawidy.Domain.Entities.Hospitals.Reservations> HospitalReservations { get; set; } = null!;
+        public DbSet<Mawidy.Domain.Entities.Hospitals.BlockedPhones> HospitalBlockedPhones { get; set; } = null!;
+        public DbSet<Mawidy.Domain.Entities.Hospitals.Reports> HospitalReports { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -7,6 +7,8 @@ namespace Mawidy.Domain.Entities
     {
         public int Id { get; set; }
 
+        public SystemType SystemType { get; set; } = SystemType.CivilRegistry;
+
         [Required]
         public string Name { get; set; } = string.Empty;
 
@@ -35,6 +37,15 @@ namespace Mawidy.Domain.Entities
         public int QueueCount { get; set; }
         public string WaitTime { get; set; } = string.Empty;
         public double Rating { get; set; }
+
+        // Added Bank properties for unification
+        public string NameEn { get; set; } = string.Empty;
+        public string CityEn { get; set; } = string.Empty;
+        public string CityAr { get; set; } = string.Empty;
+        public string AddressEn { get; set; } = string.Empty;
+        public string AddressAr { get; set; } = string.Empty;
+        public string HoursEn { get; set; } = string.Empty;
+        public string HoursAr { get; set; } = string.Empty;
 
         public Operator Operator { get; set; } = null!;
         public District District { get; set; } = null!;

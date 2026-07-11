@@ -1,3 +1,6 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Mawidy.Application.Interfaces;
@@ -65,6 +68,11 @@ public class BranchController : Controller
             var fresh = await _apptSvc.GetBookingFormAsync(vm.BranchId, vm.ServiceKey);
             if (fresh is not null) vm.AvailableServices = fresh.AvailableServices;
             return View(vm);
+        }
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            vm.UserId = userId;
         }
         var confirm = await _apptSvc.CreateAppointmentAsync(vm);
         return RedirectToAction(nameof(Confirm), new { id = confirm.AppointmentId });

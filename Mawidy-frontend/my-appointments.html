@@ -179,8 +179,8 @@
                 <li><a href="civil-registry.html" class="dropdown-item"><i class="bi bi-building"></i> السجل المدني</a></li>
                 <li><a href="mawidy-courts.html" class="dropdown-item"><i class="bi bi-bank"></i> المحاكم والنيابات</a></li>
                 <li><a href="/Branch" class="dropdown-item"><i class="bi bi-phone"></i> شركات الاتصالات</a></li>
-                <li><a href="http://localhost:5216/" class="dropdown-item"><i class="bi bi-heart-pulse"></i> المستشفيات والعيادات</a></li>
-                <li><a href="http://localhost:5281/" class="dropdown-item"><i class="bi bi-cash-coin"></i> البنوك والخدمات المالية</a></li>
+                <li><a href="/Hospitals/Maw3dyCare/Index" class="dropdown-item"><i class="bi bi-heart-pulse"></i> المستشفيات والعيادات</a></li>
+                <li><a href="/Banks/Home/Index" class="dropdown-item"><i class="bi bi-cash-coin"></i> البنوك والخدمات المالية</a></li>
             </ul>
         </li>
         <li><a href="my-appointments.html" class="nav-link" id="myAppointmentsLink" style="display:none">مواعيدي</a></li>
@@ -425,7 +425,7 @@
                     <div class="countdown" id="countdown-${a.id}"></div>
 
                     <div style="display:flex;gap:8px;flex-wrap:wrap">
-                        ${a.status === 'Confirmed' || a.status === 'Pending' ? `
+                        ${(a.status === 'Confirmed' || a.status === 'Pending') && a.systemType !== 4 && a.systemType !== 5 ? `
                             <button class="btn btn-sm" style="background:#EAF2FB;color:var(--primary)"
                                 onclick="showQR(${a.id})">
                                 <i class="bi bi-qr-code"></i> QR
@@ -478,7 +478,11 @@
         const diff = appointmentDate - now;
 
         if (diff <= 0) {
-            el.innerHTML = '<i class="bi bi-clock"></i> الموعد الآن';
+            if (appointment.systemType === 4) {
+                el.innerHTML = '<i class="bi bi-clock-history"></i> انتهت صلاحية الحجز';
+            } else {
+                el.innerHTML = '<i class="bi bi-clock"></i> الموعد الآن';
+            }
             return;
         }
 
@@ -487,9 +491,13 @@
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
         let text = '';
-        if (days > 0) text = `باقي ${days} يوم و ${hours} ساعة`;
-        else if (hours > 0) text = `باقي ${hours} ساعة و ${minutes} دقيقة`;
-        else text = `باقي ${minutes} دقيقة`;
+        if (appointment.systemType === 4) {
+            text = `صلاحية الحجز تنتهي خلال ${minutes} دقيقة`;
+        } else {
+            if (days > 0) text = `باقي ${days} يوم و ${hours} ساعة`;
+            else if (hours > 0) text = `باقي ${hours} ساعة و ${minutes} دقيقة`;
+            else text = `باقي ${minutes} دقيقة`;
+        }
 
         el.innerHTML = `<i class="bi bi-hourglass-split"></i> ${text}`;
     }
@@ -665,3 +673,4 @@
 </script>
 </body>
 </html>
+

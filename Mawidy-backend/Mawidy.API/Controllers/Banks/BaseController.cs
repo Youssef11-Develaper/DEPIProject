@@ -1,0 +1,249 @@
+using Mawidy.Domain.Entities.Hospitals;
+using Mawidy.Domain.Entities.Banks;
+using Mawidy.Infrastructure.Persistence;
+using Mawidy.API.Hubs.Banks;
+using Mawidy.API.Hubs.Hospitals;
+using Mawidy.Application.Banks.Services;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
+
+using Mawidy.Domain.Entities;
+
+namespace Mawidy.API.Controllers.Banks
+{
+    [Area("Banks")]
+    public class BaseController : Controller
+    {
+        protected readonly Mawidy.Infrastructure.Persistence.AppDbContext _context;
+        protected readonly IConfiguration _configuration;
+
+        // Active user session properties
+        public string CurrentUserId { get; private set; } = "1"; // Default fallback to user 1
+        public ApplicationUser? CurrentUser { get; private set; }
+        public bool IsBankEmployee { get; private set; } = false;
+
+        public BaseController(Mawidy.Infrastructure.Persistence.AppDbContext context, IConfiguration configuration)
+        {
+            _context = context;
+            _configuration = configuration;
+        }
+
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            // 1. Check for token in query parameter
+            string? token = context.HttpContext.Request.Query["token"];
+            bool isFromQuery = !string.IsNullOrEmpty(token);
+
+            // 2. If not in query, check in cookies
+            if (string.IsNullOrEmpty(token))
+            {
+                context.HttpContext.Request.Cookies.TryGetValue("mw3dy-token", out token);
+            }
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var claimsPrincipal = ValidateToken(token);
+                if (claimsPrincipal != null)
+                {
+                    // Token is valid! Parse claims and establish session
+                    var email = claimsPrincipal.FindFirst(ClaimTypes.Email)?.Value ?? claimsPrincipal.FindFirst("email")?.Value;
+                    var name = claimsPrincipal.FindFirst(ClaimTypes.Name)?.Value ?? claimsPrincipal.FindFirst("name")?.Value;
+                    var role = claimsPrincipal.FindFirst(ClaimTypes.Role)?.Value ?? claimsPrincipal.FindFirst("role")?.Value;
+                    var tokenUserIdStr = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? claimsPrincipal.FindFirst("sub")?.Value;
+
+                    bool IsBankEmployeeRole = string.Equals(role, "employee", StringComparison.OrdinalIgnoreCase) || 
+                                           string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
+
+                    // Sync/Get user from DB
+                    var user = GetOrCreateUser(tokenUserIdStr, email, name, IsBankEmployeeRole);
+                    if (user != null)
+                    {
+                        CurrentUserId = user.Id;
+                        CurrentUser = user;
+                        IsBankEmployee = user.IsBankEmployee;
+
+                        // Save to cookies if we just parsed it from query
+                        if (isFromQuery)
+                        {
+                            var isHttps = context.HttpContext.Request.IsHttps;
+                            var cookieOptions = new CookieOptions
+                            {
+                                Expires = DateTimeOffset.UtcNow.AddDays(7),
+                                HttpOnly = true,
+                                Secure = isHttps,
+                                SameSite = SameSiteMode.Lax
+                            };
+                            context.HttpContext.Response.Cookies.Append("mw3dy-token", token, cookieOptions);
+                            context.HttpContext.Response.Cookies.Append("mw3dy-user-id", user.Id.ToString(), new CookieOptions 
+                            { 
+                                Expires = DateTimeOffset.UtcNow.AddDays(7), 
+                                HttpOnly = false, 
+                                Secure = isHttps, 
+                                SameSite = SameSiteMode.Lax 
+                            });
+
+                            // Redirect to the same URL without the token parameter to keep URL clean
+                            var request = context.HttpContext.Request;
+                            var queryParams = request.Query.Where(q => q.Key != "token").ToDictionary(q => q.Key, q => (string?)q.Value.ToString());
+                            var redirectUrl = Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(request.Path, queryParams);
+
+                            context.Result = new RedirectResult(redirectUrl);
+                            base.OnActionExecuting(context);
+                            return;
+                        }
+                    }
+                }
+                else
+                {
+                    // Token is invalid/expired! Clear cookies
+                    context.HttpContext.Response.Cookies.Delete("mw3dy-token");
+                    context.HttpContext.Response.Cookies.Delete("mw3dy-user-id");
+                }
+            }
+            else
+            {
+                // Fallback to mw3dy-user-id cookie for backward compatibility if no token is present
+                if (context.HttpContext.Request.Cookies.TryGetValue("mw3dy-user-id", out var idStr) && idStr != null)
+                {
+                    var user = _context.Users.FirstOrDefault(u => u.Id == idStr);
+                    if (user != null)
+                    {
+                        CurrentUserId = user.Id;
+                        CurrentUser = user;
+                        IsBankEmployee = user.IsBankEmployee;
+                    }
+                }
+            }
+
+            // Expose user info to ViewBag for Layout rendering
+            ViewBag.CurrentUserId = CurrentUserId;
+            ViewBag.CurrentUser = CurrentUser;
+            ViewBag.IsBankEmployee = IsBankEmployee;
+
+            base.OnActionExecuting(context);
+        }
+
+        private ClaimsPrincipal? ValidateToken(string token)
+        {
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtSettings = _configuration.GetSection("JwtSettings");
+                var keyStr = jwtSettings["SecretKey"] ?? _configuration["Jwt:Key"] ?? "d9b8f7a6e5d4c3b2a1you3459989ammdef0876285729abcdef01t6246788ab";
+                var key = Encoding.UTF8.GetBytes(keyStr);
+
+                var validationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtSettings["Issuer"] ?? _configuration["Jwt:Issuer"] ?? "CivilRegistryAPI",
+                    ValidateAudience = true,
+                    ValidAudience = jwtSettings["Audience"] ?? _configuration["Jwt:Audience"] ?? "CivilRegistryClient",
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                };
+
+                return tokenHandler.ValidateToken(token, validationParameters, out SecurityToken validatedToken);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private ApplicationUser? GetOrCreateUser(string? tokenUserIdStr, string? email, string? name, bool IsBankEmployee)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                email = !string.IsNullOrEmpty(tokenUserIdStr) ? $"{tokenUserIdStr}@external.com" : "external@mw3dy.com";
+            }
+
+            // Find user by Email
+            var user = _context.Users.FirstOrDefault(u => u.Email == email);
+            
+            // If not found by email, and tokenUserIdStr is a valid integer, try to find by ID
+            if (user == null && int.TryParse(tokenUserIdStr, out var parsedId))
+            {
+                user = _context.Users.FirstOrDefault(u => u.Id == tokenUserIdStr);
+            }
+
+            if (user == null)
+            {
+                // Create user
+                user = new ApplicationUser
+                {
+                    FirstName = name ?? email.Split('@')[0],
+                    Email = email,
+                    IsBankEmployee = IsBankEmployee,
+                    City = "New Cairo",
+                    Address = "",
+                    PhoneNumber = ""
+                };
+
+                // If parsedId is valid and doesn't conflict with seeded IDs (1, 2)
+                if (tokenUserIdStr != null && tokenUserIdStr.Length > 2)
+                {
+                    user.Id = tokenUserIdStr;
+                }
+
+                _context.Users.Add(user);
+                _context.SaveChanges();
+            }
+            else
+            {
+                // Update properties if they changed
+                bool updated = false;
+                if (!string.IsNullOrEmpty(name) && user.FullName != name)
+                {
+                    user.FirstName = name;
+                    updated = true;
+                }
+                if (user.IsBankEmployee != IsBankEmployee)
+                {
+                    user.IsBankEmployee = IsBankEmployee;
+                    updated = true;
+                }
+
+                if (updated)
+                {
+                    _context.SaveChanges();
+                }
+            }
+
+            return user;
+        }
+
+        protected IActionResult? CheckAuthorization()
+        {
+            // If the user is not authenticated (i.e. no CurrentUser found), redirect to Login
+            if (CurrentUser == null)
+            {
+                var loginUrl = _configuration["Jwt:LoginUrl"] ?? "http://localhost:5154/index.html?action=login";
+                
+                // Construct the return URL dynamically
+                var request = HttpContext.Request;
+                var currentUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
+                
+                // If it is external login (Mawidy platform), append redirect parameter
+                if (loginUrl.Contains("localhost:5154") || loginUrl.Contains("index.html"))
+                {
+                    var sep = loginUrl.Contains("?") ? "&" : "?";
+                    loginUrl = $"{loginUrl}{sep}redirect={Uri.EscapeDataString(currentUrl)}";
+                }
+                
+                return Redirect(loginUrl);
+            }
+            return null;
+        }
+    }
+}

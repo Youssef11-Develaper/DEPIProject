@@ -6,6 +6,7 @@ using Mawidy.Application.Interfaces;
 using Mawidy.Application.Services;
 using Microsoft.Extensions.FileProviders;
 using Mawidy.Infrastructure.Services;
+using Mawidy.Application.Banks.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -25,11 +26,10 @@ QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
 
-builder.Services.AddDbContext<TelecomDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
+
 
 builder.Services.AddScoped<IAppDbContext>(provider =>
-    provider.GetRequiredService<TelecomDbContext>());
+    provider.GetRequiredService<AppDbContext>());
 
 builder.Services.AddScoped<IApplicationDbContext>(provider =>
     provider.GetRequiredService<AppDbContext>());
@@ -71,6 +71,20 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = jwtSettings["Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
     };
+})
+.AddCookie("MvcCookies", options =>
+{
+    options.LoginPath = "/Banks/Home/Login";
+    options.AccessDeniedPath = "/Banks/Home/Login";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.Cookie.Name = ".MvcAuth";
+})
+.AddCookie("HospitalCookies", options =>
+{
+    options.LoginPath = "/Hospitals/HospitalAuth/Login";
+    options.Cookie.Name = ".HospitalAuth";
+    options.AccessDeniedPath = "/Hospitals/HospitalAuth/Login";
+    options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
 
 // CORS
@@ -108,6 +122,13 @@ builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddScoped<IBranchRepository, BranchRepository>();
 builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+
+// Banks & Hospitals Services
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<LocalizationService>();
+
+// SignalR
+builder.Services.AddSignalR();
 
 builder.Services.AddControllersWithViews();
 
@@ -183,8 +204,25 @@ using (var scope = app.Services.CreateScope())
             DateOfBirth = new DateTime(1990, 1, 1)
         };
 
-        await userManager.CreateAsync(adminUser, "Admin@12345");
-        await userManager.AddToRoleAsync(adminUser, Roles.Admin);
+        await userManager.CreateAsync(adminUser, "Test@1234");
+        await userManager.AddToRoleAsync(adminUser, Roles.Admin);    var testEmail = "test@mawidy.com";
+    var testUser = await userManager.FindByEmailAsync(testEmail);
+    if (testUser == null)
+    {
+        testUser = new ApplicationUser
+        {
+            FirstName = "Test",
+            LastName = "User",
+            NationalId = "11111111111111",
+            UserName = testEmail,
+            Email = testEmail,
+            PhoneNumber = "01111111111",
+            EmailConfirmed = true,
+            DateOfBirth = new DateTime(1995, 1, 1)
+        };
+        await userManager.CreateAsync(testUser, "Test@1234");
+        await userManager.AddToRoleAsync(testUser, Roles.Citizen);
+    }
     }
 }
 
@@ -220,9 +258,40 @@ app.UseFileServer(fileServerOptions);
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
+
+// Backward-compatible redirects for old Maw3dyCare URLs (before Areas consolidation)
+app.MapGet("/Maw3dyCare/{action}/{id?}", (string action, string? id) =>
+    Results.Redirect(id != null ? $"/Hospitals/Maw3dyCare/{action}/{id}" : $"/Hospitals/Maw3dyCare/{action}"));
+app.MapGet("/HospitalDashboard/{action}/{id?}", (string action, string? id) =>
+    Results.Redirect(id != null ? $"/Hospitals/HospitalDashboard/{action}/{id}" : $"/Hospitals/HospitalDashboard/{action}"));
+app.MapGet("/HospitalAuth/{action}/{id?}", (string action, string? id) =>
+    Results.Redirect(id != null ? $"/Hospitals/HospitalAuth/{action}/{id}" : $"/Hospitals/HospitalAuth/{action}"));
+app.MapGet("/HospitalDashboard", () => Results.Redirect("/Hospitals/HospitalDashboard/Index"));
+app.MapGet("/Maw3dyCare", () => Results.Redirect("/Hospitals/Maw3dyCare/Landing"));
+app.MapGet("/Maw3dyCare/Hospitals", () => Results.Redirect("/Hospitals/Maw3dyCare/Hospitals"));
+
+// Areas (Banks & Hospitals MVC) - BEFORE default
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// REST API controllers
+app.MapControllers();
+
+// Map SignalR Hubs
+app.MapHub<Mawidy.API.Hubs.Banks.BookingHub>("/hubs/booking");
+app.MapHub<Mawidy.API.Hubs.Hospitals.ReservationHub>("/hubs/reservation");
+
 app.Run();
+
+
+
+
+
+
+
+

@@ -76,7 +76,15 @@ namespace Mawidy.Infrastructure.Services
             if (schedule == null)
             {
                 viewModel.IsAvailable = false;
-                viewModel.UnavailabilityMessage = "????? ?? ?????? ?? ????? ??";
+                viewModel.UnavailabilityMessage = "الفرع لا يعمل في هذا اليوم";
+                return viewModel;
+            }
+
+            // Treat days with maxAppointmentsPerSlot=0 or identical open/close times as closed
+            if (schedule.MaxAppointmentsPerSlot == 0 || schedule.OpenTime == schedule.CloseTime)
+            {
+                viewModel.IsAvailable = false;
+                viewModel.UnavailabilityMessage = "الفرع مغلق في هذا اليوم (إجازة أسبوعية)";
                 return viewModel;
             }
 

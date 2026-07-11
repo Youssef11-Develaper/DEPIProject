@@ -13,5 +13,16 @@ public interface IApplicationDbContext
     DbSet<CaseTimelineEvent> CaseTimelineEvents { get; set; }
     DbSet<QueueTicket> QueueTickets { get; set; }
 
+    // Banks
+    DbSet<Mawidy.Domain.Entities.Banks.Service> BankServices { get; set; }
+
+    // Hospitals
+    DbSet<Mawidy.Domain.Entities.Hospitals.Hospitals> Hospitals { get; set; }
+    DbSet<Mawidy.Domain.Entities.Hospitals.Beds> HospitalBeds { get; set; }
+    DbSet<Mawidy.Domain.Entities.Hospitals.BedTypes> HospitalBedTypes { get; set; }
+    DbSet<Mawidy.Domain.Entities.Hospitals.Reservations> HospitalReservations { get; set; }
+    DbSet<Mawidy.Domain.Entities.Hospitals.BlockedPhones> HospitalBlockedPhones { get; set; }
+    DbSet<Mawidy.Domain.Entities.Hospitals.Reports> HospitalReports { get; set; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }

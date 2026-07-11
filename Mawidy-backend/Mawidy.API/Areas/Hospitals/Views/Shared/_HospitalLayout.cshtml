@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Maw3dyCare</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: white;
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 100;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-brand {
+            padding: 22px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .brand-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .brand-sub {
+            font-size: 10px;
+            color: #94a3b8;
+        }
+
+        .sidebar-nav {
+            padding: 16px 12px;
+            flex: 1;
+        }
+
+        .nav-item {
+            list-style: none;
+            margin-bottom: 4px;
+        }
+
+        .nav-link-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #64748b;
+            font-size: 14px;
+            text-decoration: none;
+            transition: .15s;
+        }
+
+            .nav-link-item:hover {
+                background: #f1f5f9;
+                color: #1e293b;
+            }
+
+            .nav-link-item.active {
+                background: #eff6ff;
+                color: #2563eb;
+                font-weight: 500;
+            }
+
+            .nav-link-item i {
+                width: 18px;
+                text-align: center;
+            }
+
+        /* Badge ???????? */
+        .nav-badge {
+            margin-left: auto;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-user {
+            padding: 16px;
+            border-top: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #3b82f6;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: #94a3b8;
+        }
+
+        .btn-logout-sidebar {
+            width: 100%;
+            background: none;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            color: #ef4444;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+            .btn-logout-sidebar:hover {
+                background: #fff1f2;
+            }
+
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            padding: 28px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+
+        <!-- Brand -->
+        <div class="sidebar-brand">
+            <div class="brand-icon"><i class="fas fa-heart-pulse"></i></div>
+            <div>
+                <div class="brand-name">Maw3dyCare</div>
+                <div class="brand-sub">HOSPITAL PORTAL</div>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="sidebar-nav">
+            <ul style="padding:0; margin:0;">
+
+                <!-- Home -->
+                <li class="nav-item">
+                    <a asp-area="Hospitals" asp-controller="HospitalDashboard" asp-action="Index"
+                       class="nav-link-item @(ViewData["ActivePage"]?.ToString() == "Home" ? "active" : "")">
+                        <i class="fas fa-th-large"></i> Home
+                    </a>
+                </li>
+
+                <!-- Reservation Requests -->
+                <li class="nav-item">
+                    <a asp-area="Hospitals" asp-controller="HospitalDashboard" asp-action="Reservations"
+                       class="nav-link-item @(ViewData["ActivePage"]?.ToString() == "Reservations" ? "active" : "")"
+                       id="reservationNavLink">
+                        <i class="fas fa-clipboard-list"></i> Reservation Requests
+                        <span class="nav-badge" id="pendingBadge" style="display:none">0</span>
+                    </a>
+                </li>
+
+                <!-- Add Bed -->
+                <li class="nav-item">
+                    <a asp-area="Hospitals" asp-controller="HospitalDashboard" asp-action="AddBed"
+                       class="nav-link-item @(ViewData["ActivePage"]?.ToString() == "AddBed" ? "active" : "")">
+                        <i class="fas fa-plus-circle"></i> Add Bed
+                    </a>
+                </li>
+
+                <!-- Manage Beds -->
+                <li class="nav-item">
+                    <a asp-area="Hospitals" asp-controller="HospitalDashboard" asp-action="ManageBeds"
+                       class="nav-link-item @(ViewData["ActivePage"]?.ToString() == "ManageBeds" ? "active" : "")">
+                        <i class="fas fa-bed"></i> Manage Beds
+                    </a>
+                </li>
+
+                <!-- History -->
+                <li class="nav-item">
+                    <a asp-area="Hospitals" asp-controller="HospitalDashboard" asp-action="History"
+                       class="nav-link-item @(ViewData["ActivePage"]?.ToString() == "History" ? "active" : "")">
+                        <i class="fas fa-history"></i> History
+                    </a>
+                </li>
+
+                <!-- Block User - ?????? ?????? -->
+                <li class="nav-item">
+                    <a asp-area="Hospitals" asp-controller="HospitalDashboard" asp-action="BlockUser"
+                       class="nav-link-item @(ViewData["ActivePage"]?.ToString() == "BlockUser" ? "active" : "")"
+                       style="color:#ef4444;">
+                        <i class="fas fa-ban"></i> Block User
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+
+        <!-- User Info + Logout -->
+        <div>
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    @(User.Identity?.Name?.Length >= 2
+                                        ? User.Identity.Name.Substring(0, 2).ToUpper()
+                                        : "HU")
+                </div>
+                <div>
+                    <div class="user-name">@User.Identity?.Name</div>
+                    <div class="user-role">Hospital Admin</div>
+                </div>
+            </div>
+
+            <form asp-area="Hospitals" asp-controller="HospitalAuth" asp-action="Logout"
+                  method="post" style="padding: 0 12px 16px;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-logout-sidebar">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        </div>
+
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // ????? ??? ???????? ???????? ?????? ??? Badge ?? 30 ?????
+        function loadPendingCount() {
+            fetch('/Hospitals/HospitalDashboard/GetNotifications')
+                .then(r => r.json())
+                .then(data => {
+                    const badge = document.getElementById('pendingBadge');
+                    if (badge) {
+                        if (data.count > 0) {
+                            badge.textContent    = data.count;
+                            badge.style.display  = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    }
+                }).catch(() => {});
+        }
+
+        loadPendingCount();
+        setInterval(loadPendingCount, 30000);
+    </script>
+
+</body>
+</html>
+
+
+

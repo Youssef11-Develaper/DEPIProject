@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الشكاوى - لوحة التحكم v2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/admin-v2/css/admin.css">
+    <style>
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+            padding: 0 10px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10px;
+            right: 10px;
+            height: 3px;
+            background: var(--border-color);
+            z-index: 1;
+        }
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .timeline-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 3px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+        .timeline-step.active .timeline-icon {
+            border-color: var(--primary-light);
+            background: var(--primary-light);
+            color: #FFFFFF;
+        }
+        .timeline-step.active {
+            color: var(--primary-light);
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Sidebar -->
+    <div id="sidebar-container"></div>
+    
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header id="header-container" class="admin-header"></header>
+        
+        <main class="page-content">
+            <div class="page-title-area">
+                <div>
+                    <h1 class="page-title">إدارة شكاوى ومقترحات المواطنين</h1>
+                    <ul class="breadcrumb">
+                        <li><a href="/admin-v2/index.html">الرئيسية</a></li>
+                        <li>إدارة الشكاوى</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <label class="admin-form-label">حالة الشكوى</label>
+                    <select id="filter-status" class="admin-form-control" onchange="loadComplaints()">
+                        <option value="">جميع الحالات</option>
+                        <option value="0">تم الإرسال (Submitted)</option>
+                        <option value="1">قيد المراجعة (UnderReview)</option>
+                        <option value="2">تم الحل (Resolved)</option>
+                        <option value="3">مغلقة (Closed)</option>
+                    </select>
+                </div>
+                <div class="filter-group" style="flex: 2;">
+                    <label class="admin-form-label">بحث باسم المواطن أو عنوان الشكوى</label>
+                    <input type="text" id="search-complaint" class="admin-form-control" placeholder="بحث..." oninput="renderComplaints()">
+                </div>
+            </div>
+
+            <!-- Complaints Table -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">
+                        <i class="bi bi-exclamation-circle"></i> الشكاوى والمقترحات المقدمة
+                    </span>
+                    <span id="complaints-count" class="admin-badge badge-info" style="font-size:0.85rem">العدد: 0</span>
+                </div>
+                <div class="admin-card-body" style="padding:0;">
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>اسم مقدم الشكوى</th>
+                                    <th>عنوان الشكوى</th>
+                                    <th>تاريخ تقديمها</th>
+                                    <th>حالة الشكوى</th>
+                                    <th>الرد الإداري</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="complaints-table-body">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- View/Reply Complaint Modal -->
+<div class="modal-backdrop" id="complaint-modal">
+    <div class="admin-modal" style="max-width: 550px;">
+        <div class="admin-modal-header">
+            <span class="admin-modal-title">تفاصيل الشكوى والرد عليها</span>
+            <button class="admin-modal-close" onclick="closeComplaintModal()">&times;</button>
+        </div>
+        <div class="admin-modal-body">
+            <input type="hidden" id="complaint-id">
+            
+            <div style="margin-bottom:15px">
+                <span style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:2px">صاحب الشكوى</span>
+                <span id="c-user" style="font-weight:700"></span>
+            </div>
+
+            <div style="margin-bottom:15px">
+                <span style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:2px">عنوان الشكوى</span>
+                <span id="c-title" style="font-weight:700; color:var(--primary)"></span>
+            </div>
+
+            <div style="margin-bottom:15px">
+                <span style="font-size:0.8rem; color:var(--text-muted); display:block; margin-bottom:2px">نص الشكوى بالتفصيل</span>
+                <p id="c-desc" style="font-size:0.9rem; background:var(--bg-main); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-color); line-height:1.6"></p>
+            </div>
+
+            <!-- Complaint Timeline -->
+            <div class="timeline">
+                <div class="timeline-step" id="step-0">
+                    <div class="timeline-icon"><i class="bi bi-send"></i></div>
+                    <span>أرسلت</span>
+                </div>
+                <div class="timeline-step" id="step-1">
+                    <div class="timeline-icon"><i class="bi bi-eye"></i></div>
+                    <span>قيد المراجعة</span>
+                </div>
+                <div class="timeline-step" id="step-2">
+                    <div class="timeline-icon"><i class="bi bi-check-circle"></i></div>
+                    <span>تم الحل</span>
+                </div>
+                <div class="timeline-step" id="step-3">
+                    <div class="timeline-icon"><i class="bi bi-lock"></i></div>
+                    <span>مغلقة</span>
+                </div>
+            </div>
+
+            <hr style="border:none; border-top:1px solid var(--border-color); margin:20px 0;">
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">الرد الإداري</label>
+                <textarea id="c-response" class="admin-form-control" rows="4" placeholder="اكتب رد الإدارة على الشكوى هنا..."></textarea>
+            </div>
+
+            <div class="admin-form-group">
+                <label class="admin-form-label">تحديث حالة الشكوى</label>
+                <select id="c-status" class="admin-form-control">
+                    <option value="1">قيد المراجعة (UnderReview)</option>
+                    <option value="2">تم الحل وإخطار المواطن (Resolved)</option>
+                    <option value="3">حفظ الشكوى وإغلاقها (Closed)</option>
+                </select>
+            </div>
+        </div>
+        <div class="admin-modal-footer">
+            <button class="admin-btn admin-btn-outline" onclick="closeComplaintModal()">إلغاء</button>
+            <button class="admin-btn admin-btn-primary" id="saveResponseBtn" onclick="saveResponse()">حفظ الرد وتحديث الحالة</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="/js/api.js"></script>
+<script src="/admin-v2/js/admin-api.js"></script>
+<script src="/admin-v2/js/admin-ui.js"></script>
+
+<script>
+    let allComplaints = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        AdminUI.init('complaints');
+        await loadComplaints();
+    });
+
+    async function loadComplaints() {
+        const tbody = document.getElementById('complaints-table-body');
+        tbody.innerHTML = AdminUI.createSkeletonRows(6);
+
+        const status = document.getElementById('filter-status').value;
+        const statusParam = status !== "" ? parseInt(status) : undefined;
+
+        try {
+            const response = await API.admin.getComplaints(statusParam);
+            allComplaints = response.data || [];
+            renderComplaints();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast('حدث خطأ أثناء تحميل الشكاوى', 'error');
+        }
+    }
+
+    function renderComplaints() {
+        const search = document.getElementById('search-complaint').value.trim().toLowerCase();
+        const tbody = document.getElementById('complaints-table-body');
+
+        let filtered = allComplaints;
+
+        if (search) {
+            filtered = filtered.filter(c => 
+                c.userFullName.toLowerCase().includes(search) || 
+                c.title.toLowerCase().includes(search) || 
+                c.description.toLowerCase().includes(search)
+            );
+        }
+
+        document.getElementById('complaints-count').textContent = `العدد: ${filtered.length}`;
+
+        if (filtered.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted)">
+                        <i class="bi bi-emoji-smile" style="font-size:2.5rem; display:block; margin-bottom:10px"></i>
+                        لا توجد أي شكاوى حالياً
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        const statusMap = {
+            "Submitted": { text: "تم الإرسال", class: "badge-neutral" },
+            "UnderReview": { text: "قيد المراجعة", class: "badge-warning" },
+            "Resolved": { text: "تم الحل", class: "badge-success" },
+            "Closed": { text: "مغلقة", class: "badge-danger" }
+        };
+
+        tbody.innerHTML = filtered.map(c => {
+            const st = statusMap[c.status] || { text: c.status, class: "badge-neutral" };
+            return `
+                <tr>
+                    <td style="font-weight:700">${c.userFullName}</td>
+                    <td style="font-weight:600">${c.title}</td>
+                    <td>${new Date(c.createdAt).toLocaleDateString('ar-EG')}</td>
+                    <td><span class="admin-badge ${st.class}">${st.text}</span></td>
+                    <td style="max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.85rem; color:var(--text-muted)">
+                        ${c.adminResponse || '<span style="font-style:italic">لم يتم الرد</span>'}
+                    </td>
+                    <td>
+                        <button class="admin-btn admin-btn-outline admin-btn-sm" onclick="viewComplaint(${c.id})">
+                            <i class="bi bi-reply"></i> الرد والتفاصيل
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function viewComplaint(id) {
+        const c = allComplaints.find(x => x.id === id);
+        if (!c) return;
+
+        document.getElementById('complaint-id').value = c.id;
+        document.getElementById('c-user').textContent = c.userFullName;
+        document.getElementById('c-title').textContent = c.title;
+        document.getElementById('c-desc').textContent = c.description;
+        document.getElementById('c-response').value = c.adminResponse || '';
+
+        // Reset timeline
+        const steps = ['step-0', 'step-1', 'step-2', 'step-3'];
+        steps.forEach(s => document.getElementById(s).classList.remove('active'));
+
+        const statusValIndex = { "Submitted": 0, "UnderReview": 1, "Resolved": 2, "Closed": 3 };
+        const activeIdx = statusValIndex[c.status] !== undefined ? statusValIndex[c.status] : 0;
+        
+        for (let i = 0; i <= activeIdx; i++) {
+            document.getElementById(steps[i]).classList.add('active');
+        }
+
+        // Set status dropdown selection
+        const statusMapForSelect = { "Submitted": "1", "UnderReview": "1", "Resolved": "2", "Closed": "3" };
+        document.getElementById('c-status').value = statusMapForSelect[c.status] || "1";
+
+        document.getElementById('complaint-modal').classList.add('show');
+    }
+
+    function closeComplaintModal() {
+        document.getElementById('complaint-modal').classList.remove('show');
+    }
+
+    async function saveResponse() {
+        const id = parseInt(document.getElementById('complaint-id').value);
+        const adminResponse = document.getElementById('c-response').value.trim();
+        const status = parseInt(document.getElementById('c-status').value);
+        const btn = document.getElementById('saveResponseBtn');
+
+        if (!adminResponse) {
+            AdminUI.showToast('يرجى كتابة رد الإدارة على الشكوى أولاً', 'error');
+            return;
+        }
+
+        const dto = { adminResponse, status };
+        UI.showLoading(btn);
+
+        try {
+            const response = await API.admin.respondToComplaint(id, dto);
+            AdminUI.showToast(response.message || 'تم حفظ الرد وتحديث حالة الشكوى بنجاح');
+            closeComplaintModal();
+            await loadComplaints();
+        } catch (err) {
+            console.error(err);
+            AdminUI.showToast(err.message || 'حدث خطأ أثناء حفظ الرد', 'error');
+        } finally {
+            UI.hideLoading(btn);
+        }
+    }
+</script>
+</body>
+</html>
+

@@ -1,0 +1,468 @@
+@* ???? ?????? ???? ????? - ?????? ?? 10 ????? ?? Status=Pending *@
+@model Maw3dyCare.Models.Maw3dyCareDB.Reservations
+@{
+    ViewData["Title"] = "Reservation Status";
+}
+
+<style>
+    body { background-color: #f0f4ff; }
+
+    @* ??? Wrapper ??????? *@
+    .status-wrapper {
+        max-width: 480px;
+        margin: 50px auto;
+    }
+
+    @* ???? ????????? ???????? *@
+    .main-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 12px;
+    }
+
+    @* ?? ?? ?? ????????? *@
+    /* .info-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f0f0f0;
+    } */
+    .info-row {
+        border-bottom: 1px solid var(--border);
+    }
+
+    .info-row:last-child { border-bottom: none; }
+
+    @* ??????? ???? ??? ?? ?????? *@
+    .icon-circle {
+        width: 40px; height: 40px;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* .info-label {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-bottom: 2px;
+    } */
+    .info-label {
+        color: var(--text-muted);
+    }
+
+    /* .info-value {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #111;
+        margin: 0;
+    } */
+    .info-value {
+        color: var(--text-main);
+    }
+
+    @* ???? ???????? *@
+    .phone-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 18px 24px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 12px;
+    }
+
+    @* ???? ????????? *@
+    /* .directions-btn {
+        display: block; width: 100%;
+        background: #fff;
+        border: 1.5px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+        color: #374151; font-weight: 500;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        margin-bottom: 12px;
+    } */
+    .directions-btn {
+        display: block;
+        width: 100%;
+        background: var(--bg-card);
+        border: 1.5px solid var(--border);
+        border-radius: 16px;
+        padding: 16px;
+        text-align: center;
+        color: var(--text-main);
+        font-weight: 500;
+        text-decoration: none;
+        margin-bottom: 12px;
+        cursor: pointer;
+    }
+
+    .directions-btn:hover {
+        background: var(--badge-bg);
+    }
+
+    /* .directions-btn:hover { background: #f5f8ff; color: #0d6efd; } */
+
+    @* Banner ???? ????? (?????/?????/?????) *@
+    .status-banner {
+        border-radius: 14px;
+        padding: 16px 18px;
+        margin-bottom: 14px;
+        display: flex; align-items: center; gap: 12px;
+        font-size: 15px; font-weight: 600;
+    }
+
+    .banner-pending  { background:#fffbeb; color:#f59e0b; border:1px solid #fde68a; }
+    .banner-accepted { background:#f0fdf4; color:#16a34a; border:1px solid #bbf7d0; }
+    .banner-rejected { background:#fff1f2; color:#ef4444; border:1px solid #fecaca; }
+
+    @* ???? ?????? *@
+    .nav-arrows {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 16px;
+    }
+
+    /* .arrow-btn {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 13px; color: #64748b;
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1.5px solid #e2e8f0;
+        background: white;
+        transition: all .15s;
+    }
+
+    .arrow-btn:hover { background: #f1f5f9; color: #1e293b; } */
+
+    .arrow-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1.5px solid var(--border);
+        background: var(--bg-card);
+        transition: all .15s;
+    }
+
+        .arrow-btn:hover {
+            background: var(--badge-bg);
+            color: var(--text-main);
+        }
+
+    @* ?????? Auto-refresh *@
+    .refresh-info {
+        text-align: center;
+        font-size: 12px;
+        color: #94a3b8;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+</style>
+
+<div class="container">
+    <div class="status-wrapper">
+
+        @* ===== ???? ?????? ===== *@
+        @* Back ???? ????? ??????? | Next ???? ?????? ?????????? *@
+        <div class="nav-arrows">
+            <a href="/Maw3dyCare/Confirmation/@Model.ReservationId" class="arrow-btn">
+                <i class="bi bi-arrow-left"></i> Back
+            </a>
+            <a href="/Maw3dyCare/Hospitals" class="arrow-btn">
+                Hospitals <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        @* ===== ????? ?????? ===== *@
+        <h5 class="fw-bold text-center mb-3">Reservation Status</h5>
+
+        @* ===== Banner ???? ????? - ?????? ??? ??? Status ===== *@
+        @if (Model.Status == "Accepted")
+        {
+            @* ?? ?????? ??? ????? *@
+            <div class="status-banner banner-accepted">
+                <i class="bi bi-check-circle-fill" style="font-size:22px;"></i>
+                <div>
+                    <div>? Your reservation has been Accepted!</div>
+                    <div style="font-size:13px;font-weight:400;margin-top:2px;">
+                        A bed has been prepared. Head to the hospital now.
+                    </div>
+                </div>
+            </div>
+        }
+        else if (Model.Status == "Rejected")
+        {
+            @* ?? ?????? ??? ????? *@
+            <div class="status-banner banner-rejected">
+                <i class="bi bi-x-circle-fill" style="font-size:22px;"></i>
+                <div>
+                    <div>? Your reservation has been Rejected</div>
+                    <div style="font-size:13px;font-weight:400;margin-top:2px;">
+                        No available beds at the moment. Try another hospital.
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @* ?? ??? ?? ?????? ?? ?????? *@
+            <div class="status-banner banner-pending">
+                <i class="bi bi-hourglass-split" style="font-size:20px;"></i>
+                <div>
+                    <div>? Waiting for hospital response...</div>
+                    <div style="font-size:13px;font-weight:400;margin-top:2px;">
+                        The hospital is reviewing your request.
+                    </div>
+                </div>
+            </div>
+
+           
+        }
+
+        @* ===== ?????? ??????? - ??????? ????? ===== *@
+        <div class="main-card">
+
+            @* ??? ???????? *@
+            <div class="info-row">
+                <div class="icon-circle" style="background:#e8f4fd;">
+                    <i class="bi bi-building" style="color:#3b9dd4;font-size:1.1rem;"></i>
+                </div>
+                <div>
+                    <p class="info-label">Hospital</p>
+                    <p class="info-value">@Model.Hospitals.Name</p>
+                </div>
+            </div>
+
+            @* ??? ????? *@
+            <div class="info-row">
+                <div class="icon-circle" style="background:#ede9fe;">
+                    <i class="bi bi-ticket-perforated" style="color:#7c5cbf;font-size:1.1rem;"></i>
+                </div>
+                <div>
+                    <p class="info-label">Reservation Number</p>
+                    <p class="info-value">@Model.BedTypes.Name-@Model.ReservationId.ToString("D2")</p>
+                </div>
+            </div>
+
+            @* ??? ?????? *@
+            <div class="info-row">
+                <div class="icon-circle" style="background:#f0fdf4;">
+                    <i class="bi bi-hospital" style="color:#16a34a;font-size:1.1rem;"></i>
+                </div>
+                <div>
+                    <p class="info-label">Bed Type</p>
+                    <p class="info-value">@Model.BedTypes.Name</p>
+                </div>
+            </div>
+
+            @* ??? ?????? ??????? *@
+            <div class="info-row">
+                <div class="icon-circle" style="background:#fff7ed;">
+                    <i class="bi bi-clock" style="color:#f97316;font-size:1.1rem;"></i>
+                </div>
+                <div>
+                    <p class="info-label">Estimated Arrival</p>
+                    <p class="info-value">@Model.ETA minutes</p>
+                </div>
+            </div>
+
+            @* ??????? ??????? - ????? ????? ??????? ??? 30 ????? *@
+            <div class="info-row">
+                <div style="width:100%; display:flex; flex-direction:column;
+                            align-items:center; padding:16px 0;">
+                    <p class="info-label mb-3">Time Remaining</p>
+                    <div style="position:relative; width:120px; height:120px;">
+                        <svg width="120" height="120" style="transform:rotate(-90deg);">
+                            @* ??????? ??????? ???????? *@
+                            <circle cx="60" cy="60" r="50"
+                                    fill="none" stroke="#e8eeff" stroke-width="8" />
+                            @* ??????? ???????? - ?????? ?? ???? ????? *@
+                            <circle id="timerCircle"
+                                    cx="60" cy="60" r="50"
+                                    fill="none" stroke="#4facfe" stroke-width="8"
+                                    stroke-linecap="round"
+                                    stroke-dasharray="314"
+                                    stroke-dashoffset="0" />
+                        </svg>
+                        @* ????? ?? ??? ??????? *@
+                        <div id="timerText"
+                             style="position:absolute; top:50%; left:50%;
+                                    transform:translate(-50%,-50%);
+                                    font-size:1.2rem; font-weight:700;
+                                    color:#1e3a5f; text-align:center;">
+                            --:--
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        @* ===== ???? ?????? ???????? ===== *@
+        <div class="phone-card">
+            <div class="icon-circle" style="background:#e8fdf0;">
+                <i class="bi bi-telephone" style="color:#22c55e;font-size:1.1rem;"></i>
+            </div>
+            <div>
+                <p class="info-label">Hospital Contact</p>
+                <p class="info-value">@Model.Hospitals.Phone</p>
+            </div>
+        </div>
+
+        @* ===== ???? Get Directions - ????? Google Maps ===== *@
+        @* ===== ???? Get Directions - ????? ?????? ????? ?????? ===== *@
+        <button onclick="getDirections(@Model.Hospitals.Latitude, @Model.Hospitals.Longitude)"
+                class="directions-btn">
+            <i class="bi bi-geo-alt me-2"></i> Get Directions
+        </button>
+
+        <script>
+            function getDirections(hospitalLat, hospitalLng) {
+                // ????? ??? ????? ?????? ?? ??????
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            // ?? ???? - ??? ?????
+                            var userLat = position.coords.latitude;
+                            var userLng = position.coords.longitude;
+
+                            // ???? Google Maps ???? ?????? ?? ????? ????????
+                            var url = `https://www.google.com/maps/dir/${userLat},${userLng}/${hospitalLat},${hospitalLng}`;
+                            window.open(url, '_blank');
+                        },
+                        function(error) {
+                            // ?? ??? ?? ??? ????? - ???? Maps ??? ???????? ??
+                            var url = `https://www.google.com/maps?q=${hospitalLat},${hospitalLng}`;
+                            window.open(url, '_blank');
+                        }
+                    );
+                } else {
+                    // ?? ??????? ?? ????? Geolocation
+                    var url = `https://www.google.com/maps?q=${hospitalLat},${hospitalLng}`;
+                    window.open(url, '_blank');
+                }
+            }
+        </script>
+
+    
+
+        @* ===== ???? ?????? ?????? ?????????? ?? Rejected ===== *@
+        @if (Model.Status == "Rejected")
+        {
+            <a href="/Maw3dyCare/Hospitals"
+               class="btn btn-danger w-100 rounded-3">
+                <i class="bi bi-search"></i> Find Another Hospital
+            </a>
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
+    <script>
+        // ===== ??????? ??????? - ????? ????? ??????? ?? ??? ExpiresAt =====
+        var remainingSeconds = @((int)(Model.ExpiresAt - DateTime.Now).TotalSeconds);
+        var totalSeconds = 30 * 60;
+
+        if (remainingSeconds < 0) remainingSeconds = 0;
+
+        function updateTimer() {
+            if (remainingSeconds <= 0) {
+                // ????? ?????
+                document.getElementById("timerText").innerHTML = "Expired";
+                document.getElementById("timerText").style.color = "#ef4444";
+                document.getElementById("timerCircle").style.stroke = "#ef4444";
+                document.getElementById("timerCircle").style.strokeDashoffset = "314";
+                return;
+            }
+
+            // ???? ??????? ????????
+            var minutes = Math.floor(remainingSeconds / 60);
+            var seconds = remainingSeconds % 60;
+            document.getElementById("timerText").innerHTML =
+                String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+
+            // ????? ??????? ????????
+            var progress = remainingSeconds / totalSeconds;
+            var offset = 314 - (progress * 314);
+            document.getElementById("timerCircle").style.strokeDashoffset = offset;
+
+            // ????? ????? ??? ????? ???????
+            if (remainingSeconds < 300) {
+                // ??? ?? 5 ????? = ????
+                document.getElementById("timerCircle").style.stroke = "#ef4444";
+                document.getElementById("timerText").style.color = "#ef4444";
+            } else if (remainingSeconds < 600) {
+                // ??? ?? 10 ????? = ???????
+                document.getElementById("timerCircle").style.stroke = "#f59e0b";
+                document.getElementById("timerText").style.color = "#f59e0b";
+            } else {
+                // ????? = ????
+                document.getElementById("timerCircle").style.stroke = "#4facfe";
+                document.getElementById("timerText").style.color = "#1e3a5f";
+            }
+
+            remainingSeconds--;
+        }
+
+        updateTimer();
+        setInterval(updateTimer, 1000);
+        @* ===== Auto-refresh ?? 10 ????? ?? Status = Pending ===== *@
+//         @if (Model.Status == "Pending")
+// {
+//     <text>
+//     var autoCount = 10;
+//     var countEl = document.getElementById('countdown');
+
+//     setInterval(function () {
+//         autoCount--;
+
+//         if (countEl)
+//             countEl.textContent = autoCount;
+
+//         if (autoCount <= 0) {
+//             window.location.reload();
+//         }
+//     }, 1000);
+//     </text>
+}
+
+        // ===== SignalR =====
+
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/reservationHub")
+            .withAutomaticReconnect()
+            .build();
+
+        connection.on("StatusChanged", function (status) {
+            window.location.reload();
+        });
+
+        connection.start().then(function () {
+            connection.invoke(
+                "JoinReservation",
+                "@Model.ReservationId"
+            );
+        }).catch(function (err) {
+            console.error(err);
+        });
+
+    </script>
+}
+

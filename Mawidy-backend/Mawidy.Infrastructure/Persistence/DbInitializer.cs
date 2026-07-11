@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Mawidy.Domain.Entities;
+using Mawidy.Domain.Entities.Hospitals;
 using Mawidy.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,119 @@ namespace Mawidy.Infrastructure.Persistence
         {
             // Apply any pending migrations automatically on startup
             await context.Database.MigrateAsync();
+
+            // Sync SystemType of legacy appointments based on their branch
+            var unsyncedAppointments = await context.Appointments
+                .Include(a => a.Branch)
+                .Where(a => a.SystemType == SystemType.CivilRegistry && a.Branch != null && a.Branch.SystemType != SystemType.CivilRegistry)
+                .ToListAsync();
+
+            var allReservations = await context.HospitalReservations.ToListAsync();
+            Console.WriteLine($"=== HOSPITAL RESERVATIONS COUNT: {allReservations.Count} ===");
+            foreach (var r in allReservations)
+            {
+                Console.WriteLine($"Id: {r.ReservationId}, Name: {r.PatientName}, Phone: {r.PatientPhone}, Status: {r.Status}");
+            }
+
+            if (unsyncedAppointments.Any())
+            {
+                foreach (var a in unsyncedAppointments)
+                {
+                    a.SystemType = a.Branch.SystemType;
+                }
+                await context.SaveChangesAsync();
+            }
+
+            // Update existing branches to have correct SystemType and detail properties (if they were already seeded)
+            var existingBranches = await context.Branches.ToListAsync();
+            if (existingBranches.Any())
+            {
+                bool modified = false;
+                foreach (var b in existingBranches)
+                {
+                    if (b.Name.Contains("فودافون") || b.Name.Contains("أورنج") || b.Name.Contains("اتصالات") || b.Name.Contains("وي"))
+                    {
+                        if (b.SystemType != SystemType.Telecom)
+                        {
+                            b.SystemType = SystemType.Telecom;
+                            modified = true;
+                        }
+                    }
+                    else if (b.Name.Contains("سجل مدني"))
+                    {
+                        if (b.SystemType != SystemType.CivilRegistry)
+                        {
+                            b.SystemType = SystemType.CivilRegistry;
+                            modified = true;
+                        }
+                    }
+                    else if (b.Name.Contains("البنك الأهلي") || b.Name.Contains("بنك مصر") || b.Name.Contains("البنك التجاري") || b.Name.Contains("CIB") || b.Name.Contains("QNB") || b.Name.Contains("الإسكندرية"))
+                    {
+                        if (b.SystemType != SystemType.Bank)
+                        {
+                            b.SystemType = SystemType.Bank;
+                            modified = true;
+                        }
+                        if (string.IsNullOrEmpty(b.NameEn))
+                        {
+                            modified = true;
+                            if (b.Name.Contains("الأهلي"))
+                            {
+                                b.NameEn = "National Bank of Egypt - Abbas El-Akkad";
+                                b.CityEn = "Cairo";
+                                b.CityAr = "القاهرة";
+                                b.AddressEn = "Abbas El-Akkad St, Nasr City";
+                                b.AddressAr = "شارع عباس العقاد، مدينة نصر";
+                                b.HoursEn = "Sun–Thu · 8:30–15:00";
+                                b.HoursAr = "الأحد–الخميس · 8:30–15:00";
+                            }
+                            else if (b.Name.Contains("بنك مصر"))
+                            {
+                                b.NameEn = "Banque Misr - Mohandessin";
+                                b.CityEn = "Giza";
+                                b.CityAr = "الجيزة";
+                                b.AddressEn = "El-Batal Ahmed Abdel Aziz St, Mohandessin";
+                                b.AddressAr = "شارع البطل أحمد عبد العزيز، المهندسين";
+                                b.HoursEn = "Sun–Thu · 8:30–15:00";
+                                b.HoursAr = "الأحد–الخميس · 8:30–15:00";
+                            }
+                            else if (b.Name.Contains("التجاري") || b.Name.Contains("CIB"))
+                            {
+                                b.NameEn = "CIB - Zamalek";
+                                b.CityEn = "Cairo";
+                                b.CityAr = "القاهرة";
+                                b.AddressEn = "26th of July St, Zamalek";
+                                b.AddressAr = "شارع 26 يوليو، الزمالك";
+                                b.HoursEn = "Sun–Thu · 8:30–15:00";
+                                b.HoursAr = "الأحد–الخميس · 8:30–15:00";
+                            }
+                        }
+                    }
+                    else if (b.Name.Contains("مستشفى") || b.Name.Contains("السلام الدولي"))
+                    {
+                        if (b.SystemType != SystemType.Hospital)
+                        {
+                            b.SystemType = SystemType.Hospital;
+                            modified = true;
+                        }
+                        if (string.IsNullOrEmpty(b.NameEn))
+                        {
+                            modified = true;
+                            b.NameEn = "As-Salam International Hospital - Maadi";
+                            b.CityEn = "Cairo";
+                            b.CityAr = "القاهرة";
+                            b.AddressEn = "Corniche El Nile, Maadi";
+                            b.AddressAr = "كورنيش النيل، المعادي";
+                            b.HoursEn = "24/7";
+                            b.HoursAr = "24/7";
+                        }
+                    }
+                }
+                if (modified)
+                {
+                    await context.SaveChangesAsync();
+                }
+            }
 
             // Populate missing Governorate fields (NameAr, NameEn, Region, Emoji, SortOrder) if empty
             var firstGov = await context.Governorates.FirstOrDefaultAsync();
@@ -220,40 +334,136 @@ namespace Mawidy.Infrastructure.Persistence
 
                 // Vodafone Branches
                 int vId = opMap["vodafone"];
-                branches.Add(new Branch { Name = "فودافون - فرع مدينة نصر", Address = "شارع عباس العقاد، مدينة نصر", NameAr = "فرع عباس العقاد", Area = "مدينة نصر", Latitude = 30.0566, Longitude = 31.3411, GovernorateId = cairo.Id, DistrictId = GetDistId("مدينة نصر"), OperatorId = vId, Status = BranchStatus.Open, WaitTime = "25 دقيقة", QueueCount = 8, DistanceKm = 1.2, Rating = 4.2 });
-                branches.Add(new Branch { Name = "فودافون - فرع المهندسين", Address = "شارع جامعة الدول العربية، المهندسين", NameAr = "فرع جامعة الدول", Area = "المهندسين", Latitude = 30.0522, Longitude = 31.2012, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = vId, Status = BranchStatus.Open, WaitTime = "15 دقيقة", QueueCount = 4, DistanceKm = 2.5, Rating = 4.5 });
-                branches.Add(new Branch { Name = "فودافون - فرع المعادي", Address = "شارع 9، المعادي", NameAr = "فرع شارع 9", Area = "المعادي", Latitude = 29.9602, Longitude = 31.2611, GovernorateId = cairo.Id, DistrictId = GetDistId("المعادي"), OperatorId = vId, Status = BranchStatus.Open, WaitTime = "5 دقائق", QueueCount = 1, DistanceKm = 4.0, Rating = 3.9 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "فودافون - فرع مدينة نصر", Address = "شارع عباس العقاد، مدينة نصر", NameAr = "فرع عباس العقاد", Area = "مدينة نصر", Latitude = 30.0566, Longitude = 31.3411, GovernorateId = cairo.Id, DistrictId = GetDistId("مدينة نصر"), OperatorId = vId, Status = BranchStatus.Open, WaitTime = "25 دقيقة", QueueCount = 8, DistanceKm = 1.2, Rating = 4.2 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "فودافون - فرع المهندسين", Address = "شارع جامعة الدول العربية، المهندسين", NameAr = "فرع جامعة الدول", Area = "المهندسين", Latitude = 30.0522, Longitude = 31.2012, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = vId, Status = BranchStatus.Open, WaitTime = "15 دقيقة", QueueCount = 4, DistanceKm = 2.5, Rating = 4.5 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "فودافون - فرع المعادي", Address = "شارع 9، المعادي", NameAr = "فرع شارع 9", Area = "المعادي", Latitude = 29.9602, Longitude = 31.2611, GovernorateId = cairo.Id, DistrictId = GetDistId("المعادي"), OperatorId = vId, Status = BranchStatus.Open, WaitTime = "5 دقائق", QueueCount = 1, DistanceKm = 4.0, Rating = 3.9 });
 
                 // Orange Branches
                 int oId = opMap["orange"];
-                branches.Add(new Branch { Name = "أورنج - فرع مصر الجديدة", Address = "شارع الأهرام، الكوربة، مصر الجديدة", NameAr = "فرع الكوربة", Area = "مصر الجديدة", Latitude = 30.0901, Longitude = 31.3255, GovernorateId = cairo.Id, DistrictId = GetDistId("مصر الجديدة"), OperatorId = oId, Status = BranchStatus.Open, WaitTime = "10 دقائق", QueueCount = 3, DistanceKm = 3.1, Rating = 4.1 });
-                branches.Add(new Branch { Name = "أورنج - فرع الدقي", Address = "شارع التحرير، الدقي", NameAr = "فرع التحرير", Area = "الدقي", Latitude = 30.0388, Longitude = 31.2111, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = oId, Status = BranchStatus.Open, WaitTime = "30 دقيقة", QueueCount = 12, DistanceKm = 0.5, Rating = 3.8 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "أورنج - فرع مصر الجديدة", Address = "شارع الأهرام، الكوربة، مصر الجديدة", NameAr = "فرع الكوربة", Area = "مصر الجديدة", Latitude = 30.0901, Longitude = 31.3255, GovernorateId = cairo.Id, DistrictId = GetDistId("مصر الجديدة"), OperatorId = oId, Status = BranchStatus.Open, WaitTime = "10 دقائق", QueueCount = 3, DistanceKm = 3.1, Rating = 4.1 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "أورنج - فرع الدقي", Address = "شارع التحرير، الدقي", NameAr = "فرع التحرير", Area = "الدقي", Latitude = 30.0388, Longitude = 31.2111, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = oId, Status = BranchStatus.Open, WaitTime = "30 دقيقة", QueueCount = 12, DistanceKm = 0.5, Rating = 3.8 });
 
                 // Etisalat Branches
                 int eId = opMap["etisalat"];
-                branches.Add(new Branch { Name = "اتصالات - فرع التجمع الخامس", Address = "شارع التسعين الشمالي، التجمع الخامس", NameAr = "فرع التسعين", Area = "التجمع الخامس", Latitude = 30.0266, Longitude = 31.4811, GovernorateId = cairo.Id, DistrictId = GetDistId("التجمع الخامس"), OperatorId = eId, Status = BranchStatus.Open, WaitTime = "20 دقيقة", QueueCount = 6, DistanceKm = 5.2, Rating = 4.3 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "اتصالات - فرع التجمع الخامس", Address = "شارع التسعين الشمالي، التجمع الخامس", NameAr = "فرع التسعين", Area = "التجمع الخامس", Latitude = 30.0266, Longitude = 31.4811, GovernorateId = cairo.Id, DistrictId = GetDistId("التجمع الخامس"), OperatorId = eId, Status = BranchStatus.Open, WaitTime = "20 دقيقة", QueueCount = 6, DistanceKm = 5.2, Rating = 4.3 });
 
                 // WE Branches
                 int weId = opMap["we"];
-                branches.Add(new Branch { Name = "وي - فرع وسط البلد", Address = "شارع طلعت حرب، وسط البلد", NameAr = "فرع طلعت حرب", Area = "وسط البلد", Latitude = 30.0466, Longitude = 31.2388, GovernorateId = cairo.Id, DistrictId = GetDistId("وسط البلد"), OperatorId = weId, Status = BranchStatus.Open, WaitTime = "12 دقيقة", QueueCount = 4, DistanceKm = 1.0, Rating = 4.0 });
+                branches.Add(new Branch { SystemType = SystemType.Telecom, Name = "وي - فرع وسط البلد", Address = "شارع طلعت حرب، وسط البلد", NameAr = "فرع طلعت حرب", Area = "وسط البلد", Latitude = 30.0466, Longitude = 31.2388, GovernorateId = cairo.Id, DistrictId = GetDistId("وسط البلد"), OperatorId = weId, Status = BranchStatus.Open, WaitTime = "12 دقيقة", QueueCount = 4, DistanceKm = 1.0, Rating = 4.0 });
 
                 // Civil Registry (السجل المدني) Branches
-                branches.Add(new Branch { Name = "سجل مدني مدينة نصر أول", Address = "بجوار قسم أول مدينة نصر، القاهرة", NameAr = "سجل مدني مدينة نصر", Area = "مدينة نصر", Latitude = 30.0592, Longitude = 31.3391, GovernorateId = cairo.Id, DistrictId = GetDistId("مدينة نصر"), OperatorId = civilOpId, Status = BranchStatus.Open, WaitTime = "45 دقيقة", QueueCount = 20, DistanceKm = 1.4, Rating = 3.5 });
-                branches.Add(new Branch { Name = "سجل مدني مصر الجديدة", Address = "شارع الحجاز، مصر الجديدة", NameAr = "سجل مدني مصر الجديدة", Area = "مصر الجديدة", Latitude = 30.1002, Longitude = 31.3355, GovernorateId = cairo.Id, DistrictId = GetDistId("مصر الجديدة"), OperatorId = civilOpId, Status = BranchStatus.Open, WaitTime = "35 دقيقة", QueueCount = 15, DistanceKm = 2.8, Rating = 3.7 });
-                branches.Add(new Branch { Name = "سجل مدني الدقي", Address = "بجوار مجلس مدينة الجيزة، الدقي", NameAr = "سجل مدني الدقي", Area = "الدقي", Latitude = 30.0411, Longitude = 31.2122, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = civilOpId, Status = BranchStatus.Open, WaitTime = "50 دقيقة", QueueCount = 25, DistanceKm = 0.8, Rating = 3.2 });
+                branches.Add(new Branch { SystemType = SystemType.CivilRegistry, Name = "سجل مدني مدينة نصر أول", Address = "بجوار قسم أول مدينة نصر، القاهرة", NameAr = "سجل مدني مدينة نصر", Area = "مدينة نصر", Latitude = 30.0592, Longitude = 31.3391, GovernorateId = cairo.Id, DistrictId = GetDistId("مدينة نصر"), OperatorId = civilOpId, Status = BranchStatus.Open, WaitTime = "45 دقيقة", QueueCount = 20, DistanceKm = 1.4, Rating = 3.5 });
+                branches.Add(new Branch { SystemType = SystemType.CivilRegistry, Name = "سجل مدني مصر الجديدة", Address = "شارع الحجاز، مصر الجديدة", NameAr = "سجل مدني مصر الجديدة", Area = "مصر الجديدة", Latitude = 30.1002, Longitude = 31.3355, GovernorateId = cairo.Id, DistrictId = GetDistId("مصر الجديدة"), OperatorId = civilOpId, Status = BranchStatus.Open, WaitTime = "35 دقيقة", QueueCount = 15, DistanceKm = 2.8, Rating = 3.7 });
+                branches.Add(new Branch { SystemType = SystemType.CivilRegistry, Name = "سجل مدني الدقي", Address = "بجوار مجلس مدينة الجيزة، الدقي", NameAr = "سجل مدني الدقي", Area = "الدقي", Latitude = 30.0411, Longitude = 31.2122, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = civilOpId, Status = BranchStatus.Open, WaitTime = "50 دقيقة", QueueCount = 25, DistanceKm = 0.8, Rating = 3.2 });
 
                 // Bank Branches (NBE, Banque Misr, CIB)
                 int nbeId = opMap["nbe"];
-                branches.Add(new Branch { Name = "البنك الأهلي المصري - فرع عباس العقاد", Address = "شارع عباس العقاد، مدينة نصر", NameAr = "فرع عباس العقاد", Area = "مدينة نصر", Latitude = 30.0571, Longitude = 31.3418, GovernorateId = cairo.Id, DistrictId = GetDistId("مدينة نصر"), OperatorId = nbeId, Status = BranchStatus.Open, WaitTime = "30 دقيقة", QueueCount = 10, DistanceKm = 1.3, Rating = 4.4 });
+                branches.Add(new Branch 
+                { 
+                    SystemType = SystemType.Bank, 
+                    Name = "البنك الأهلي المصري - فرع عباس العقاد", 
+                    Address = "شارع عباس العقاد، مدينة نصر", 
+                    NameAr = "البنك الأهلي المصري - فرع عباس العقاد", 
+                    NameEn = "National Bank of Egypt - Abbas El-Akkad",
+                    Area = "مدينة نصر", 
+                    CityAr = "القاهرة",
+                    CityEn = "Cairo",
+                    AddressAr = "شارع عباس العقاد، مدينة نصر",
+                    AddressEn = "Abbas El-Akkad St, Nasr City",
+                    HoursAr = "الأحد–الخميس · 8:30–15:00",
+                    HoursEn = "Sun–Thu · 8:30–15:00",
+                    Latitude = 30.0571, 
+                    Longitude = 31.3418, 
+                    GovernorateId = cairo.Id, 
+                    DistrictId = GetDistId("مدينة نصر"), 
+                    OperatorId = nbeId, 
+                    Status = BranchStatus.Open, 
+                    WaitTime = "30 دقيقة", 
+                    QueueCount = 10, 
+                    DistanceKm = 1.3, 
+                    Rating = 4.4 
+                });
 
                 int bmId = opMap["banquemisr"];
-                branches.Add(new Branch { Name = "بنك مصر - فرع المهندسين", Address = "شارع البطل أحمد عبد العزيز، المهندسين", NameAr = "فرع البطل أحمد عبد العزيز", Area = "المهندسين", Latitude = 30.0531, Longitude = 31.2025, GovernorateId = giza.Id, DistrictId = GetDistId("الدقي والمهندسين"), OperatorId = bmId, Status = BranchStatus.Open, WaitTime = "25 دقيقة", QueueCount = 9, DistanceKm = 2.6, Rating = 4.1 });
+                branches.Add(new Branch 
+                { 
+                    SystemType = SystemType.Bank, 
+                    Name = "بنك مصر - فرع المهندسين", 
+                    Address = "شارع البطل أحمد عبد العزيز، المهندسين", 
+                    NameAr = "بنك مصر - فرع المهندسين", 
+                    NameEn = "Banque Misr - Mohandessin",
+                    Area = "المهندسين", 
+                    CityAr = "الجيزة",
+                    CityEn = "Giza",
+                    AddressAr = "شارع البطل أحمد عبد العزيز، المهندسين",
+                    AddressEn = "El-Batal Ahmed Abdel Aziz St, Mohandessin",
+                    HoursAr = "الأحد–الخميس · 8:30–15:00",
+                    HoursEn = "Sun–Thu · 8:30–15:00",
+                    Latitude = 30.0531, 
+                    Longitude = 31.2025, 
+                    GovernorateId = giza.Id, 
+                    DistrictId = GetDistId("الدقي والمهندسين"), 
+                    OperatorId = bmId, 
+                    Status = BranchStatus.Open, 
+                    WaitTime = "25 دقيقة", 
+                    QueueCount = 9, 
+                    DistanceKm = 2.6, 
+                    Rating = 4.1 
+                });
 
                 int cibId = opMap["cib"];
-                branches.Add(new Branch { Name = "البنك التجاري الدولي CIB - فرع الزمالك", Address = "شارع 26 يوليو، الزمالك", NameAr = "فرع الزمالك", Area = "المالك", Latitude = 30.0601, Longitude = 31.2199, GovernorateId = cairo.Id, DistrictId = GetDistId("الزمالك"), OperatorId = cibId, Status = BranchStatus.Open, WaitTime = "15 دقيقة", QueueCount = 5, DistanceKm = 1.9, Rating = 4.6 });
+                branches.Add(new Branch 
+                { 
+                    SystemType = SystemType.Bank, 
+                    Name = "البنك التجاري الدولي CIB - فرع الزمالك", 
+                    Address = "شارع 26 يوليو، الزمالك", 
+                    NameAr = "البنك التجاري الدولي - فرع الزمالك", 
+                    NameEn = "CIB - Zamalek",
+                    Area = "الزمالك", 
+                    CityAr = "القاهرة",
+                    CityEn = "Cairo",
+                    AddressAr = "شارع 26 يوليو، الزمالك",
+                    AddressEn = "26th of July St, Zamalek",
+                    HoursAr = "الأحد–الخميس · 8:30–15:00",
+                    HoursEn = "Sun–Thu · 8:30–15:00",
+                    Latitude = 30.0601, 
+                    Longitude = 31.2199, 
+                    GovernorateId = cairo.Id, 
+                    DistrictId = GetDistId("الزمالك"), 
+                    OperatorId = cibId, 
+                    Status = BranchStatus.Open, 
+                    WaitTime = "15 دقيقة", 
+                    QueueCount = 5, 
+                    DistanceKm = 1.9, 
+                    Rating = 4.6 
+                });
 
                 // Hospital Branches
-                branches.Add(new Branch { Name = "مستشفى السلام الدولي - المعادي", Address = "كورنيش النيل، المعادي، القاهرة", NameAr = "مستشفى السلام الدولي", Area = "المعادي", Latitude = 29.9655, Longitude = 31.2501, GovernorateId = cairo.Id, DistrictId = GetDistId("المعادي"), OperatorId = hospOpId, Status = BranchStatus.Open, WaitTime = "10 دقائق", QueueCount = 2, DistanceKm = 3.5, Rating = 4.7 });
+                branches.Add(new Branch 
+                { 
+                    SystemType = SystemType.Hospital, 
+                    Name = "مستشفى السلام الدولي - المعادي", 
+                    Address = "كورنيش النيل، المعادي، القاهرة", 
+                    NameAr = "مستشفى السلام الدولي - المعادي", 
+                    NameEn = "As-Salam International Hospital - Maadi",
+                    Area = "المعادي", 
+                    CityAr = "القاهرة",
+                    CityEn = "Cairo",
+                    AddressAr = "كورنيش النيل، المعادي",
+                    AddressEn = "Corniche El Nile, Maadi",
+                    HoursAr = "24/7",
+                    HoursEn = "24/7",
+                    Latitude = 29.9655, 
+                    Longitude = 31.2501, 
+                    GovernorateId = cairo.Id, 
+                    DistrictId = GetDistId("المعادي"), 
+                    OperatorId = hospOpId, 
+                    Status = BranchStatus.Open, 
+                    WaitTime = "10 دقائق", 
+                    QueueCount = 2, 
+                    DistanceKm = 3.5, 
+                    Rating = 4.7 
+                });
 
                 await context.Branches.AddRangeAsync(branches);
                 await context.SaveChangesAsync();
@@ -364,6 +574,94 @@ namespace Mawidy.Infrastructure.Persistence
                 };
 
                 await context.LegalCases.AddRangeAsync(cases);
+                await context.SaveChangesAsync();
+            }
+
+            // 8. Seed BankServices
+            if (!await context.BankServices.AnyAsync())
+            {
+                var bankServices = new List<Mawidy.Domain.Entities.Banks.Service>
+                {
+                    new Mawidy.Domain.Entities.Banks.Service { Id = "account", Icon = "wallet", Title = "Open an Account", Desc = "Personal, joint or business accounts in minutes." },
+                    new Mawidy.Domain.Entities.Banks.Service { Id = "loan", Icon = "circle-dollar-sign", Title = "Personal Loan", Desc = "Flexible financing tailored to your goals." },
+                    new Mawidy.Domain.Entities.Banks.Service { Id = "mortgage", Icon = "home", Title = "Mortgage", Desc = "Find your home with competitive rates." },
+                    new Mawidy.Domain.Entities.Banks.Service { Id = "wealth", Icon = "trending-up", Title = "Wealth Management", Desc = "Bespoke advisory for long-term growth." },
+                    new Mawidy.Domain.Entities.Banks.Service { Id = "cards", Icon = "credit-card", Title = "Premium Cards", Desc = "Black, Platinum and World Elite tiers." },
+                    new Mawidy.Domain.Entities.Banks.Service { Id = "business", Icon = "briefcase", Title = "Business Banking", Desc = "Solutions that scale with your company." }
+                };
+
+                await context.BankServices.AddRangeAsync(bankServices);
+                await context.SaveChangesAsync();
+            }
+
+            // 9. Seed HospitalBedTypes
+            if (!await context.HospitalBedTypes.AnyAsync())
+            {
+                var bedTypes = new List<BedTypes>
+                {
+                    new BedTypes { Name = "ICU", Description = "Intensive Care Unit" },
+                    new BedTypes { Name = "NICU", Description = "Neonatal Intensive Care Unit" },
+                    new BedTypes { Name = "CICU", Description = "Cardiac Intensive Care Unit" },
+                    new BedTypes { Name = "VENT", Description = "Ventilator Bed" }
+                };
+                await context.HospitalBedTypes.AddRangeAsync(bedTypes);
+                await context.SaveChangesAsync();
+            }
+
+            // 10. Seed Hospitals and Beds
+            if (!await context.Hospitals.AnyAsync())
+            {
+                var asSalam = new Hospitals
+                {
+                    Name = "مستشفى السلام الدولي - المعادي",
+                    Address = "كورنيش النيل، المعادي",
+                    City = "القاهرة",
+                    Latitude = 29.9668M,
+                    Longitude = 31.2497M,
+                    Phone = "01012345678",
+                    Email = "assalam@mw3dy.com",
+                    Description = "مستشفى مجهز بأحدث الأجهزة الطبية والرعاية المركزة",
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                };
+
+                var kasrElAini = new Hospitals
+                {
+                    Name = "مستشفى القصر العيني التعليمي",
+                    Address = "شارع القصر العيني، المنيل",
+                    City = "القاهرة",
+                    Latitude = 30.0309M,
+                    Longitude = 31.2281M,
+                    Phone = "01122334455",
+                    Email = "kasr@mw3dy.com",
+                    Description = "مستشفى القصر العيني لتقديم الرعاية الطبية الفائقة والأسرة التخصصية",
+                    IsActive = true,
+                    CreatedAt = DateTime.Now
+                };
+
+                await context.Hospitals.AddRangeAsync(asSalam, kasrElAini);
+                await context.SaveChangesAsync();
+
+                // Seed beds for these hospitals
+                var dbBedTypes = await context.HospitalBedTypes.ToListAsync();
+                var icu = dbBedTypes.First(t => t.Name == "ICU");
+                var nicu = dbBedTypes.First(t => t.Name == "NICU");
+                var cicu = dbBedTypes.First(t => t.Name == "CICU");
+                var vent = dbBedTypes.First(t => t.Name == "VENT");
+
+                var beds = new List<Beds>();
+                // As-Salam Beds
+                for (int i = 1; i <= 5; i++) beds.Add(new Beds { BedNumber = $"ICU-{i}", Status = "Available", HospitalId = asSalam.HospitalId, BedTypeId = icu.BedTypeId });
+                for (int i = 1; i <= 3; i++) beds.Add(new Beds { BedNumber = $"NICU-{i}", Status = "Available", HospitalId = asSalam.HospitalId, BedTypeId = nicu.BedTypeId });
+                for (int i = 1; i <= 2; i++) beds.Add(new Beds { BedNumber = $"CICU-{i}", Status = "Available", HospitalId = asSalam.HospitalId, BedTypeId = cicu.BedTypeId });
+                for (int i = 1; i <= 4; i++) beds.Add(new Beds { BedNumber = $"VENT-{i}", Status = "Available", HospitalId = asSalam.HospitalId, BedTypeId = vent.BedTypeId });
+
+                // Kasr El Aini Beds
+                for (int i = 1; i <= 10; i++) beds.Add(new Beds { BedNumber = $"ICU-{i}", Status = "Available", HospitalId = kasrElAini.HospitalId, BedTypeId = icu.BedTypeId });
+                for (int i = 1; i <= 5; i++) beds.Add(new Beds { BedNumber = $"NICU-{i}", Status = "Available", HospitalId = kasrElAini.HospitalId, BedTypeId = nicu.BedTypeId });
+                for (int i = 1; i <= 8; i++) beds.Add(new Beds { BedNumber = $"VENT-{i}", Status = "Available", HospitalId = kasrElAini.HospitalId, BedTypeId = vent.BedTypeId });
+
+                await context.HospitalBeds.AddRangeAsync(beds);
                 await context.SaveChangesAsync();
             }
         }

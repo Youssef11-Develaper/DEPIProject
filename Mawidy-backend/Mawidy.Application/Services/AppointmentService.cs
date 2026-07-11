@@ -47,7 +47,8 @@ public class AppointmentService : IAppointmentService
             AppointmentDate = vm.AppointmentDate.Date,
             AppointmentTime = timeSpan,
             Status          = AppointmentStatus.Confirmed,
-            Notes           = vm.Notes
+            Notes           = vm.Notes,
+            UserId          = string.IsNullOrEmpty(vm.UserId) ? null : vm.UserId
         };
         _db.Appointments.Add(appointment);
         await _db.SaveChangesAsync();
