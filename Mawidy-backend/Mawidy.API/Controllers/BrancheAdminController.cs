@@ -74,7 +74,7 @@ namespace Mawidy.API.Controllers
                     UserFullName = a.User.FullName,
                     UserNationalId = a.User.NationalId,
                     UserPhone = a.User.PhoneNumber ?? "",
-                    ServiceName = a.ServiceType.Name,
+                    ServiceName = a.ServiceType?.Name ?? a.Service ?? a.ServiceKey,
                     AppointmentDate = a.AppointmentDate,
                     TimeSlot = a.TimeSlot,
                     Status = a.Status.ToString()

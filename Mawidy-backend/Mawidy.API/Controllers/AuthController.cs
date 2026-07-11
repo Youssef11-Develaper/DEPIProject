@@ -196,6 +196,7 @@ namespace Mawidy.API.Controllers
                 Email = user.Email!,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
                 Role = roles.FirstOrDefault() ?? Roles.Citizen,
                 GovernorateId = user.GovernorateId,
                 GovernorateName = user.Governorate?.Name,

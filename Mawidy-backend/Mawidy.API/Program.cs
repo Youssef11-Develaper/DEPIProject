@@ -81,9 +81,9 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie("HospitalCookies", options =>
 {
-    options.LoginPath = "/Banks/Home/Login";
-    options.Cookie.Name = ".MvcAuth";
-    options.AccessDeniedPath = "/Banks/Home/Login";
+    options.LoginPath = "/Hospitals/HospitalAuth/Login";
+    options.Cookie.Name = ".HospitalAuth";
+    options.AccessDeniedPath = "/Hospitals/HospitalAuth/Login";
     options.ExpireTimeSpan = TimeSpan.FromHours(8);
 });
 

@@ -5,6 +5,8 @@ namespace Mawidy.Application.DTOs.Appointments
     public class AppointmentDto
     {
         public int Id { get; set; }
+        public string StringId { get; set; } = string.Empty;
+        public int SystemType { get; set; }
         public string UserFullName { get; set; } = string.Empty;
         public string UserNationalId { get; set; } = string.Empty;
         public string UserPhone { get; set; } = string.Empty;

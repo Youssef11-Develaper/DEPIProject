@@ -30,6 +30,11 @@ public class BookingsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<BookingResultDto>> CreateBooking([FromBody] CreateBookingCommand command)
     {
+        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (Guid.TryParse(userIdStr, out var userGuid))
+        {
+            command.UserId = userGuid;
+        }
         var result = await _mediator.Send(command);
         return Ok(result);
     }

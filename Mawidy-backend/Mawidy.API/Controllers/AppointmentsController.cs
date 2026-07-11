@@ -1,7 +1,6 @@
 using Mawidy.Domain.Entities.Hospitals;
 using Mawidy.Domain.Entities.Banks;
 using Mawidy.Infrastructure.Persistence;
-using Mawidy.Infrastructure.Persistence;
 using Mawidy.Application.DTOs.Appointments;
 using Mawidy.Application.DTOs.Common;
 using Mawidy.Domain.Entities;
@@ -9,6 +8,7 @@ using Mawidy.Domain.Enums;
 using Mawidy.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Mawidy.API.Controllers
@@ -49,29 +49,130 @@ namespace Mawidy.API.Controllers
         {
             var appointments = await _appointmentRepository.GetUserAppointmentsAsync(UserId);
 
-            var result = await Task.WhenAll(appointments.Select(async a => new AppointmentDto
+            var result = new List<AppointmentDto>();
+            foreach (var a in appointments)
             {
-                Id = a.Id,
-                UserFullName = a.User.FullName,
-                UserNationalId = a.User.NationalId,
-                UserPhone = a.User.PhoneNumber ?? "",
-                BranchId = a.BranchId,
-                BranchName = a.Branch.Name,
-                BranchAddress = a.Branch.Address,
-                ServiceTypeId = a.ServiceTypeId,
-                ServiceName = a.ServiceType.Name,
-                RequiredDocuments = a.ServiceType.RequiredDocuments,
-                AppointmentDate = a.AppointmentDate,
-                TimeSlot = a.TimeSlot,
-                Status = a.Status.ToString(),
-                QueueNumber = await _appointmentRepository.GetQueueNumberAsync(
-                    a.BranchId, a.AppointmentDate, a.ServiceTypeId, a.TimeSlot),
-                IsNotified = a.IsNotified,
-                CreatedAt = a.CreatedAt,
-                HasRating = a.Rating != null
-            }));
+                var appointmentDate = a.AppointmentDate;
+                var timeSlot = a.TimeSlot;
+                if (a.SystemType == SystemType.Bank)
+                {
+                    if (DateTime.TryParse(a.Date, out var parsedD)) appointmentDate = parsedD;
+                    if (TimeSpan.TryParse(a.Time, out var parsedT)) timeSlot = parsedT;
+                }
 
-            return Ok(ApiResponse<IEnumerable<AppointmentDto>>.Ok(result));
+                var queueNumber = await _appointmentRepository.GetQueueNumberAsync(
+                    a.BranchId, appointmentDate, a.ServiceTypeId ?? 0, timeSlot);
+
+                result.Add(new AppointmentDto
+                {
+                    Id = a.Id,
+                    StringId = a.Id.ToString(),
+                    SystemType = (int)a.SystemType,
+                    UserFullName = a.User?.FullName ?? a.CustomerName,
+                    UserNationalId = a.User?.NationalId ?? "",
+                    UserPhone = a.User?.PhoneNumber ?? a.CustomerPhone,
+                    BranchId = a.BranchId,
+                    BranchName = a.Branch.Name,
+                    BranchAddress = a.Branch.Address,
+                    ServiceTypeId = a.ServiceTypeId ?? 0,
+                    ServiceName = a.ServiceType?.Name ?? a.Service ?? a.ServiceKey,
+                    RequiredDocuments = a.ServiceType?.RequiredDocuments ?? "",
+                    AppointmentDate = appointmentDate,
+                    TimeSlot = timeSlot,
+                    Status = a.Status.ToString(),
+                    QueueNumber = queueNumber,
+                    IsNotified = a.IsNotified,
+                    CreatedAt = a.CreatedAt,
+                    HasRating = a.Rating != null
+                });
+            }
+
+            var user = await _context.Users.FindAsync(UserId);
+            var combinedResult = result.ToList();
+            if (user != null)
+            {
+                // 1. Hospital Bed Reservations – match by UserId (if linked) OR by phone (fallback for anonymous bookings)
+                var reservations = await _context.HospitalReservations
+                    .Include(r => r.Hospitals)
+                    .Include(r => r.BedTypes)
+                    .Where(r => r.UserId == UserId ||
+                                (!string.IsNullOrEmpty(user.PhoneNumber) && r.PatientPhone == user.PhoneNumber))
+                    .ToListAsync();
+
+                if (reservations.Any())
+                {
+                    var resList = reservations.Select(r => new AppointmentDto
+                    {
+                        Id = r.ReservationId,
+                        StringId = r.ReservationId.ToString(),
+                        SystemType = (int)Mawidy.Domain.Enums.SystemType.Hospital,
+                        UserFullName = r.PatientName,
+                        UserNationalId = user.NationalId,
+                        UserPhone = r.PatientPhone,
+                        BranchId = 0,
+                        BranchName = r.Hospitals?.Name ?? "المستشفى",
+                        BranchAddress = r.Hospitals?.Address ?? "",
+                        ServiceTypeId = 0,
+                        ServiceName = $"حجز سرير ({r.BedTypes?.Name ?? "رعاية"})",
+                        RequiredDocuments = "",
+                        AppointmentDate = r.ExpiresAt,
+                        TimeSlot = r.ExpiresAt.TimeOfDay,
+                        Status = r.Status == "Accepted" ? "Confirmed" : r.Status == "Rejected" ? "Cancelled" : "Pending",
+                        QueueNumber = r.BedId ?? 0,
+                        IsNotified = false,
+                        CreatedAt = r.ReservedAt,
+                        HasRating = false
+                    }).ToList();
+
+                    combinedResult = combinedResult.Concat(resList).ToList();
+                }
+
+                // 2. Court Bookings
+                Guid? userGuid = Guid.TryParse(UserId, out var parsedGuid) ? parsedGuid : null;
+                var courtBookingsQuery = _context.Bookings
+                    .Include(b => b.Court)
+                    .Include(b => b.Department)
+                    .Include(b => b.Service)
+                    .AsQueryable();
+
+                if (userGuid.HasValue)
+                {
+                    courtBookingsQuery = courtBookingsQuery.Where(b => b.UserId == userGuid.Value || b.NationalId == user.NationalId || b.PhoneNumber == user.PhoneNumber);
+                }
+                else
+                {
+                    courtBookingsQuery = courtBookingsQuery.Where(b => b.NationalId == user.NationalId || b.PhoneNumber == user.PhoneNumber);
+                }
+
+                var courtBookings = await courtBookingsQuery.ToListAsync();
+                var courtList = courtBookings.Select(b => new AppointmentDto
+                {
+                    Id = Math.Abs(b.Id.GetHashCode()),
+                    StringId = b.Id.ToString(),
+                    SystemType = (int)Mawidy.Domain.Enums.SystemType.Court,
+                    UserFullName = b.FullName,
+                    UserNationalId = b.NationalId,
+                    UserPhone = b.PhoneNumber,
+                    BranchId = 0,
+                    BranchName = b.Court?.Name ?? "المحكمة",
+                    BranchAddress = b.Court?.Address ?? "",
+                    ServiceTypeId = 0,
+                    ServiceName = b.Service?.Name ?? "جلسة قضائية",
+                    RequiredDocuments = b.Service?.RequiredDocumentsJson ?? "",
+                    AppointmentDate = b.BookingDate,
+                    TimeSlot = b.TimeSlot,
+                    Status = b.Status.ToString(),
+                    QueueNumber = b.QueueNumber,
+                    IsNotified = false,
+                    CreatedAt = b.CreatedAt,
+                    HasRating = false
+                }).ToList();
+
+                combinedResult = combinedResult.Concat(courtList).ToList();
+            }
+
+            combinedResult = combinedResult.OrderByDescending(x => x.CreatedAt).ToList();
+            return Ok(ApiResponse<IEnumerable<AppointmentDto>>.Ok(combinedResult));
         }
 
         // GET api/appointments/{id}
@@ -83,24 +184,34 @@ namespace Mawidy.API.Controllers
             if (appointment == null || appointment.UserId != UserId)
                 return NotFound(ApiResponse<AppointmentDto>.Fail("?????? ??? ?????"));
 
+            var appointmentDate = appointment.AppointmentDate;
+            var timeSlot = appointment.TimeSlot;
+            if (appointment.SystemType == SystemType.Bank)
+            {
+                if (DateTime.TryParse(appointment.Date, out var parsedD)) appointmentDate = parsedD;
+                if (TimeSpan.TryParse(appointment.Time, out var parsedT)) timeSlot = parsedT;
+            }
+
             var queueNumber = await _appointmentRepository.GetQueueNumberAsync(
-                appointment.BranchId, appointment.AppointmentDate,
-                appointment.ServiceTypeId, appointment.TimeSlot);
+                appointment.BranchId, appointmentDate,
+                appointment.ServiceTypeId ?? 0, timeSlot);
 
             return Ok(ApiResponse<AppointmentDto>.Ok(new AppointmentDto
             {
                 Id = appointment.Id,
-                UserFullName = appointment.User.FullName,
-                UserNationalId = appointment.User.NationalId,
-                UserPhone = appointment.User.PhoneNumber ?? "",
+                StringId = appointment.Id.ToString(),
+                SystemType = (int)appointment.SystemType,
+                UserFullName = appointment.User?.FullName ?? appointment.CustomerName,
+                UserNationalId = appointment.User?.NationalId ?? "",
+                UserPhone = appointment.User?.PhoneNumber ?? appointment.CustomerPhone,
                 BranchId = appointment.BranchId,
                 BranchName = appointment.Branch.Name,
                 BranchAddress = appointment.Branch.Address,
-                ServiceTypeId = appointment.ServiceTypeId,
-                ServiceName = appointment.ServiceType.Name,
-                RequiredDocuments = appointment.ServiceType.RequiredDocuments,
-                AppointmentDate = appointment.AppointmentDate,
-                TimeSlot = appointment.TimeSlot,
+                ServiceTypeId = appointment.ServiceTypeId ?? 0,
+                ServiceName = appointment.ServiceType?.Name ?? appointment.Service ?? appointment.ServiceKey,
+                RequiredDocuments = appointment.ServiceType?.RequiredDocuments ?? "",
+                AppointmentDate = appointmentDate,
+                TimeSlot = timeSlot,
                 Status = appointment.Status.ToString(),
                 QueueNumber = queueNumber,
                 IsNotified = appointment.IsNotified,
@@ -200,20 +311,21 @@ namespace Mawidy.API.Controllers
 
             var queueNumber = await _appointmentRepository.GetQueueNumberAsync(
                 appointment.BranchId, appointment.AppointmentDate,
-                appointment.ServiceTypeId, appointment.TimeSlot);
+                appointment.ServiceTypeId ?? 0, appointment.TimeSlot);
 
             return Ok(ApiResponse<AppointmentDto>.Ok(new AppointmentDto
             {
                 Id = fullAppointment!.Id,
-                UserFullName = fullAppointment.User.FullName,
-                UserNationalId = fullAppointment.User.NationalId,
-                UserPhone = fullAppointment.User.PhoneNumber ?? "",
+                SystemType = (int)fullAppointment.SystemType,
+                UserFullName = fullAppointment.User?.FullName ?? fullAppointment.CustomerName,
+                UserNationalId = fullAppointment.User?.NationalId ?? "",
+                UserPhone = fullAppointment.User?.PhoneNumber ?? fullAppointment.CustomerPhone,
                 BranchId = fullAppointment.BranchId,
                 BranchName = fullAppointment.Branch.Name,
                 BranchAddress = fullAppointment.Branch.Address,
-                ServiceTypeId = fullAppointment.ServiceTypeId,
-                ServiceName = fullAppointment.ServiceType.Name,
-                RequiredDocuments = fullAppointment.ServiceType.RequiredDocuments,
+                ServiceTypeId = fullAppointment.ServiceTypeId ?? 0,
+                ServiceName = fullAppointment.ServiceType?.Name ?? fullAppointment.Service ?? fullAppointment.ServiceKey,
+                RequiredDocuments = fullAppointment.ServiceType?.RequiredDocuments ?? "",
                 AppointmentDate = fullAppointment.AppointmentDate,
                 TimeSlot = fullAppointment.TimeSlot,
                 Status = fullAppointment.Status.ToString(),
@@ -230,7 +342,7 @@ namespace Mawidy.API.Controllers
         {
             var appointment = await _appointmentRepository.GetByIdAsync(id);
 
-            if (appointment == null || appointment.UserId != UserId)
+            if (appointment == null || (appointment.UserId != null && appointment.UserId != UserId))
                 return NotFound(ApiResponse<string>.Fail("?????? ??? ?????"));
 
             if (appointment.Status == AppointmentStatus.Completed ||
@@ -290,7 +402,7 @@ namespace Mawidy.API.Controllers
 
             var queueNumber = await _appointmentRepository.GetQueueNumberAsync(
                 appointment.BranchId, appointment.AppointmentDate,
-                appointment.ServiceTypeId, appointment.TimeSlot);
+                appointment.ServiceTypeId ?? 0, appointment.TimeSlot);
 
             var qrBase64 = _qrService.GenerateQRCode(appointment, queueNumber);
 

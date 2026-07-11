@@ -1,4 +1,4 @@
-using Mawidy.Application.Hospitals.ViewModels;
+ï»¿using Mawidy.Application.Hospitals.ViewModels;
 using Mawidy.Domain.Entities.Hospitals;
 using Mawidy.Domain.Entities.Banks;
 using Mawidy.Infrastructure.Persistence;
@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Mawidy.API.Controllers.Hospitals
 {
-    [Authorize(AuthenticationSchemes = "HospitalCookie")]
+    [Authorize(AuthenticationSchemes = "HospitalCookies")]
     [Area("Hospitals")]
     public class HospitalDashboardController : Controller
     {
@@ -124,7 +124,7 @@ namespace Mawidy.API.Controllers.Hospitals
                     ReservationId = r.ReservationId,
                     PatientName = r.PatientName,
                     PatientPhone = r.PatientPhone,
-                    BedTypeName = r.BedTypes != null ? r.BedTypes.Name : "—",
+                    BedTypeName = r.BedTypes != null ? r.BedTypes.Name : "â€”",
                     CaseDescription = r.CaseDescription,
                     Status = r.Status,
                     ETA = r.ETA,
@@ -157,13 +157,13 @@ namespace Mawidy.API.Controllers.Hospitals
                 ReservationId = r.ReservationId,
                 PatientName = r.PatientName,
                 PatientPhone = r.PatientPhone,
-                BedTypeName = r.BedTypes?.Name ?? "—",
+                BedTypeName = r.BedTypes?.Name ?? "â€”",
                 CaseDescription = r.CaseDescription,
                 Status = r.Status,
                 ETA = r.ETA,
                 ReservedAt = r.ReservedAt,
                 ExpiresAt = r.ExpiresAt,
-                HospitalName = r.Hospitals?.Name ?? "—"
+                HospitalName = r.Hospitals?.Name ?? "â€”"
             });
         }
 
@@ -349,7 +349,7 @@ namespace Mawidy.API.Controllers.Hospitals
                 {
                     BedId = b.BedId,
                     BedNumber = b.BedNumber,
-                    BedTypeName = b.BedTypes?.Name ?? "—",
+                    BedTypeName = b.BedTypes?.Name ?? "â€”",
                     BedTypeId = b.BedTypeId,
                     Status = b.Status,
                     AssignedPatient = b.Status == "Occupied"
@@ -411,7 +411,7 @@ namespace Mawidy.API.Controllers.Hospitals
                     ReservationId = r.ReservationId,
                     PatientName = r.PatientName,
                     PatientPhone = r.PatientPhone,
-                    BedTypeName = r.BedTypes != null ? r.BedTypes.Name : "—",
+                    BedTypeName = r.BedTypes != null ? r.BedTypes.Name : "â€”",
                     CaseDescription = r.CaseDescription,
                     Status = r.Status,
                     ETA = r.ETA,

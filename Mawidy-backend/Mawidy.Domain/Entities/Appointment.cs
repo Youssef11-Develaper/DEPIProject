@@ -8,14 +8,14 @@ namespace Mawidy.Domain.Entities
 
         public SystemType SystemType { get; set; } = SystemType.CivilRegistry;
 
-        public string UserId { get; set; } = string.Empty;
-        public ApplicationUser User { get; set; } = null!;
+        public string? UserId { get; set; }
+        public ApplicationUser? User { get; set; }
 
         public int BranchId { get; set; }
         public Branch Branch { get; set; } = null!;
 
-        public int ServiceTypeId { get; set; }
-        public ServiceType ServiceType { get; set; } = null!;
+        public int? ServiceTypeId { get; set; }
+        public ServiceType? ServiceType { get; set; }
 
         public DateTime AppointmentDate { get; set; }
         public TimeSpan TimeSlot { get; set; }

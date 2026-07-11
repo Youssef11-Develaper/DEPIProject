@@ -175,18 +175,19 @@
     @* ===== Search + City Filter ===== *@
     <div class="d-flex gap-3 mb-4 flex-wrap align-items-center">
 
-        @* ???? ????? *@
         <input type="text" id="searchInput" class="form-control"
                style="max-width:400px;"
                placeholder="Search hospitals..."
+               autocomplete="off"
                onkeyup="filterAll()">
 
-        @* ???? ???????? *@
         <select id="citySelect" class="city-select" onchange="filterAll()">
-            <option value="all">??? All Cities</option>
-            <option value="fayoum">?? Fayoum</option>
-            <option value="alexandria">?? Alexandria</option>
-            <option value="banha">?? Banha</option>
+            <option value="all">كل المدن - All Cities</option>
+            <option value="القاهرة">القاهرة - Cairo</option>
+            <option value="الجيزة">الجيزة - Giza</option>
+            <option value="الاسكندرية">الإسكندرية - Alexandria</option>
+            <option value="الفيوم">الفيوم - Fayoum</option>
+            <option value="بنها">بنها - Banha</option>
         </select>
 
     </div>

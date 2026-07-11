@@ -103,6 +103,8 @@ public class AppointmentCreateViewModel
     public DateTime AppointmentDate     { get; set; } = DateTime.Today.AddDays(1);
     public string   AppointmentTimeSlot { get; set; } = string.Empty;
     public string?  Notes               { get; set; }
+    /// <summary>Set from JWT claims so the booking appears in مواعيدي.</summary>
+    public string?  UserId              { get; set; }
     public List<ServiceItemViewModel> AvailableServices { get; set; } = new();
 }
 

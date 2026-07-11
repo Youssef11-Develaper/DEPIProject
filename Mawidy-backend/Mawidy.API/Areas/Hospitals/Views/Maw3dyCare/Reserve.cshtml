@@ -144,6 +144,30 @@
     </div>
 </div>
 
+<script>
+// Auto-fill from Mawidy SSO token if user is logged in
+(function () {
+    try {
+        var token = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('mw3dy-token='));
+        if (!token) return;
+        var jwt = token.split('=').slice(1).join('=');
+        var payload = JSON.parse(atob(jwt.split('.')[1]));
+        var givenName = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname'] || '';
+        var surname = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname'] || '';
+        var fullName = (givenName + ' ' + surname).trim();
 
+        var nameInput = document.querySelector('input[name="PatientName"]');
+        var phoneInput = document.querySelector('input[name="PatientPhone"]');
 
+        if (nameInput && !nameInput.value && fullName) nameInput.value = fullName;
 
+        // Fetch user's phone number from profile API
+        fetch('/api/auth/profile', {
+            headers: { 'Authorization': 'Bearer ' + jwt }
+        }).then(r => r.json()).then(data => {
+            var phone = data?.data?.phoneNumber || data?.phoneNumber || '';
+            if (phoneInput && !phoneInput.value && phone) phoneInput.value = phone;
+        }).catch(() => {});
+    } catch (e) {}
+})();
+</script>

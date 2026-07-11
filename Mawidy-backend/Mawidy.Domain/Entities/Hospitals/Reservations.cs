@@ -15,7 +15,6 @@ namespace Mawidy.Domain.Entities.Hospitals
         [Required]
         public String CaseDescription { set; get; }
         [Required]
-
         public String Status { set; get; }
         [Range(1, 120, ErrorMessage = "Arrival Time between 1 and 120 minutes")]
         public int ETA { set; get; }
@@ -31,6 +30,7 @@ namespace Mawidy.Domain.Entities.Hospitals
         public int? BedId { get; set; }
         public Beds? Bed { get; set; }
 
-        
+        /// <summary>Optional: links the reservation to a registered Mawidy user.</summary>
+        public string? UserId { get; set; }
     }
 }

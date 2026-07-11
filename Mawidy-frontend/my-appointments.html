@@ -425,7 +425,7 @@
                     <div class="countdown" id="countdown-${a.id}"></div>
 
                     <div style="display:flex;gap:8px;flex-wrap:wrap">
-                        ${a.status === 'Confirmed' || a.status === 'Pending' ? `
+                        ${(a.status === 'Confirmed' || a.status === 'Pending') && a.systemType !== 4 && a.systemType !== 5 ? `
                             <button class="btn btn-sm" style="background:#EAF2FB;color:var(--primary)"
                                 onclick="showQR(${a.id})">
                                 <i class="bi bi-qr-code"></i> QR
@@ -478,7 +478,11 @@
         const diff = appointmentDate - now;
 
         if (diff <= 0) {
-            el.innerHTML = '<i class="bi bi-clock"></i> الموعد الآن';
+            if (appointment.systemType === 4) {
+                el.innerHTML = '<i class="bi bi-clock-history"></i> انتهت صلاحية الحجز';
+            } else {
+                el.innerHTML = '<i class="bi bi-clock"></i> الموعد الآن';
+            }
             return;
         }
 
@@ -487,9 +491,13 @@
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
         let text = '';
-        if (days > 0) text = `باقي ${days} يوم و ${hours} ساعة`;
-        else if (hours > 0) text = `باقي ${hours} ساعة و ${minutes} دقيقة`;
-        else text = `باقي ${minutes} دقيقة`;
+        if (appointment.systemType === 4) {
+            text = `صلاحية الحجز تنتهي خلال ${minutes} دقيقة`;
+        } else {
+            if (days > 0) text = `باقي ${days} يوم و ${hours} ساعة`;
+            else if (hours > 0) text = `باقي ${hours} ساعة و ${minutes} دقيقة`;
+            else text = `باقي ${minutes} دقيقة`;
+        }
 
         el.innerHTML = `<i class="bi bi-hourglass-split"></i> ${text}`;
     }

@@ -1,12 +1,7 @@
 using Mawidy.Application.Hospitals.ViewModels;
 using Mawidy.Domain.Entities.Hospitals;
-using Mawidy.Domain.Entities.Banks;
 using Mawidy.Infrastructure.Persistence;
-using Mawidy.API.Hubs.Banks;
 using Mawidy.API.Hubs.Hospitals;
-using Mawidy.Application.Banks.Services;
-
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +22,7 @@ namespace Mawidy.API.Controllers.Hospitals
         public IActionResult Login()
         {
             if (User.Identity?.IsAuthenticated == true &&
-                User.Identity.AuthenticationType == "HospitalCookie")
+                User.Identity.AuthenticationType == "HospitalCookies")
                 return RedirectToAction("Index", "HospitalDashboard");
 
             return View(new HospitalLoginVM());
@@ -58,29 +53,46 @@ namespace Mawidy.API.Controllers.Hospitals
                 return View(vm);
             }
 
+            var roles = _db.UserRoles
+                .Where(ur => ur.UserId == user.Id)
+                .Join(_db.Roles, ur => ur.RoleId, r => r.Id, (ur, r) => r.Name)
+                .ToList();
+
+            bool isAdmin = roles.Contains("Admin") || user.HospitalId == null;
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name,  user.FullName),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim("HospitalId",     user.HospitalId.ToString())
+                new Claim("HospitalId",     user.HospitalId?.ToString() ?? "0")
             };
 
-            var identity = new ClaimsIdentity(claims, "HospitalCookie");
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+
+            var identity = new ClaimsIdentity(claims, "HospitalCookies");
             var principal = new ClaimsPrincipal(identity);
 
-            await HttpContext.SignInAsync("HospitalCookie", principal);
+            await HttpContext.SignInAsync("HospitalCookies", principal);
 
-            return RedirectToAction("Index", "HospitalDashboard");
+            if (isAdmin)
+            {
+                return RedirectToAction("Index", "Maw3dyCare");
+            }
+            else
+            {
+                return RedirectToAction("Index", "HospitalDashboard");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("HospitalCookie");
+            await HttpContext.SignOutAsync("HospitalCookies");
             return RedirectToAction("Login");
         }
     }
 }
-
-

@@ -1,4 +1,3 @@
-
 using Mawidy.Domain.Entities.Hospitals;
 using Mawidy.Domain.Entities.Banks;
 using Mawidy.Infrastructure.Persistence;
@@ -62,7 +61,7 @@ namespace Mawidy.API.Controllers.Banks
                     var tokenUserIdStr = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? claimsPrincipal.FindFirst("sub")?.Value;
 
                     bool IsBankEmployeeRole = string.Equals(role, "employee", StringComparison.OrdinalIgnoreCase) || 
-                                          string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
+                                           string.Equals(role, "admin", StringComparison.OrdinalIgnoreCase);
 
                     // Sync/Get user from DB
                     var user = GetOrCreateUser(tokenUserIdStr, email, name, IsBankEmployeeRole);
@@ -138,7 +137,8 @@ namespace Mawidy.API.Controllers.Banks
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var keyStr = _configuration["Jwt:Key"] ?? "SUPER_SECRET_KEY_MAWIDY_SYSTEM_2026_1234567890";
+                var jwtSettings = _configuration.GetSection("JwtSettings");
+                var keyStr = jwtSettings["SecretKey"] ?? _configuration["Jwt:Key"] ?? "d9b8f7a6e5d4c3b2a1you3459989ammdef0876285729abcdef01t6246788ab";
                 var key = Encoding.UTF8.GetBytes(keyStr);
 
                 var validationParameters = new TokenValidationParameters
@@ -146,9 +146,9 @@ namespace Mawidy.API.Controllers.Banks
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = true,
-                    ValidIssuer = _configuration["Jwt:Issuer"] ?? "MawidyPlatform",
+                    ValidIssuer = jwtSettings["Issuer"] ?? _configuration["Jwt:Issuer"] ?? "CivilRegistryAPI",
                     ValidateAudience = true,
-                    ValidAudience = _configuration["Jwt:Audience"] ?? "MawidyPlatform",
+                    ValidAudience = jwtSettings["Audience"] ?? _configuration["Jwt:Audience"] ?? "CivilRegistryClient",
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
@@ -235,7 +235,7 @@ namespace Mawidy.API.Controllers.Banks
                 var currentUrl = $"{request.Scheme}://{request.Host}{request.Path}{request.QueryString}";
                 
                 // If it is external login (Mawidy platform), append redirect parameter
-                if (loginUrl.Contains("localhost:5154"))
+                if (loginUrl.Contains("localhost:5154") || loginUrl.Contains("index.html"))
                 {
                     var sep = loginUrl.Contains("?") ? "&" : "?";
                     loginUrl = $"{loginUrl}{sep}redirect={Uri.EscapeDataString(currentUrl)}";
@@ -247,5 +247,3 @@ namespace Mawidy.API.Controllers.Banks
         }
     }
 }
-
-

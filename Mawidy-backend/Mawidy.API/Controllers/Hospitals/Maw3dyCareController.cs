@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Mawidy.Application.Hospitals.ViewModels;
 using Mawidy.Domain.Entities.Hospitals;
 using Mawidy.Domain.Entities.Banks;
@@ -108,6 +109,11 @@ namespace Mawidy.API.Controllers.Hospitals
             reservation.Status = "Pending";
             reservation.ReservedAt = DateTime.Now;
             reservation.ExpiresAt = DateTime.Now.AddMinutes(30);
+
+            // Link to Mawidy account if user is logged in via SSO
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userId))
+                reservation.UserId = userId;
 
             ModelState.Remove("Hospitals");
             ModelState.Remove("BedTypes");
@@ -441,7 +447,7 @@ namespace Mawidy.API.Controllers.Hospitals
                     UserId = u.Id,
                     FullName = u.FirstName,
                     Email = u.Email,
-                    HospitalName = u.Hospital != null ? u.Hospital.Name : "—",
+                    HospitalName = u.Hospital != null ? u.Hospital.Name : "ï¿½",
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt
                 }).ToList();
@@ -495,7 +501,7 @@ namespace Mawidy.API.Controllers.Hospitals
             user.IsActive = !user.IsActive;
             _db.SaveChanges();
 
-            TempData["Success"] = $"{(user.IsActive ? "? Enabled" : "? Disabled")} — {user.FullName}";
+            TempData["Success"] = $"{(user.IsActive ? "? Enabled" : "? Disabled")} ï¿½ {user.FullName}";
             return RedirectToAction("Accounts");
         }
 

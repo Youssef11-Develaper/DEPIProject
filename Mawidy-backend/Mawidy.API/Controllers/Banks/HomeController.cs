@@ -33,7 +33,7 @@ namespace Mawidy.API.Controllers.Banks
                 if (IsBankEmployee)
                     return RedirectToAction("Index", "Employee");
                 else
-                    return RedirectToAction("Index", "Dashboard");
+                    return View();
             }
             return View();
         }

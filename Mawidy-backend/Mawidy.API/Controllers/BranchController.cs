@@ -69,6 +69,11 @@ public class BranchController : Controller
             if (fresh is not null) vm.AvailableServices = fresh.AvailableServices;
             return View(vm);
         }
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            vm.UserId = userId;
+        }
         var confirm = await _apptSvc.CreateAppointmentAsync(vm);
         return RedirectToAction(nameof(Confirm), new { id = confirm.AppointmentId });
     }

@@ -6,8 +6,8 @@
     
     // Retrieve authenticated user info from ViewBag (set by BaseController)
     var currentUser = ViewBag.CurrentUser as Mawidy.Domain.Entities.ApplicationUser;
-    var isEmployee = ViewBag.IsEmployee as bool? ?? false;
-    var currentUserId = ViewBag.CurrentUserId as int? ?? 1;
+    var isEmployee = (ViewBag.IsBankEmployee as bool? ?? false) || (currentUser != null && currentUser.IsBankEmployee);
+    var currentUserId = currentUser?.Id ?? "1";
 }
 <!DOCTYPE html>
 <html lang="@culture" dir="@(isRtl ? "rtl" : "ltr")" class="h-full">
@@ -76,16 +76,25 @@
                 {
                     @if (isEmployee)
                     {
-                        <!-- Dashboard link (Admin only) -->
+                        <!-- Employee Portal link (Employee only) -->
                         <a asp-area="Banks" asp-controller="Employee" asp-action="Index" 
                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors hover:bg-muted text-muted-foreground hover:text-foreground">
-                            <i data-lucide="layout-dashboard" class="h-4 w-4 shrink-0"></i>
-                            <span>@Localizer.T("common.dashboard")</span>
+                            <i data-lucide="shield" class="h-4 w-4 shrink-0"></i>
+                            <span>@Localizer.T("employee.portal")</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <!-- Appointments link (Customer only) -->
+                        <a asp-area="Banks" asp-controller="Dashboard" asp-action="Index" 
+                           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors hover:bg-muted text-muted-foreground hover:text-foreground">
+                            <i data-lucide="calendar" class="h-4 w-4 shrink-0"></i>
+                            <span>@Localizer.T("common.appointments")</span>
                         </a>
                     }
 
                     <!-- Sign Out link (Shared) -->
-                    <a asp-area="Banks" asp-controller="Home" asp-action="Logout" 
+                    <a href="javascript:void(0)" onclick="handleMawidyLogout()" 
                        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium transition-colors hover:bg-muted text-muted-foreground hover:text-foreground">
                         <i data-lucide="log-out" class="h-4 w-4 shrink-0"></i>
                         <span>@Localizer.T("common.signOut")</span>
@@ -155,11 +164,20 @@
                 {
                     @if (isEmployee)
                     {
-                        <!-- Dashboard link -->
+                        <!-- Employee Portal link -->
                         <a asp-area="Banks" asp-controller="Employee" asp-action="Index" 
                            class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted text-sm font-medium text-muted-foreground hover:text-foreground transition-all">
-                            <i data-lucide="layout-dashboard" class="h-5 w-5"></i>
-                            <span>@Localizer.T("common.dashboard")</span>
+                            <i data-lucide="shield" class="h-5 w-5"></i>
+                            <span>@Localizer.T("employee.portal")</span>
+                        </a>
+                    }
+                    else
+                    {
+                        <!-- Appointments link -->
+                        <a asp-area="Banks" asp-controller="Dashboard" asp-action="Index" 
+                           class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted text-sm font-medium text-muted-foreground hover:text-foreground transition-all">
+                            <i data-lucide="calendar" class="h-5 w-5"></i>
+                            <span>@Localizer.T("common.appointments")</span>
                         </a>
                     }
 
@@ -174,7 +192,7 @@
                     }
 
                     <!-- Sign Out link -->
-                    <a asp-area="Banks" asp-controller="Home" asp-action="Logout" 
+                    <a href="javascript:void(0)" onclick="handleMawidyLogout()" 
                        class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-rose-500/10 text-sm font-medium text-muted-foreground hover:text-rose-600 transition-all border-t border-border/40 mt-2 pt-3">
                         <i data-lucide="log-out" class="h-5 w-5"></i>
                         <span>@Localizer.T("common.signOut")</span>
@@ -301,6 +319,11 @@
             switchMwTab('login');
         }catch(err){alert(err.message);}
         finally{btn.disabled=false;btn.innerHTML=orig;}
+    }
+    function handleMawidyLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '@Url.Action("Logout", "Home", new { area = "Banks" })';
     }
     document.getElementById('mawidyAuthOverlay').addEventListener('click',function(e){if(e.target===this)closeMawidyAuthModal();});
     </script>

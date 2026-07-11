@@ -92,13 +92,19 @@ namespace Mawidy.API.Controllers.Banks
                     return Json(new { success = false, message = "This slot is already booked by another customer. Please choose a different slot." });
                 }
 
+                DateTime.TryParse(dto.Date, out var parsedDate);
+                TimeSpan.TryParse(dto.Time, out var parsedTime);
+
                 // Create appointment
                 appointment = new Appointment
                 {
+                    SystemType = Mawidy.Domain.Enums.SystemType.Bank,
                     Service = dto.Service,
                     BranchId = dto.BranchId,
                     Date = dto.Date,
                     Time = dto.Time,
+                    AppointmentDate = parsedDate,
+                    TimeSlot = parsedTime,
                     Notes = dto.Notes,
                     Status = Mawidy.Domain.Enums.AppointmentStatus.Confirmed,
                     CreatedAt = DateTime.UtcNow,
